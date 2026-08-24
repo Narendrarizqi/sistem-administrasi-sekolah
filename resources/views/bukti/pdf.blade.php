@@ -108,7 +108,7 @@
                 </td>
                 <td class="sekolah">
                     <h2>SMK Muhammadiyah Margasari</h2>
-                    <p>Sistem Informasi Pembayaran Sekolah</p>
+                    <p>Jl. Raya Margasari, Kec. Margasari, Kab. Tegal</p>
                 </td>
             </tr>
         </table>

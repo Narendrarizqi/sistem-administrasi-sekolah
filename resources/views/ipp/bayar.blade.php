@@ -316,12 +316,12 @@ $namaBulanSekarang = ($bulanIndoList[(int)\Carbon\Carbon::now()->format('n')] ??
                     </div>
 
                     <div class="d-flex justify-content-between pt-2 border-top">
-                        <a href="{{ route('ipp.index') }}" class="btn btn-secondary px-4">
+                        <a href="{{ route('ipp.index') }}" class="btn btn-batal-merah px-4">
                             <i class="fas fa-arrow-left mr-1"></i> Kembali
                         </a>
 
                         <button type="submit" class="btn btn-add px-4" {{ $sisa <= 0 ? 'disabled' : '' }}>
-                            <i class="fas fa-money-bill-wave mr-1"></i> Simpan Pembayaran
+                            Simpan Pembayaran
                         </button>
                     </div>
 

@@ -27,7 +27,17 @@ Route::middleware('auth')->group(function () {
         ->name('dashboard');
 
     Route::post('/siswa/naik-kelas', [SiswaController::class, 'naikKelas'])
-    ->name('siswa.naik-kelas');
+        ->name('siswa.naik-kelas');
+
+    // Import Siswa
+    Route::get('/siswa/import/template', [SiswaController::class, 'downloadTemplate'])
+        ->name('siswa.import.template');
+    Route::post('/siswa/import/parse', [SiswaController::class, 'parseImport'])
+        ->name('siswa.import.parse');
+    Route::post('/siswa/import/mapping', [SiswaController::class, 'applyMapping'])
+        ->name('siswa.import.mapping');
+    Route::post('/siswa/import/confirm', [SiswaController::class, 'confirmImport'])
+        ->name('siswa.import.confirm');
 
     Route::resource('siswa', SiswaController::class)->except(['show']);
     Route::get('/siswa', [SiswaController::class, 'index'])

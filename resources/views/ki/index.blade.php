@@ -633,6 +633,379 @@
             border-radius: 8px;
             padding: 10px 14px;
         }
+
+        /* =========================================================================
+           DEDICATED STYLES FOR MODAL PEMBAYARAN KI (Clean, Calm, School Admin)
+           ========================================================================= */
+        .modal-bayar-ki .modal-content {
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+            background: #ffffff;
+        }
+
+        /* 1. Light, Clean Header with Green Accent */
+        .modal-bayar-ki .modal-header {
+            background: #ffffff !important;
+            border-bottom: 1px solid #e2e8f0 !important;
+            padding: 16px 22px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-top-left-radius: 14px !important;
+            border-top-right-radius: 14px !important;
+        }
+
+        .modal-bayar-ki .header-title-wrap {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .modal-bayar-ki .header-icon-badge {
+            width: 38px;
+            height: 38px;
+            border-radius: 9px;
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            color: #16a34a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .modal-bayar-ki .header-main-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #0f172a !important;
+            line-height: 1.25;
+            margin: 0;
+        }
+
+        .modal-bayar-ki .header-sub-info {
+            font-size: 13px;
+            color: #64748b !important;
+            font-weight: 500;
+            margin-top: 2px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .modal-bayar-ki .header-sub-info strong {
+            color: #1e293b !important;
+        }
+
+        .modal-bayar-ki .modal-close-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            border: 1px solid transparent;
+            background: transparent;
+            color: #94a3b8 !important;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            padding: 0;
+            line-height: 1;
+            box-shadow: none;
+            opacity: 1 !important;
+        }
+
+        .modal-bayar-ki .modal-close-btn:hover {
+            background: #f1f5f9;
+            color: #475569 !important;
+            border-color: #e2e8f0;
+        }
+
+        /* 2. Ringkasan Tagihan 3 Sub-Kegiatan (Calm Unified Summary Box) */
+        .modal-bayar-ki .summary-container {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 14px 18px;
+            margin-bottom: 18px;
+        }
+
+        .modal-bayar-ki .summary-subtagihan-col {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            padding: 0 8px;
+        }
+
+        .modal-bayar-ki .summary-subtagihan-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 12px;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 2px;
+            padding-bottom: 3px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .modal-bayar-ki .summary-sub-line {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 11.5px;
+            color: #64748b;
+        }
+
+        .modal-bayar-ki .summary-sub-line strong {
+            font-weight: 600;
+        }
+
+        /* 3. Dropdown Pilih Tagihan */
+        .modal-bayar-ki .kategori-select-container {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: 9px;
+            padding: 10px 14px;
+            margin-bottom: 18px;
+        }
+
+        .modal-bayar-ki .kategori-select-container select {
+            border: 1px solid #86efac;
+            background: #ffffff;
+            border-radius: 7px;
+            height: 36px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #166534;
+        }
+
+        .modal-bayar-ki .kategori-select-container select:focus {
+            border-color: #16a34a;
+            box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.15);
+        }
+
+        /* 4. Form Controls */
+        .modal-bayar-ki .form-label-custom {
+            font-size: 13px;
+            font-weight: 600;
+            color: #334155;
+            margin-bottom: 0;
+            padding-top: 8px;
+        }
+
+        .modal-bayar-ki .form-control-custom {
+            height: 38px;
+            font-size: 13.5px;
+            border-radius: 8px;
+            border: 1px solid #cbd5e1;
+            padding: 6px 12px;
+            color: #1e293b;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .modal-bayar-ki .form-control-custom:focus {
+            border-color: #16a34a;
+            box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.12);
+        }
+
+        .modal-bayar-ki .nominal-input-group .input-group-text {
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            border-right: none;
+            border-radius: 8px 0 0 8px;
+            color: #475569;
+            font-weight: 700;
+            font-size: 14px;
+            padding: 0 14px;
+        }
+
+        .modal-bayar-ki .nominal-input-group .form-control-custom {
+            border-radius: 0 8px 8px 0;
+            font-size: 15.5px;
+            font-weight: 700;
+            color: #15803d;
+        }
+
+        .modal-bayar-ki .quick-fill-btn {
+            font-size: 11.5px;
+            font-weight: 600;
+            padding: 3px 9px;
+            border-radius: 6px;
+            background: #ffffff;
+            border: 1px solid #bbf7d0;
+            color: #15803d;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .modal-bayar-ki .quick-fill-btn:hover {
+            background: #f0fdf4;
+            border-color: #86efac;
+            color: #166534;
+        }
+
+        /* 5. Payment Methods Segmented */
+        .modal-bayar-ki .payment-methods-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+
+        .modal-bayar-ki .method-radio-card {
+            position: relative;
+            margin: 0;
+            cursor: pointer;
+        }
+
+        .modal-bayar-ki .method-radio-card input {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .modal-bayar-ki .method-card-box {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            height: 38px;
+            padding: 0 10px;
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 12.5px;
+            font-weight: 600;
+            color: #334155;
+            transition: all 0.15s ease;
+            white-space: nowrap;
+        }
+
+        .modal-bayar-ki .method-radio-card input:checked + .method-card-box {
+            background: #f0fdf4;
+            border-color: #16a34a;
+            color: #15803d;
+            box-shadow: 0 0 0 1px #16a34a;
+        }
+
+        .modal-bayar-ki .method-radio-card:hover .method-card-box {
+            border-color: #94a3b8;
+        }
+
+        /* 6. Upload Bukti Box */
+        .modal-bayar-ki .compact-upload-box {
+            border: 1px dashed #cbd5e1;
+            border-radius: 8px;
+            padding: 8px 12px;
+            background: #f8fafc;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .modal-bayar-ki .compact-upload-box:hover {
+            border-color: #16a34a;
+            background: #f0fdf4;
+        }
+
+        /* 7. Riwayat Accordion */
+        .modal-bayar-ki .riwayat-section {
+            margin-top: 18px;
+            border-top: 1px solid #f1f5f9;
+            padding-top: 14px;
+        }
+
+        .modal-bayar-ki .btn-riwayat-toggle {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            color: #334155;
+            font-size: 12.5px;
+            font-weight: 600;
+            padding: 6px 12px;
+            border-radius: 7px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .modal-bayar-ki .btn-riwayat-toggle:hover {
+            background: #f8fafc;
+            border-color: #cbd5e1;
+            color: #0f172a;
+        }
+
+        /* 8. Footer Actions */
+        .modal-bayar-ki .modal-footer-custom {
+            background: #f8fafc;
+            border-top: 1px solid #e2e8f0;
+            padding: 12px 22px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .modal-bayar-ki .btn-cancel-neutral {
+            height: 38px;
+            padding: 0 18px;
+            border-radius: 8px;
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            color: #475569;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-bayar-ki .btn-cancel-neutral:hover {
+            background: #f1f5f9;
+            color: #1e293b;
+            border-color: #94a3b8;
+        }
+
+        .modal-bayar-ki .btn-submit-pay {
+            height: 38px;
+            padding: 0 20px;
+            border-radius: 8px;
+            background: #16a34a;
+            border: 1px solid #16a34a;
+            color: #ffffff;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .modal-bayar-ki .btn-submit-pay:hover:not(:disabled) {
+            background: #15803d;
+            border-color: #15803d;
+            box-shadow: 0 2px 6px rgba(22, 163, 74, 0.25);
+            transform: translateY(-1px);
+        }
+
+        .modal-bayar-ki .btn-submit-pay:disabled {
+            opacity: 0.55;
+            cursor: not-allowed;
+        }
     </style>
 @stop
 
@@ -1124,15 +1497,28 @@
         @endphp
 
         {{-- MODAL BAYAR --}}
-        <div class="modal fade" id="modalBayar{{ $item->id }}" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal fade modal-bayar-ki" id="modalBayar{{ $item->id }}" tabindex="-1" role="dialog" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-                <div class="modal-content border-0 shadow" style="border-radius: 14px; overflow: hidden;">
-                    <div class="modal-header modal-header-payment">
-                        <h5 class="modal-title font-weight-bold" style="font-size: 16px;">
-                            <i class="fas fa-wallet mr-2"></i>
-                            Pembayaran KI: {{ $item->siswa->nama ?? '-' }} ({{ $item->siswa->nis ?? '-' }})
-                        </h5>
-                        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                <div class="modal-content border-0 shadow">
+                    
+                    {{-- 1. HEADER --}}
+                    <div class="modal-header">
+                        <div class="header-title-wrap">
+                            <div class="header-icon-badge">
+                                <i class="fas fa-industry"></i>
+                            </div>
+                            <div>
+                                <h5 class="header-main-title">Pembayaran Kunjungan Industri (KI)</h5>
+                                <div class="header-sub-info">
+                                    <strong>{{ $item->siswa->nama ?? '-' }}</strong>
+                                    <span>·</span>
+                                    <span>NIS: {{ $item->siswa->nis ?? '-' }}</span>
+                                    <span>·</span>
+                                    <span>Kelas: {{ $item->siswa->kelas ?? '-' }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" class="modal-close-btn" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
@@ -1141,41 +1527,88 @@
                         @csrf
                         <div class="modal-body p-4">
 
-                            {{-- Rincian 3 Sub-Tagihan Box --}}
-                            <div class="fee-info-box mb-3">
-                                <div class="row align-items-center">
+                            {{-- 2. RINGKASAN 3 SUB-TAGIHAN (Calm Unified Summary Box) --}}
+                            <div class="summary-container">
+                                <div class="row">
                                     <div class="col-md-4 col-12 mb-2 mb-md-0 border-right">
-                                        <div class="text-muted small font-weight-bold">1. UTS</div>
-                                        <div class="small">Target: <span class="font-num font-weight-semibold">Rp {{ number_format($subUts['target'], 0, ',', '.') }}</span></div>
-                                        <div class="small">Terbayar: <span class="text-success font-num font-weight-semibold">Rp {{ number_format($subUts['terbayar'], 0, ',', '.') }}</span></div>
-                                        <div class="small">Sisa: <strong class="{{ $subUts['sisa'] > 0 ? 'text-danger' : 'text-success' }} font-num">Rp {{ number_format($subUts['sisa'], 0, ',', '.') }}</strong></div>
+                                        <div class="summary-subtagihan-col">
+                                            <div class="summary-subtagihan-header">
+                                                <span>1. UTS</span>
+                                                <span class="badge {{ $subUts['sisa'] <= 0 && $subUts['target'] > 0 ? 'badge-success' : 'badge-light border' }}" style="font-size: 10px;">
+                                                    {{ $subUts['sisa'] <= 0 && $subUts['target'] > 0 ? 'Lunas' : 'Belum Lunas' }}
+                                                </span>
+                                            </div>
+                                            <div class="summary-sub-line">
+                                                <span>Target</span>
+                                                <span class="font-num font-weight-semibold">Rp {{ number_format($subUts['target'], 0, ',', '.') }}</span>
+                                            </div>
+                                            <div class="summary-sub-line">
+                                                <span>Terbayar</span>
+                                                <span class="text-success font-num font-weight-semibold">Rp {{ number_format($subUts['terbayar'], 0, ',', '.') }}</span>
+                                            </div>
+                                            <div class="summary-sub-line">
+                                                <span>Sisa</span>
+                                                <strong class="{{ $subUts['sisa'] > 0 ? 'text-danger' : 'text-success' }} font-num">Rp {{ number_format($subUts['sisa'], 0, ',', '.') }}</strong>
+                                            </div>
+                                        </div>
                                     </div>
                                     <div class="col-md-4 col-12 mb-2 mb-md-0 border-right">
-                                        <div class="text-muted small font-weight-bold">2. UAS</div>
-                                        <div class="small">Target: <span class="font-num font-weight-semibold">Rp {{ number_format($subUas['target'], 0, ',', '.') }}</span></div>
-                                        <div class="small">Terbayar: <span class="text-success font-num font-weight-semibold">Rp {{ number_format($subUas['terbayar'], 0, ',', '.') }}</span></div>
-                                        <div class="small">Sisa: <strong class="{{ $subUas['sisa'] > 0 ? 'text-danger' : 'text-success' }} font-num">Rp {{ number_format($subUas['sisa'], 0, ',', '.') }}</strong></div>
+                                        <div class="summary-subtagihan-col">
+                                            <div class="summary-subtagihan-header">
+                                                <span>2. UAS</span>
+                                                <span class="badge {{ $subUas['sisa'] <= 0 && $subUas['target'] > 0 ? 'badge-success' : 'badge-light border' }}" style="font-size: 10px;">
+                                                    {{ $subUas['sisa'] <= 0 && $subUas['target'] > 0 ? 'Lunas' : 'Belum Lunas' }}
+                                                </span>
+                                            </div>
+                                            <div class="summary-sub-line">
+                                                <span>Target</span>
+                                                <span class="font-num font-weight-semibold">Rp {{ number_format($subUas['target'], 0, ',', '.') }}</span>
+                                            </div>
+                                            <div class="summary-sub-line">
+                                                <span>Terbayar</span>
+                                                <span class="text-success font-num font-weight-semibold">Rp {{ number_format($subUas['terbayar'], 0, ',', '.') }}</span>
+                                            </div>
+                                            <div class="summary-sub-line">
+                                                <span>Sisa</span>
+                                                <strong class="{{ $subUas['sisa'] > 0 ? 'text-danger' : 'text-success' }} font-num">Rp {{ number_format($subUas['sisa'], 0, ',', '.') }}</strong>
+                                            </div>
+                                        </div>
                                     </div>
                                     <div class="col-md-4 col-12">
-                                        <div class="text-muted small font-weight-bold">3. Ujian</div>
-                                        <div class="small">Target: <span class="font-num font-weight-semibold">Rp {{ number_format($subUjian['target'], 0, ',', '.') }}</span></div>
-                                        <div class="small">Terbayar: <span class="text-success font-num font-weight-semibold">Rp {{ number_format($subUjian['terbayar'], 0, ',', '.') }}</span></div>
-                                        <div class="small">Sisa: <strong class="{{ $subUjian['sisa'] > 0 ? 'text-danger' : 'text-success' }} font-num">Rp {{ number_format($subUjian['sisa'], 0, ',', '.') }}</strong></div>
+                                        <div class="summary-subtagihan-col">
+                                            <div class="summary-subtagihan-header">
+                                                <span>3. Ujian</span>
+                                                <span class="badge {{ $subUjian['sisa'] <= 0 && $subUjian['target'] > 0 ? 'badge-success' : 'badge-light border' }}" style="font-size: 10px;">
+                                                    {{ $subUjian['sisa'] <= 0 && $subUjian['target'] > 0 ? 'Lunas' : 'Belum Lunas' }}
+                                                </span>
+                                            </div>
+                                            <div class="summary-sub-line">
+                                                <span>Target</span>
+                                                <span class="font-num font-weight-semibold">Rp {{ number_format($subUjian['target'], 0, ',', '.') }}</span>
+                                            </div>
+                                            <div class="summary-sub-line">
+                                                <span>Terbayar</span>
+                                                <span class="text-success font-num font-weight-semibold">Rp {{ number_format($subUjian['terbayar'], 0, ',', '.') }}</span>
+                                            </div>
+                                            <div class="summary-sub-line">
+                                                <span>Sisa</span>
+                                                <strong class="{{ $subUjian['sisa'] > 0 ? 'text-danger' : 'text-success' }} font-num">Rp {{ number_format($subUjian['sisa'], 0, ',', '.') }}</strong>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
-                            {{-- Pilihan Dropdown Tagihan yang Dibayar --}}
-                            <div class="subtagihan-select-box mb-3">
+                            {{-- 3. PILIH SUB-TAGIHAN DIBAYAR --}}
+                            <div class="kategori-select-container">
                                 <div class="form-group row mb-0 align-items-center">
-                                    <label class="col-sm-4 col-form-label font-weight-bold text-success">
-                                        <i class="fas fa-check-to-slot mr-1"></i> Pilih Tagihan Dibayar <span class="text-danger">*</span>
+                                    <label class="col-sm-4 col-form-label font-weight-bold text-success small mb-0">
+                                        <i class="fas fa-check-circle mr-1"></i> Pilih Tagihan Dibayar <span class="text-danger">*</span>
                                     </label>
                                     <div class="col-sm-8">
                                         <select name="kategori"
                                                 id="selectKategoriKi{{ $item->id }}"
-                                                class="form-control font-weight-bold"
-                                                style="border-radius: 8px; border: 1.5px solid #16a34a;"
+                                                class="form-control"
                                                 required
                                                 onchange="updateKiPaymentForm({{ $item->id }})">
                                             <option value="UTS"
@@ -1204,66 +1637,77 @@
                                 </div>
                             </div>
 
-                            {{-- Form Inputs --}}
+                            {{-- 4. FORM PEMBAYARAN --}}
                             <div class="form-group row mb-3">
-                                <label class="col-sm-3 col-form-label font-weight-bold">Tanggal <span class="text-danger">*</span></label>
+                                <label class="col-sm-3 form-label-custom">Tanggal <span class="text-danger">*</span></label>
                                 <div class="col-sm-9">
-                                    <input type="text" class="form-control bg-light font-num" value="{{ date('d/m/Y') }}" readonly style="border-radius: 8px;">
+                                    <input type="text" class="form-control form-control-custom bg-light font-num" value="{{ date('d/m/Y') }}" readonly>
                                 </div>
                             </div>
 
                             <div class="form-group row mb-3">
-                                <label class="col-sm-3 col-form-label font-weight-bold">Nominal Pembayaran <span class="text-danger">*</span></label>
+                                <label class="col-sm-3 form-label-custom">Nominal Pembayaran <span class="text-danger">*</span></label>
                                 <div class="col-sm-9">
-                                    <div class="input-group">
+                                    <div class="input-group nominal-input-group">
                                         <div class="input-group-prepend">
-                                            <span class="input-group-text font-weight-bold">Rp</span>
+                                            <span class="input-group-text">Rp</span>
                                         </div>
                                         <input type="number"
                                                name="nominal"
                                                id="nominalInputModalKi{{ $item->id }}"
-                                               class="form-control font-weight-bold text-success font-num"
+                                               class="form-control form-control-custom font-num"
                                                max="{{ $activeSisa > 0 ? (int)$activeSisa : 999999999 }}"
                                                min="1"
                                                value=""
-                                               placeholder="Masukkan nominal pembayaran..."
-                                               style="border-radius: 0 8px 8px 0;"
+                                               placeholder="Masukkan nominal..."
                                                required>
                                     </div>
                                     <div class="d-flex justify-content-between align-items-center mt-1 flex-wrap gap-1">
-                                        <small class="form-text text-muted mb-0" id="maxNominalLabelKi{{ $item->id }}">
+                                        <small class="text-muted" id="maxNominalLabelKi{{ $item->id }}" style="font-size: 11.5px;">
                                             Maksimal pembayaran {{ $defaultKat }}: <strong>Rp {{ number_format($activeSisa, 0, ',', '.') }}</strong>
                                         </small>
                                         <button type="button"
                                                 id="btnQuickFillKi{{ $item->id }}"
-                                                class="btn btn-xs btn-outline-success font-weight-bold mt-1"
-                                                style="border-radius: 6px; font-size: 11px; {{ $activeSisa <= 0 ? 'display: none;' : '' }}"
+                                                class="quick-fill-btn"
+                                                style="{{ $activeSisa <= 0 ? 'display: none;' : '' }}"
                                                 onclick="quickFillKiNominal({{ $item->id }})">
-                                            <i class="fas fa-coins mr-1"></i> <span id="labelQuickFillKi{{ $item->id }}">Bayar Lunas {{ $defaultKat }} (Rp {{ number_format($activeSisa, 0, ',', '.') }})</span>
+                                            <i class="fas fa-coins"></i> <span id="labelQuickFillKi{{ $item->id }}">Bayar Lunas {{ $defaultKat }} (Rp {{ number_format($activeSisa, 0, ',', '.') }})</span>
                                         </button>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="form-group row mb-3">
-                                <label class="col-sm-3 col-form-label font-weight-bold">Metode Pembayaran <span class="text-danger">*</span></label>
+                                <label class="col-sm-3 form-label-custom">Metode Pembayaran <span class="text-danger">*</span></label>
                                 <div class="col-sm-9">
-                                    <div class="payment-mode-box">
-                                        <label class="d-inline-flex align-items-center mr-3">
-                                            <input type="radio" name="metode" value="Cash" checked class="mr-2"> Cash / Tunai
+                                    <div class="payment-methods-grid">
+                                        <label class="method-radio-card">
+                                            <input type="radio" name="metode" value="Cash" checked>
+                                            <div class="method-card-box">
+                                                <i class="fas fa-money-bill-wave text-success"></i>
+                                                <span>Cash / Tunai</span>
+                                            </div>
                                         </label>
-                                        <label class="d-inline-flex align-items-center mr-3">
-                                            <input type="radio" name="metode" value="Transfer" class="mr-2"> Bank Transfer
+                                        <label class="method-radio-card">
+                                            <input type="radio" name="metode" value="Transfer">
+                                            <div class="method-card-box">
+                                                <i class="fas fa-university text-primary"></i>
+                                                <span>Bank Transfer</span>
+                                            </div>
                                         </label>
-                                        <label class="d-inline-flex align-items-center">
-                                            <input type="radio" name="metode" value="QRIS" class="mr-2"> QRIS / E-Wallet
+                                        <label class="method-radio-card">
+                                            <input type="radio" name="metode" value="QRIS">
+                                            <div class="method-card-box">
+                                                <i class="fas fa-qrcode text-dark"></i>
+                                                <span>QRIS / E-Wallet</span>
+                                            </div>
                                         </label>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="form-group row mb-3">
-                                <label class="col-sm-3 col-form-label font-weight-bold">Bukti Transfer</label>
+                                <label class="col-sm-3 form-label-custom">Bukti Transfer</label>
                                 <div class="col-sm-9">
                                     <div class="custom-file-upload">
                                         <input type="file"
@@ -1272,47 +1716,49 @@
                                                class="file-input-hidden"
                                                accept="image/*,.pdf"
                                                onchange="if(this.files && this.files[0]) { document.getElementById('labelBuktiKi{{ $item->id }}').innerHTML = '<i class=\'fas fa-file text-success mr-2\'></i><span class=\'font-weight-bold text-dark\'>' + this.files[0].name + '</span>'; }">
-                                        <label for="buktiKi{{ $item->id }}" class="file-upload-label d-flex align-items-center justify-content-between px-3">
-                                            <span id="labelBuktiKi{{ $item->id }}" class="text-muted text-truncate" style="max-width: 78%; font-size: 13px;">
+                                        <label for="buktiKi{{ $item->id }}" class="compact-upload-box mb-1">
+                                            <span id="labelBuktiKi{{ $item->id }}" class="text-muted text-truncate" style="max-width: 78%; font-size: 12.5px;">
                                                 <i class="fas fa-cloud-upload-alt text-success mr-2"></i> Pilih foto / file struk transfer...
                                             </span>
-                                            <span class="btn btn-xs btn-outline-success font-weight-bold">
+                                            <span class="btn btn-xs btn-outline-success font-weight-bold" style="border-radius: 6px; font-size: 11px;">
                                                 <i class="fas fa-folder-open mr-1"></i> Browse
                                             </span>
                                         </label>
                                     </div>
-                                    <small class="form-text text-muted">Lampirkan foto/struk transfer jika melalui Bank Transfer / QRIS (opsional, maks 3MB)</small>
+                                    <small class="text-muted d-block" style="font-size: 11.5px;">Lampirkan bukti jika melalui Bank Transfer / QRIS (opsional, maks 3MB)</small>
                                 </div>
                             </div>
 
                             <div class="form-group row mb-0">
-                                <label class="col-sm-3 col-form-label font-weight-bold">Keterangan</label>
+                                <label class="col-sm-3 form-label-custom">Keterangan</label>
                                 <div class="col-sm-9">
                                     <textarea name="keterangan"
-                                              class="form-control"
+                                              class="form-control form-control-custom"
                                               rows="2"
-                                              style="border-radius: 8px;"
+                                              style="height: auto;"
                                               placeholder="Catatan pembayaran (opsional)..."></textarea>
                                 </div>
                             </div>
 
-                            {{-- DROPDOWN RIWAYAT PEMBAYARAN SCROLLABLE --}}
-                            <div class="mt-3 pt-3 border-top">
+                            {{-- 5. RIWAYAT PEMBAYARAN --}}
+                            <div class="riwayat-section">
                                 <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <button class="btn btn-sm btn-outline-success font-weight-semibold" type="button" data-toggle="collapse" data-target="#riwayatCollapse{{ $item->id }}" aria-expanded="false" style="border-radius: 6px;">
-                                        <i class="fas fa-history mr-1"></i> Lihat Riwayat Pembayaran ({{ $item->detailPembayaran->count() }}) <i class="fas fa-chevron-down ml-1"></i>
+                                    <button class="btn-riwayat-toggle" type="button" data-toggle="collapse" data-target="#riwayatCollapse{{ $item->id }}" aria-expanded="false">
+                                        <i class="fas fa-history text-muted"></i>
+                                        <span>Lihat Riwayat Pembayaran ({{ $item->detailPembayaran->count() }})</span>
+                                        <i class="fas fa-chevron-down ml-1 text-muted" style="font-size: 10px;"></i>
                                     </button>
-                                    <span class="small text-muted">{{ $item->detailPembayaran->count() }} Transaksi</span>
+                                    <span class="small text-muted font-num">{{ $item->detailPembayaran->count() }} Transaksi</span>
                                 </div>
 
                                 <div class="collapse" id="riwayatCollapse{{ $item->id }}">
                                     <div class="card card-body p-2 bg-light border shadow-none mb-0" style="max-height: 200px; overflow-y: auto; border-radius: 8px;">
                                         <table class="table table-sm table-bordered bg-white mb-0" style="font-size: 12px;">
-                                            <thead class="table-success">
+                                            <thead class="bg-light text-dark">
                                                 <tr>
                                                     <th width="30" class="text-center">No</th>
                                                     <th>Tanggal</th>
-                                                    <th class="text-center" style="background:#e8f5e9; color:#1b5e20;">Kegiatan</th>
+                                                    <th class="text-center">Kegiatan</th>
                                                     <th>Nominal (Rp)</th>
                                                     <th>Metode</th>
                                                     <th>Bukti</th>
@@ -1323,7 +1769,7 @@
                                             <tbody>
                                                 @forelse($item->detailPembayaran as $detail)
                                                     <tr>
-                                                        <td class="text-center font-num">{{ $loop->iteration }}</td>
+                                                        <td class="text-center font-num text-muted">{{ $loop->iteration }}</td>
                                                         <td class="font-num">{{ \Carbon\Carbon::parse($detail->tanggal)->format('d/m/Y') }}</td>
                                                         <td class="text-center">
                                                             <span class="badge badge-success px-2 py-1" style="font-size: 10px; border-radius: 6px;">
@@ -1350,7 +1796,7 @@
                                                     </tr>
                                                 @empty
                                                     <tr>
-                                                        <td colspan="8" class="text-center py-2 text-muted">Belum ada riwayat pembayaran.</td>
+                                                        <td colspan="8" class="text-center py-3 text-muted">Belum ada riwayat pembayaran.</td>
                                                     </tr>
                                                 @endforelse
                                             </tbody>
@@ -1361,12 +1807,13 @@
 
                         </div>
 
-                        <div class="modal-footer bg-light px-4 py-3 justify-content-end">
+                        {{-- 6. FOOTER --}}
+                        <div class="modal-footer-custom">
                             <button type="button" class="btn btn-batal-merah px-4 mr-2" data-dismiss="modal">
                                 Batal
                             </button>
-                            <button type="submit" class="btn btn-success px-4 font-weight-bold" style="border-radius: 8px; height: 38px;" {{ $sisaItem <= 0 ? 'disabled' : '' }}>
-                                <i class="fas fa-money-bill-wave mr-1"></i> Simpan Pembayaran
+                            <button type="submit" class="btn-submit-pay" {{ $sisaItem <= 0 ? 'disabled' : '' }}>
+                                Simpan Pembayaran
                             </button>
                         </div>
                     </form>
