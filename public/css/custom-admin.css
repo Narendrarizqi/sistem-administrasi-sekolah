@@ -1,0 +1,88 @@
+/* ================================
+   FONT
+================================ */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+
+body{
+    font-family:'Poppins',sans-serif;
+    background:#f4f6f9;
+}
+
+/* ================================
+   NAVBAR
+================================ */
+
+.main-header{
+    background:linear-gradient(90deg,#0f6b34,#15803d)!important;
+    border:none!important;
+    box-shadow:0 3px 10px rgba(0,0,0,.15);
+}
+
+.main-header .nav-link{
+    color:white!important;
+}
+
+/* ================================
+   SIDEBAR
+================================ */
+
+.main-sidebar{
+    background:linear-gradient(180deg,#0b5b2d,#08461f)!important;
+    box-shadow:5px 0 18px rgba(0,0,0,.25);
+}
+
+.brand-link{
+    background:transparent!important;
+    border-bottom:1px solid rgba(255,255,255,.08)!important;
+}
+
+.brand-text{
+    color:white!important;
+    font-weight:600;
+}
+
+.nav-header{
+    color:#cfe8d2!important;
+    font-size:11px;
+    letter-spacing:1px;
+}
+
+.nav-sidebar .nav-link{
+    color:#fff!important;
+    border-radius:8px;
+    margin:4px 10px;
+    transition:.25s;
+}
+
+.nav-sidebar .nav-link:hover{
+    background:rgba(255,255,255,.12)!important;
+}
+
+.nav-sidebar .nav-link.active{
+    background:#27ae60!important;
+    box-shadow:0 4px 10px rgba(0,0,0,.2);
+}
+
+/* ================================
+   CONTENT
+================================ */
+
+.content-wrapper{
+    background:#f4f6f9!important;
+}
+
+.content-header h1{
+    font-size:42px;
+    font-weight:700;
+    color:#222;
+}
+
+/* ================================
+   CARD
+================================ */
+
+.card{
+    border:none;
+    border-radius:14px;
+    box-shadow:0 6px 20px rgba(0,0,0,.08);
+}

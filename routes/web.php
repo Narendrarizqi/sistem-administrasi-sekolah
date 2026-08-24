@@ -1,0 +1,157 @@
+<?php
+
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\SiswaController;
+use App\Http\Controllers\RekapController;
+use App\Http\Controllers\PembayaranController;
+use App\Http\Controllers\IppController;
+use App\Http\Controllers\DaftarUlangController;
+use App\Http\Controllers\SarprasController;
+use App\Http\Controllers\KiController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ForgotPasswordController;
+use App\Http\Controllers\PengeluaranController;
+use App\Http\Controllers\LaporanController;
+use App\Http\Controllers\BuktiPembayaranController;
+use App\Http\Controllers\TargetTahunanController;
+use App\Http\Controllers\TahunAjaranController;
+
+Route::middleware('auth')->group(function () {
+
+    //Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/', function () {
+        return auth()->check() ? redirect()->route('dashboard') : redirect()->route('login');
+    });
+    Route::get('/dashboard', [DashboardController::class, 'index'])
+        ->name('dashboard');
+
+    Route::post('/siswa/naik-kelas', [SiswaController::class, 'naikKelas'])
+    ->name('siswa.naik-kelas');
+
+    Route::resource('siswa', SiswaController::class)->except(['show']);
+    Route::get('/siswa', [SiswaController::class, 'index'])
+        ->name('siswa.index');
+
+    Route::get('/siswa/create', [SiswaController::class, 'create'])
+        ->name('siswa.create');
+
+    Route::post('/siswa', [SiswaController::class, 'store'])
+        ->name('siswa.store');
+
+    Route::get('/rekap', [RekapController::class, 'index'])
+        ->name('rekap.index');
+
+    Route::get('/rekap/cetak', [RekapController::class, 'cetakPdf'])
+        ->name('rekap.cetak');
+
+    Route::get('/rekap/siswa/{siswa}/cetak', [RekapController::class, 'cetakPdfSiswa'])
+        ->name('rekap.cetak-siswa');
+
+    Route::resource('ipp', IppController::class);
+
+    Route::post('/ipp/{id}/bayar', [IppController::class,'bayar'])->name('ipp.bayar');
+
+    Route::get('/ipp/create', [IppController::class, 'create'])->name('ipp.create');
+    Route::post('/ipp', [IppController::class, 'store'])->name('ipp.store');
+    Route::post('/ipp/store', [IppController::class, 'store'])->name('ipp.store');
+
+    Route::resource('ki', KiController::class);
+    Route::post('/ki/{id}/bayar', [KiController::class,'bayar'])->name('ki.bayar');
+
+    Route::get('/pengaturan', function () {
+        return view('dashboard.index');
+    })->name('pengaturan.index');
+
+    Route::resource('pembayaran', PembayaranController::class)
+        ->only([
+            'index',
+            'create',
+            'store',
+            'edit',
+            'update',
+            'destroy'
+        ]);
+
+    Route::prefix('du')->name('du.')->group(function () {
+
+        Route::get('/', [DaftarUlangController::class,'index'])->name('index');
+
+        Route::get('/create', [DaftarUlangController::class,'create'])->name('create');
+
+        Route::post('/', [DaftarUlangController::class,'store'])->name('store');
+
+        Route::get('/{id}', [DaftarUlangController::class,'show'])->name('show');
+
+        Route::post('/{id}/bayar', [DaftarUlangController::class,'bayar'])->name('bayar');
+
+        Route::get('/{id}/edit', [DaftarUlangController::class,'edit'])->name('edit');
+
+        Route::put('/{id}', [DaftarUlangController::class,'update'])->name('update');
+
+        Route::delete('/{id}', [DaftarUlangController::class,'destroy'])->name('destroy');
+
+    });
+
+    Route::resource('du', DaftarUlangController::class);
+
+    Route::post('/du/{id}/bayar', [DaftarUlangController::class,'bayar'])->name('du.bayar');
+
+    Route::get('/du/create', [DaftarUlangController::class, 'create'])->name('du.create');
+    Route::post('/du', [DaftarUlangController::class, 'store'])->name('du.store');
+    Route::post('/du/store', [DaftarUlangController::class, 'store'])->name('du.store');
+
+    Route::resource('sarpras', SarprasController::class);
+
+    Route::post('/sarpras/{id}/bayar', [SarprasController::class,'bayar'])
+        ->name('sarpras.bayar');
+
+    Route::resource('pengeluaran', PengeluaranController::class)
+        ->except(['show']);
+
+    Route::get('/laporan', [LaporanController::class, 'index'])
+        ->name('laporan.index');
+
+    Route::get('/bukti-pembayaran/{id}/cetak', [BuktiPembayaranController::class, 'cetak'])
+        ->name('bukti.cetak');
+
+    Route::get('/target-tahunan', [TargetTahunanController::class, 'index'])
+        ->name('target-tahunan.index');
+
+    Route::post('/target-tahunan/hapus', [TargetTahunanController::class, 'destroy'])
+        ->name('target-tahunan.destroy');
+
+    Route::resource('tahun-ajaran', TahunAjaranController::class)
+        ->only(['index', 'store', 'destroy']);
+
+    Route::post('/tahun-ajaran/{id}/activate', [TahunAjaranController::class, 'activate'])
+        ->name('tahun-ajaran.activate');
+});
+
+    // Login
+    Route::get('/login', [AuthController::class, 'showLogin'])
+        ->name('login');
+
+    Route::post('/login', [AuthController::class, 'login'])
+        ->name('login.process');
+
+    // Logout
+    Route::post('/logout', [AuthController::class, 'logout'])
+        ->name('logout');
+
+    Route::get('/forgot-password', [ForgotPasswordController::class, 'showLinkRequestForm'])
+        ->middleware('guest')
+        ->name('password.request');
+
+    Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLinkEmail'])
+        ->middleware('guest')
+        ->name('password.email');
+
+    Route::get('/laporan', [LaporanController::class, 'index'])
+        ->name('laporan.index');
+
+    Route::get('/laporan/cetak', [LaporanController::class, 'cetakPdf'])
+        ->name('laporan.cetak');
+        
+    Route::get('/laporan/cetak-rincian-saldo', [LaporanController::class, 'cetakRincianSaldo'])
+    ->name('laporan.cetak-rincian-saldo');
