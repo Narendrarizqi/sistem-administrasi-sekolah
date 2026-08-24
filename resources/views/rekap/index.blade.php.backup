@@ -1,0 +1,1039 @@
+@extends('adminlte::page')
+
+@section('title', 'Rekap Pembayaran')
+
+
+@section('css')
+    <link rel="stylesheet" href="{{ asset('css/custom.css') }}">
+
+    <style>
+        .sortable {
+            cursor: pointer;
+            user-select: none;
+            white-space: nowrap;
+        }
+
+        .sortable:hover {
+            color: var(--color-primary, #198754);
+        }
+
+        .sort-icon {
+            margin-left: 5px;
+            font-size: 11px;
+            opacity: 0.6;
+        }
+
+        .sortable.active .sort-icon {
+            opacity: 1;
+        }
+
+        /* Tabel Rekap dengan Spasi yang Nyaman & Proporsional */
+        .rekap-table-wrap {
+            width: 100%;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+            background: #ffffff;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        #rekapTable {
+            font-size: 12.5px;
+            table-layout: auto !important;
+            width: 100%;
+            min-width: 1280px;
+            border-collapse: separate;
+            border-spacing: 0;
+            white-space: nowrap;
+        }
+
+        #rekapTable th,
+        #rekapTable td {
+            vertical-align: middle;
+            padding: 10px 14px;
+            white-space: nowrap;
+        }
+
+        #rekapTable th.col-no,    #rekapTable td.col-no    { width: 45px; text-align: center; }
+        #rekapTable th.col-nis,   #rekapTable td.col-nis   { min-width: 90px; }
+        #rekapTable th.col-nama,  #rekapTable td.col-nama  { min-width: 140px; }
+        #rekapTable th.col-kelas, #rekapTable td.col-kelas { width: 75px; text-align: center; }
+        #rekapTable th.col-jenis, #rekapTable td.col-jenis { min-width: 140px; }
+        #rekapTable th.col-uang,  #rekapTable td.col-uang  { min-width: 125px; text-align: right !important; }
+        #rekapTable th.col-bulan, #rekapTable td.col-bulan { min-width: 150px; text-align: center; }
+        #rekapTable th.col-status,#rekapTable td.col-status{ min-width: 110px; text-align: center; }
+        #rekapTable th.col-aksi,  #rekapTable td.col-aksi  { width: 85px; text-align: center; }
+
+        #rekapTable .jenis-select {
+            display: block;
+            width: 100%;
+            min-width: 120px;
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 6px;
+            background-color: #ffffff;
+            border: 1px solid #cbd5e1;
+            color: #15803d;
+            font-weight: 500;
+            box-shadow: none !important;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        #rekapTable .jenis-select:focus {
+            border-color: #15803d;
+            box-shadow: 0 0 0 2px rgba(21, 128, 61, 0.12) !important;
+        }
+
+        /* Tombol Aksi Cetak PDF */
+        .btn-cetak-pdf {
+            width: 28px;
+            height: 28px;
+            padding: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            border: 1px solid #fecaca;
+            background: #fef2f2;
+            color: #dc2626 !important;
+            box-shadow: none;
+            transition: all .15s ease;
+        }
+
+        .btn-cetak-pdf:hover,
+        .btn-cetak-pdf:focus {
+            background: #dc2626;
+            border-color: #dc2626;
+            color: #fff !important;
+            transform: translateY(-1px);
+        }
+
+        .btn-cetak-pdf i {
+            font-size: 11.5px;
+        }
+
+        /* Tombol Riwayat & Bukti Pembayaran */
+        .btn-riwayat-bukti {
+            width: 28px;
+            height: 28px;
+            padding: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            border: 1px solid #bbf7d0;
+            background: #f0fdf4;
+            color: #15803d !important;
+            box-shadow: none;
+            transition: all .15s ease;
+        }
+
+        .btn-riwayat-bukti:hover,
+        .btn-riwayat-bukti:focus {
+            background: #15803d;
+            border-color: #15803d;
+            color: #fff !important;
+            transform: translateY(-1px);
+        }
+
+        .btn-riwayat-bukti i {
+            font-size: 11.5px;
+        }
+
+        .modal-header-payment {
+            background: linear-gradient(135deg, #15803D, #16A34A) !important;
+            color: #ffffff !important;
+            border-top-left-radius: calc(0.3rem - 1px);
+            border-top-right-radius: calc(0.3rem - 1px);
+        }
+
+        .modal-header-payment .modal-title,
+        .modal-header-payment .modal-title *,
+        .modal-header-payment h5,
+        .modal-header-payment i,
+        .modal-header-payment span,
+        .modal-header-payment button,
+        .modal-header-payment .close {
+            color: #ffffff !important;
+            opacity: 1 !important;
+            text-shadow: none !important;
+        }
+    </style>
+@stop
+
+@section('content')
+
+{{-- PAGE HEADER & BREADCRUMB INDICATOR --}}
+<div class="page-header-box">
+    <div>
+        <div class="page-header-breadcrumb">
+            <i class="fas fa-home text-success"></i>
+            <a href="{{ route('dashboard') }}">Dashboard</a>
+            <i class="fas fa-chevron-right text-muted" style="font-size: 9px;"></i>
+            <span class="text-dark font-weight-bold">Rekap Pembayaran</span>
+        </div>
+        <h1 class="page-header-title">
+            <span class="page-header-icon"><i class="fas fa-file-invoice-dollar"></i></span>
+            Rekapitulasi Tagihan & Pembayaran
+        </h1>
+        <p class="page-header-desc">
+            Pantau status kewajiban, pembayaran masuk, sisa tagihan, serta pengingat status pembayaran bulanan siswa.
+        </p>
+    </div>
+    <div class="page-header-badges">
+        <span class="badge-page-indicator">
+            <i class="fas fa-calendar-check"></i>
+            Tahun Ajaran: {{ $selectedTa->nama ?? 'Aktif' }}
+        </span>
+        <span class="badge bg-light text-secondary border px-3 py-2 font-weight-semibold" style="border-radius: 20px; font-size: 12px;">
+            <i class="fas fa-bell text-warning mr-1"></i> Bulan Aktif: {{ \Carbon\Carbon::now()->translatedFormat('F Y') }}
+        </span>
+    </div>
+</div>
+
+<div class="card">
+
+    <div class="card-header bg-white border-bottom py-3">
+        <h5 class="mb-0 font-weight-bold" style="font-size: 15px;">
+            Tabel Rekapitulasi Pembayaran Siswa
+        </h5>
+    </div>
+
+    <div class="card-body">
+
+        @if($students->count() > 0)
+
+            <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+
+                <div class="d-flex align-items-center gap-2 flex-wrap">
+                    <div class="table-search-box">
+                        <i class="fas fa-search"></i>
+                        <input
+                            type="text"
+                            id="rekapSearchInput"
+                            placeholder="Cari NIS, nama, atau kelas..."
+                        >
+                    </div>
+
+                    @if($daftarTahunAjaran->isNotEmpty())
+                        <form action="{{ route('rekap.index') }}" method="GET" class="d-flex align-items-center">
+                            <select
+                                name="tahun_ajaran_id"
+                                class="form-control"
+                                style="min-width: 170px; border-radius: 10px;"
+                                onchange="this.form.submit()"
+                            >
+                                @foreach($daftarTahunAjaran as $ta)
+                                    <option value="{{ $ta->id }}" {{ $selectedTa && $selectedTa->id == $ta->id ? 'selected' : '' }}>
+                                        {{ $ta->nama }}{{ $ta->is_active ? ' (Aktif)' : '' }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </form>
+                    @endif
+                </div>
+
+            </div>
+
+
+            <div class="table-responsive rekap-table-wrap">
+
+                <table class="table table-hover align-middle" id="rekapTable">
+
+                    <thead>
+
+                        <tr>
+
+                            <th class="text-center col-no">
+                                No
+                            </th>
+
+                            <th
+                                class="sortable col-nis"
+                                data-sort="nis"
+                                onclick="sortTable('nis')"
+                            >
+                                NIS
+                                <i class="fas fa-sort sort-icon"></i>
+                            </th>
+
+                            <th
+                                class="sortable col-nama"
+                                data-sort="nama"
+                                onclick="sortTable('nama')"
+                            >
+                                Nama Siswa
+                                <i class="fas fa-sort sort-icon"></i>
+                            </th>
+
+                            <th
+                                class="sortable col-kelas"
+                                data-sort="kelas"
+                                onclick="sortTable('kelas')"
+                            >
+                                Kelas
+                                <i class="fas fa-sort sort-icon"></i>
+                            </th>
+
+                            <th class="col-jenis">
+                                Jenis
+                            </th>
+
+                            <th
+                                class="sortable col-uang"
+                                data-sort="target"
+                                onclick="sortTable('target')"
+                            >
+                                Target (Rp)
+                                <i class="fas fa-sort sort-icon"></i>
+                            </th>
+
+                            <th
+                                class="sortable col-uang"
+                                data-sort="terbawa"
+                                onclick="sortTable('terbawa')"
+                            >
+                                Terbawa (Rp)
+                                <i class="fas fa-sort sort-icon"></i>
+                            </th>
+
+                            <th
+                                class="sortable col-uang"
+                                data-sort="total_tagihan"
+                                onclick="sortTable('total_tagihan')"
+                            >
+                                Total Tagihan (Rp)
+                                <i class="fas fa-sort sort-icon"></i>
+                            </th>
+
+                            <th
+                                class="sortable col-uang"
+                                data-sort="terbayar"
+                                onclick="sortTable('terbayar')"
+                            >
+                                Terbayar (Rp)
+                                <i class="fas fa-sort sort-icon"></i>
+                            </th>
+
+                            <th
+                                class="sortable col-uang"
+                                data-sort="sisa"
+                                onclick="sortTable('sisa')"
+                            >
+                                Sisa (Rp)
+                                <i class="fas fa-sort sort-icon"></i>
+                            </th>
+
+                            <th class="col-bulan text-center" style="background:#fffbeb; color:#92400e; min-width: 175px;">
+                                <i class="fas fa-bell mr-1 text-warning"></i> Pengingat Bulan Ini
+                            </th>
+
+                            <th class="col-status">
+                                Status
+                            </th>
+
+                            <th class="text-center col-aksi">
+                                Aksi
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        @foreach($students as $student)
+
+                            @php
+                                $jenisKeys = array_keys($student['jenis']);
+                                $siswa = $student['siswa'];
+
+                                $orderedJenisKeys = array_merge(
+                                     ['Total'],
+                                     array_values(
+                                         array_filter(
+                                             $jenisKeys,
+                                             fn ($key) => $key !== 'Total'
+                                         )
+                                     )
+                                 );
+                            @endphp
+
+                            <tr
+                                data-nis="{{ strtolower($siswa->nis) }}"
+                                data-nama="{{ strtolower($siswa->nama) }}"
+                                data-kelas="{{ strtolower($siswa->kelas) }}"
+                            >
+
+                                <td class="text-center nomor-cell col-no">
+                                    {{ $loop->iteration }}
+                                </td>
+
+
+                                <td class="col-nis">
+                                    {{ $siswa->nis }}
+                                </td>
+
+
+                                <td class="fw-semibold col-nama">
+                                    {{ $siswa->nama }}
+                                </td>
+
+
+                                <td class="col-kelas">
+
+                                    <span class="badge bg-light text-dark border">
+                                        {{ $siswa->kelas }}
+                                    </span>
+
+                                </td>
+
+
+                                <td class="col-jenis">
+                                    <select
+                                        class="form-control form-control-sm jenis-select"
+                                        data-summary='@json($student['jenis'], JSON_HEX_APOS | JSON_HEX_QUOT)'
+                                        style="min-width: 145px; font-size: 12px; font-weight: 600; border-radius: 8px; border-color: #cbd5e1; color: #0f172a !important; background-color: #ffffff !important; height: 32px; cursor: pointer;"
+                                    >
+                                        @foreach($orderedJenisKeys as $jenis)
+                                            <option value="{{ $jenis }}" @if($jenis === 'Total') selected @endif style="color: #0f172a !important; background-color: #ffffff !important;">
+                                                {{ $jenis === 'Total' ? 'Total Keseluruhan' : $jenis }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </td>
+
+
+                                <td class="target-cell col-uang">
+                                </td>
+
+
+                                <td class="terbawa-cell col-uang">
+                                </td>
+
+
+                                <td class="total-tagihan-cell fw-semibold col-uang">
+                                </td>
+
+
+                                <td class="terbayar-cell text-success fw-semibold col-uang">
+                                </td>
+
+
+                                <td
+                                    class="sisa-cell text-danger fw-semibold col-uang"
+                                    data-sisa="0"
+                                >
+                                </td>
+
+                                <td class="bulan-cell text-center col-bulan">
+                                </td>
+
+
+                                <td class="status-cell col-status">
+                                </td>
+
+                                <td class="text-center col-aksi">
+                                    <div class="d-inline-flex align-items-center" style="gap: 4px;">
+                                        <a
+                                            href="{{ route('rekap.cetak-siswa', $siswa->id) }}"
+                                            target="_blank"
+                                            class="btn-cetak-pdf"
+                                            title="Cetak Laporan Tagihan (PDF)"
+                                        >
+                                            <i class="fas fa-file-pdf"></i>
+                                        </a>
+
+                                        <button
+                                            type="button"
+                                            class="btn-riwayat-bukti"
+                                            title="Lihat Riwayat & Bukti Pembayaran"
+                                            data-toggle="modal"
+                                            data-target="#modalRekapBukti{{ $siswa->id }}"
+                                        >
+                                            <i class="fas fa-receipt"></i>
+                                        </button>
+                                    </div>
+                                </td>
+
+                            </tr>
+
+                        @endforeach
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            {{-- MODALS RIWAYAT & BUKTI PEMBAYARAN PER SISWA --}}
+            @foreach($students as $student)
+                @php
+                    $siswa = $student['siswa'];
+                    $pembayarans = $student['pembayarans'] ?? collect();
+                @endphp
+                <div class="modal fade" id="modalRekapBukti{{ $siswa->id }}" tabindex="-1" role="dialog" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                        <div class="modal-content border-0 shadow">
+                            <div class="modal-header modal-header-payment py-3">
+                                <h5 class="modal-title font-weight-bold" style="font-size: 16px;">
+                                    <i class="fas fa-receipt mr-2"></i>
+                                    Riwayat & Bukti Pembayaran: {{ $siswa->nama }} ({{ $siswa->nis }})
+                                </h5>
+                                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body p-3">
+                                <div class="table-responsive" style="max-height: 350px; overflow-y: auto;">
+                                    <table class="table table-hover table-bordered mb-0" style="font-size: 13px;">
+                                        <thead class="table-success">
+                                            <tr>
+                                                <th width="30" class="text-center">No</th>
+                                                <th>Jenis Tagihan</th>
+                                                <th>Tanggal</th>
+                                                <th class="text-center" style="background:#e8f5e9; color:#1b5e20;">Bulan Dibayar</th>
+                                                <th>Nominal</th>
+                                                <th>Metode</th>
+                                                <th class="text-center">Bukti Transfer</th>
+                                                <th>Keterangan</th>
+                                                <th width="50" class="text-center">Kuitansi</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @php $rowNum = 1; @endphp
+                                            @forelse($pembayarans as $pb)
+                                                @foreach($pb->detailPembayaran as $detail)
+                                                    <tr>
+                                                        <td class="text-center">{{ $rowNum++ }}</td>
+                                                        <td><span class="badge bg-light text-dark border">{{ $pb->jenisPembayaran->nama ?? 'Tagihan' }}</span></td>
+                                                        <td>{{ \Carbon\Carbon::parse($detail->tanggal)->format('d/m/Y') }}</td>
+                                                        <td class="text-center">
+                                                            <span class="badge badge-bulan-bayar">
+                                                                <i class="fas fa-calendar-check mr-1 text-success"></i>
+                                                                {{ \Carbon\Carbon::parse($detail->tanggal)->translatedFormat('F Y') }}
+                                                            </span>
+                                                        </td>
+                                                        <td class="font-weight-bold text-success">Rp {{ number_format($detail->nominal, 0, ',', '.') }}</td>
+                                                        <td><span class="badge badge-light border">{{ $detail->metode }}</span></td>
+                                                        <td class="text-center">
+                                                            @if($detail->bukti)
+                                                                <a href="{{ asset($detail->bukti) }}" target="_blank" class="btn btn-xs btn-outline-success font-weight-bold" title="Buka Bukti Transfer">
+                                                                    <i class="fas fa-image mr-1"></i> Lihat Bukti
+                                                                </a>
+                                                            @else
+                                                                <span class="text-muted small">-</span>
+                                                            @endif
+                                                        </td>
+                                                        <td>{{ $detail->keterangan ?? '-' }}</td>
+                                                        <td class="text-center">
+                                                            <a href="{{ route('bukti.cetak', $detail->id) }}" target="_blank" class="btn btn-xs btn-outline-primary" title="Cetak Kuitansi">
+                                                                <i class="fas fa-print"></i>
+                                                            </a>
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            @empty
+                                                <tr>
+                                                    <td colspan="9" class="text-center py-3 text-muted">Belum ada riwayat transaksi pembayaran.</td>
+                                                </tr>
+                                            @endforelse
+                                            @if($rowNum === 1)
+                                                <tr>
+                                                    <td colspan="9" class="text-center py-3 text-muted">Belum ada riwayat transaksi pembayaran.</td>
+                                                </tr>
+                                            @endif
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="modal-footer bg-light py-2">
+                                <button type="button" class="btn btn-secondary px-3" data-dismiss="modal">Tutup</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endforeach
+
+            {{-- SCRIPT UPDATE DATA REKAP --}}
+            <script>
+
+                function formatRupiah(value) {
+
+                    return new Intl.NumberFormat('id-ID')
+                        .format(value || 0);
+
+                }
+
+
+                function updateRecapRow(row, jenis, summary) {
+
+                    const data = summary[jenis];
+
+                    const jenisLabel =
+                        row.querySelector('.jenis-label');
+
+                    if (jenisLabel) {
+                        jenisLabel.textContent = jenis === 'Total' ? 'Total Keseluruhan' : jenis;
+                    }
+
+                    const targetCell =
+                        row.querySelector('.target-cell');
+
+                    const terbawaCell =
+                        row.querySelector('.terbawa-cell');
+
+                    const totalTagihanCell =
+                        row.querySelector('.total-tagihan-cell');
+
+                    const terbayarCell =
+                        row.querySelector('.terbayar-cell');
+
+                    const sisaCell =
+                        row.querySelector('.sisa-cell');
+
+                    const bulanCell =
+                        row.querySelector('.bulan-cell');
+
+                    const statusCell =
+                        row.querySelector('.status-cell');
+
+
+                    if (!data) {
+
+                        targetCell.textContent =
+                            formatRupiah(0);
+
+                        terbawaCell.textContent =
+                            formatRupiah(0);
+
+                        totalTagihanCell.textContent =
+                            formatRupiah(0);
+
+                        terbayarCell.textContent =
+                            formatRupiah(0);
+
+                        sisaCell.textContent =
+                            formatRupiah(0);
+
+                        sisaCell.dataset.sisa = 0;
+
+                        if (bulanCell) {
+                            bulanCell.innerHTML = '<span class="text-muted small">-</span>';
+                        }
+
+                        statusCell.innerHTML =
+                            '<span class="badge bg-secondary">Tidak Ada Tagihan</span>';
+
+                        return;
+
+                    }
+
+
+                    targetCell.textContent =
+                        formatRupiah(data.target);
+
+                    terbawaCell.textContent =
+                        formatRupiah(data.terbawa);
+
+                    if (data.terbawa > 0) {
+                        terbawaCell.className = 'terbawa-cell col-uang text-warning fw-semibold';
+                    } else {
+                        terbawaCell.className = 'terbawa-cell col-uang';
+                    }
+
+                    totalTagihanCell.textContent =
+                        formatRupiah(data.total_tagihan);
+
+                    terbayarCell.textContent =
+                        formatRupiah(data.terbayar);
+
+                    sisaCell.textContent =
+                        formatRupiah(data.sisa);
+
+                    /*
+                     * Simpan angka asli sisa
+                     * untuk kebutuhan sorting.
+                     */
+                    sisaCell.dataset.sisa =
+                        Number(data.sisa) || 0;
+
+                    if (bulanCell) {
+                        if (data.notif_status === 'lunas') {
+                            bulanCell.innerHTML = `<span class="badge badge-notif-lunas"><i class="fas fa-check-double mr-1"></i> ${data.notif_text}</span>`;
+                        } else if (data.notif_status === 'sudah') {
+                            bulanCell.innerHTML = `<span class="badge badge-notif-sudah"><i class="fas fa-check-circle mr-1"></i> ${data.notif_text}</span>` +
+                                (data.notif_sub ? `<div class="text-success small font-weight-bold mt-1" style="font-size:11px;">${data.notif_sub}</div>` : '');
+                        } else if (data.notif_status === 'belum') {
+                            bulanCell.innerHTML = `<span class="badge badge-notif-belum"><i class="fas fa-exclamation-circle mr-1"></i> ${data.notif_text}</span>` +
+                                (data.notif_sub ? `<div class="text-muted small font-weight-bold mt-1" style="font-size:11px;">${data.notif_sub}</div>` : '');
+                        } else {
+                            bulanCell.innerHTML = '<span class="text-muted small">-</span>';
+                        }
+                    }
+
+                    let badgeClass =
+                        'bg-secondary';
+
+                    if (data.status === 'Lunas') {
+                        badgeClass =
+                            'bg-success';
+                    }
+                    else if (data.status === 'Belum Lunas') {
+                        badgeClass =
+                            'bg-danger';
+                    }
+
+                    statusCell.innerHTML =
+                        `<span class="badge ${badgeClass}">
+                            ${data.status}
+                        </span>`;
+
+                }
+
+
+                document.querySelectorAll('.jenis-select').forEach((select) => {
+                    const row = select.closest('tr');
+                    const summary = JSON.parse(select.dataset.summary);
+
+                    select.addEventListener('change', () => {
+                        updateRecapRow(row, select.value, summary);
+                        select.blur();
+                    });
+
+                    updateRecapRow(row, select.value, summary);
+                });
+
+            </script>
+
+
+            {{-- SCRIPT SEARCH --}}
+
+            <script>
+
+                document
+                    .getElementById('rekapSearchInput')
+                    ?.addEventListener('keyup', function () {
+
+                        const q =
+                            this.value.toLowerCase();
+
+                        document
+                            .querySelectorAll('#rekapTable tbody tr')
+                            .forEach(function (row) {
+
+                                row.style.display =
+                                    row.innerText
+                                        .toLowerCase()
+                                        .includes(q)
+                                        ? ''
+                                        : 'none';
+
+                            });
+
+                    });
+
+            </script>
+
+
+            {{-- SCRIPT SORTING --}}
+
+            <script>
+
+                let currentSort = {
+                    column: 'nama',
+                    direction: 'asc'
+                };
+
+
+                function sortTable(column) {
+
+                    const table =
+                        document.getElementById('rekapTable');
+
+                    const tbody =
+                        table.querySelector('tbody');
+
+                    const rows =
+                        Array.from(
+                            tbody.querySelectorAll('tr')
+                        );
+
+
+                    /*
+                     * Jika klik kolom yang sama,
+                     * balik arah sorting.
+                     *
+                     * Jika kolom berbeda,
+                     * mulai dari A-Z / kecil-besar.
+                     */
+
+                    if (currentSort.column === column) {
+
+                        currentSort.direction =
+                            currentSort.direction === 'asc'
+                                ? 'desc'
+                                : 'asc';
+
+                    } else {
+
+                        currentSort.column =
+                            column;
+
+                        currentSort.direction =
+                            'asc';
+
+                    }
+
+
+                    rows.sort(function (a, b) {
+
+                        let valueA;
+                        let valueB;
+
+
+                        if (column === 'nis') {
+
+                            valueA =
+                                a.dataset.nis || '';
+
+                            valueB =
+                                b.dataset.nis || '';
+
+                            /*
+                             * Jika NIS berupa angka,
+                             * bandingkan sebagai angka.
+                             */
+                            const numberA =
+                                Number(valueA);
+
+                            const numberB =
+                                Number(valueB);
+
+                            if (
+                                !isNaN(numberA) &&
+                                !isNaN(numberB)
+                            ) {
+
+                                valueA = numberA;
+                                valueB = numberB;
+
+                            }
+
+                        }
+
+
+                        else if (column === 'nama') {
+
+                            valueA =
+                                a.dataset.nama || '';
+
+                            valueB =
+                                b.dataset.nama || '';
+
+                        }
+
+
+                        else if (column === 'kelas') {
+
+                            valueA =
+                                a.dataset.kelas || '';
+
+                            valueB =
+                                b.dataset.kelas || '';
+
+                        }
+
+
+                        else if (column === 'sisa') {
+
+                            valueA =
+                                Number(
+                                    a.querySelector(
+                                        '.sisa-cell'
+                                    )?.dataset.sisa || 0
+                                );
+
+                            valueB =
+                                Number(
+                                    b.querySelector(
+                                        '.sisa-cell'
+                                    )?.dataset.sisa || 0
+                                );
+
+                        }
+
+
+                        let comparison = 0;
+
+
+                        if (typeof valueA === 'number') {
+
+                            comparison =
+                                valueA - valueB;
+
+                        } else {
+
+                            comparison =
+                                valueA.localeCompare(
+                                    valueB,
+                                    'id',
+                                    {
+                                        numeric: true,
+                                        sensitivity: 'base'
+                                    }
+                                );
+
+                        }
+
+
+                        return currentSort.direction === 'asc'
+                            ? comparison
+                            : -comparison;
+
+                    });
+
+
+                    rows.forEach(function (row) {
+
+                        tbody.appendChild(row);
+
+                    });
+
+
+                    updateSortIcons(column);
+
+                    updateNumbering();
+
+                }
+
+
+                function updateSortIcons(activeColumn) {
+
+                    document
+                        .querySelectorAll('.sortable')
+                        .forEach(function (header) {
+
+                            const icon =
+                                header.querySelector('.sort-icon');
+
+
+                            header.classList.remove('active');
+
+
+                            icon.className =
+                                'fas fa-sort sort-icon';
+
+                        });
+
+
+                    const activeHeader =
+                        document.querySelector(
+                            `.sortable[data-sort="${activeColumn}"]`
+                        );
+
+
+                    if (!activeHeader) {
+                        return;
+                    }
+
+
+                    const icon =
+                        activeHeader.querySelector(
+                            '.sort-icon'
+                        );
+
+
+                    activeHeader.classList.add('active');
+
+
+                    if (
+                        currentSort.direction === 'asc'
+                    ) {
+
+                        icon.className =
+                            'fas fa-sort-up sort-icon';
+
+                    } else {
+
+                        icon.className =
+                            'fas fa-sort-down sort-icon';
+
+                    }
+
+                }
+
+
+                function updateNumbering() {
+
+                    const rows =
+                        document.querySelectorAll(
+                            '#rekapTable tbody tr'
+                        );
+
+
+                    let nomor = 1;
+
+
+                    rows.forEach(function (row) {
+
+                        const nomorCell =
+                            row.querySelector('.nomor-cell');
+
+
+                        if (
+                            row.style.display !== 'none'
+                        ) {
+
+                            nomorCell.textContent =
+                                nomor++;
+
+                        }
+
+                    });
+
+                }
+
+
+                /*
+                 * Default sorting:
+                 * Nama A-Z
+                 */
+
+                document.addEventListener(
+                    'DOMContentLoaded',
+                    function () {
+
+                        sortTable('nama');
+
+                    }
+                );
+
+            </script>
+
+
+        @else
+
+            <div class="text-center py-5">
+
+                <i class="fas fa-receipt fa-3x text-muted mb-3"></i>
+
+                <h5 class="fw-bold">
+                    Belum ada data pembayaran
+                </h5>
+
+                <p class="text-muted mb-0">
+                    Data pembayaran siswa akan muncul di sini.
+                </p>
+
+            </div>
+
+        @endif
+
+    </div>
+
+</div>
+
+@stop
