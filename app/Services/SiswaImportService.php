@@ -302,20 +302,57 @@ class SiswaImportService
     }
 
     /**
-     * Memproses data berbentuk baris tabel (header di baris pertama)
+     * Memproses data berbentuk baris tabel (header di baris pertama atau baris teridentifikasi)
      */
     protected function processTabularData(array $rawRows): array
     {
-        // Cari baris header (baris pertama yang memiliki teks kolom bermakna)
+        // Cari baris header terbaik yang memiliki kolom kolom yang sesuai
         $headerRowIndex = 0;
         $headers = [];
+        $bestScore = -1;
 
         foreach ($rawRows as $idx => $row) {
             $nonEmpty = array_values(array_filter($row, fn($c) => !is_null($c) && trim((string)$c) !== ''));
-            if (count($nonEmpty) >= 2) {
+            if (count($nonEmpty) < 2) {
+                continue;
+            }
+
+            $score = 0;
+            foreach ($row as $cell) {
+                $cleanCell = strtolower(trim((string)$cell));
+                $cleanCell = preg_replace('/[^a-z0-9]/', '', $cleanCell);
+                if ($cleanCell === '') continue;
+
+                foreach (array_merge($this->aliasNama, $this->aliasNis, $this->aliasKelas, ['no', 'nomor']) as $alias) {
+                    $cleanAlias = preg_replace('/[^a-z0-9]/', '', $alias);
+                    if ($cleanCell === $cleanAlias) {
+                        $score += 2;
+                        break;
+                    } elseif (str_contains($cleanCell, $cleanAlias)) {
+                        $score += 1;
+                        break;
+                    }
+                }
+            }
+
+            if ($score > $bestScore) {
+                $bestScore = $score;
                 $headerRowIndex = $idx;
                 $headers = $row;
-                break;
+                if ($score >= 4) {
+                    break;
+                }
+            }
+        }
+
+        if (empty($headers)) {
+            foreach ($rawRows as $idx => $row) {
+                $nonEmpty = array_values(array_filter($row, fn($c) => !is_null($c) && trim((string)$c) !== ''));
+                if (count($nonEmpty) >= 2) {
+                    $headerRowIndex = $idx;
+                    $headers = $row;
+                    break;
+                }
             }
         }
 
@@ -688,36 +725,31 @@ class SiswaImportService
 
         $kUpper = strtoupper(preg_replace('/\s+/', ' ', $k));
 
-        // Normalisasi format umum
-        $validClasses = [
-            'X TKJ', 'X TKR 1', 'X TKR 2',
-            'XI TKJ', 'XI TKR 1', 'XI TKR 2',
-            'XII TKJ', 'XII TKR 1', 'XII TKR 2',
-            'Lulus'
-        ];
-
-        foreach ($validClasses as $vc) {
-            if (strcasecmp($kUpper, $vc) === 0) {
-                return $vc;
-            }
+        // Konversi penulisan angka Arab 10, 11, 12 ke Romawi X, XI, XII
+        if (preg_match('/^10\s+/i', $kUpper)) {
+            $kUpper = preg_replace('/^10\s+/i', 'X ', $kUpper);
+        } elseif (preg_match('/^11\s+/i', $kUpper)) {
+            $kUpper = preg_replace('/^11\s+/i', 'XI ', $kUpper);
+        } elseif (preg_match('/^12\s+/i', $kUpper)) {
+            $kUpper = preg_replace('/^12\s+/i', 'XII ', $kUpper);
         }
 
-        // Variasi penulisan angka Romawi / Arab
+        // Variasi penulisan khusus
         $map = [
             '10 TKJ' => 'X TKJ',
+            '10 TKR' => 'X TKR 1',
             '10 TKR 1' => 'X TKR 1',
             '10 TKR 2' => 'X TKR 2',
-            '10 TKR' => 'X TKR 1',
             'X TKR' => 'X TKR 1',
             '11 TKJ' => 'XI TKJ',
+            '11 TKR' => 'XI TKR 1',
             '11 TKR 1' => 'XI TKR 1',
             '11 TKR 2' => 'XI TKR 2',
-            '11 TKR' => 'XI TKR 1',
             'XI TKR' => 'XI TKR 1',
             '12 TKJ' => 'XII TKJ',
+            '12 TKR' => 'XII TKR 1',
             '12 TKR 1' => 'XII TKR 1',
             '12 TKR 2' => 'XII TKR 2',
-            '12 TKR' => 'XII TKR 1',
             'XII TKR' => 'XII TKR 1',
             'ALUMNI' => 'Lulus',
             'LULUS' => 'Lulus',
@@ -727,6 +759,6 @@ class SiswaImportService
             return $map[$kUpper];
         }
 
-        return $k;
+        return $kUpper;
     }
 }

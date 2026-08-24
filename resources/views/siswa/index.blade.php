@@ -1175,6 +1175,8 @@
                 </div>
             </div>
         </div>
+    </div>
+
     {{-- MODAL IMPORT DATA SISWA (Multi-step: Upload, Mapping, Preview & Validation) --}}
     <div class="modal fade" id="modalImportSiswa" tabindex="-1" role="dialog" aria-labelledby="modalImportSiswaLabel" aria-hidden="true" data-backdrop="static">
         <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
