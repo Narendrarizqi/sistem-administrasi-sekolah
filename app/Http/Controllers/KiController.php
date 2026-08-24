@@ -8,6 +8,7 @@ use App\Models\Pembayaran;
 use App\Models\Siswa;
 use App\Models\TahunAjaran;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 class KiController extends Controller
 {
@@ -77,8 +78,11 @@ class KiController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'siswa_id' => 'required|exists:siswa,id',
-            'target'   => 'required|numeric|min:0',
+            'siswa_id'     => 'required|exists:siswa,id',
+            'target_uts'   => 'nullable|numeric|min:0',
+            'target_uas'   => 'nullable|numeric|min:0',
+            'target_ujian' => 'nullable|numeric|min:0',
+            'target'       => 'nullable|numeric|min:0',
         ]);
 
         $jenis = JenisPembayaran::where('nama', 'KI')->firstOrFail();
@@ -86,7 +90,7 @@ class KiController extends Controller
         $tahunAjaranId = $tahunAktif?->id;
         $tahunAjaranNama = $tahunAktif?->nama;
 
-        // Cek apakah siswa sudah memiliki record tagihan di tahun ajaran aktif (misal dari carryover saat naik kelas)
+        // Cek apakah siswa sudah memiliki record tagihan di tahun ajaran aktif
         $pembayaran = Pembayaran::where('siswa_id', $request->siswa_id)
             ->where('jenis_id', $jenis->id)
             ->where(function ($q) use ($tahunAjaranId, $tahunAjaranNama) {
@@ -109,12 +113,25 @@ class KiController extends Controller
                 ->with('error', "Siswa " . ($siswa?->nama ?? '') . " (NIS: " . ($siswa?->nis ?? '') . ") sudah memiliki data tagihan Kegiatan Intrakurikuler (KI) pada tahun ajaran ini!");
         }
 
+        $targetUts   = (float) ($request->target_uts ?? 0);
+        $targetUas   = (float) ($request->target_uas ?? 0);
+        $targetUjian = (float) ($request->target_ujian ?? 0);
+        $totalTarget = $targetUts + $targetUas + $targetUjian;
+
+        // Fallback jika hanya input target global
+        if ($totalTarget <= 0 && $request->filled('target')) {
+            $totalTarget = (float) $request->target;
+        }
+
         Pembayaran::create([
             'siswa_id'        => $request->siswa_id,
             'jenis_id'        => $jenis->id,
             'tahun_ajaran_id' => $tahunAjaranId,
             'tahun_ajaran'    => $tahunAjaranNama,
-            'target'          => $request->target,
+            'target'          => $totalTarget,
+            'target_uts'      => $targetUts,
+            'target_uas'      => $targetUas,
+            'target_ujian'    => $targetUjian,
             'belum_lunas'     => 0,
             'status'          => 'Belum Lunas',
         ]);
@@ -138,14 +155,30 @@ class KiController extends Controller
     public function bayar(Request $request, $id)
     {
         $request->validate([
+            'kategori'   => 'required|in:UTS,UAS,Ujian',
             'nominal'    => 'required|numeric|min:1',
             'metode'     => 'required|string',
             'keterangan' => 'nullable|string',
             'bukti'      => 'nullable|file|mimes:jpeg,png,jpg,webp,pdf|max:3072',
         ]);
 
-        $pembayaran = Pembayaran::findOrFail($id);
+        $pembayaran = Pembayaran::with('detailPembayaran')->findOrFail($id);
+        $kategori   = $request->kategori;
         $nominal    = (float) $request->nominal;
+
+        $sisaKategori = $pembayaran->sisaKiKategori($kategori);
+
+        if ($sisaKategori <= 0) {
+            throw ValidationException::withMessages([
+                'nominal' => "Tagihan {$kategori} untuk siswa ini sudah lunas.",
+            ]);
+        }
+
+        if ($nominal > $sisaKategori) {
+            throw ValidationException::withMessages([
+                'nominal' => "Nominal pembayaran (Rp " . number_format($nominal, 0, ',', '.') . ") melebihi sisa tagihan {$kategori} (Rp " . number_format($sisaKategori, 0, ',', '.') . ").",
+            ]);
+        }
 
         $buktiPath = null;
         if ($request->hasFile('bukti')) {
@@ -159,17 +192,25 @@ class KiController extends Controller
             $buktiPath = 'uploads/bukti_pembayaran/' . $filename;
         }
 
-        $detail = $this->prosesPembayaranPrioritas(
-            $pembayaran,
-            $nominal,
-            $request->metode,
-            $request->keterangan,
-            $buktiPath
-        );
+        $detail = DetailPembayaran::create([
+            'pembayaran_id' => $pembayaran->id,
+            'tanggal'       => now(),
+            'nominal'       => $nominal,
+            'kategori'      => $kategori,
+            'metode'        => $request->metode ?? 'Cash',
+            'keterangan'    => $request->keterangan,
+            'bukti'         => $buktiPath,
+        ]);
+
+        // Update status pembayaran induk
+        $terbayarTotal = (float) $pembayaran->detailPembayaran()->sum('nominal');
+        $totalTagihan  = (float) $pembayaran->target + (float) ($pembayaran->belum_lunas ?? 0);
+        $pembayaran->status = ($totalTagihan > 0 && $terbayarTotal >= $totalTagihan) ? 'Lunas' : 'Belum Lunas';
+        $pembayaran->save();
 
         return redirect()
             ->back()
-            ->with('success', 'Pembayaran KI berhasil disimpan.')
+            ->with('success', "Pembayaran KI ({$kategori}) berhasil disimpan.")
             ->with('last_detail_id', $detail->id);
     }
 
@@ -189,7 +230,10 @@ class KiController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'target' => 'required|numeric|min:0',
+            'target_uts'   => 'nullable|numeric|min:0',
+            'target_uas'   => 'nullable|numeric|min:0',
+            'target_ujian' => 'nullable|numeric|min:0',
+            'target'       => 'nullable|numeric|min:0',
         ]);
 
         $pembayaran = Pembayaran::findOrFail($id);
@@ -198,16 +242,28 @@ class KiController extends Controller
             $pembayaran->siswa_id = $request->siswa_id;
         }
 
-        $pembayaran->target = $request->target;
-        // belum_lunas tetap terjaga utuh!
+        $targetUts   = (float) ($request->target_uts ?? 0);
+        $targetUas   = (float) ($request->target_uas ?? 0);
+        $targetUjian = (float) ($request->target_ujian ?? 0);
+        $totalTarget = $targetUts + $targetUas + $targetUjian;
 
-        $terbayar = (float) $pembayaran->detailPembayaran()->sum('nominal');
-        $totalTagihan = (float) $pembayaran->target + (float) ($pembayaran->belum_lunas ?? 0);
-        $pembayaran->status = ($totalTagihan > 0 && $terbayar >= $totalTagihan) ? 'Lunas' : 'Belum Lunas';
+        if ($totalTarget <= 0 && $request->filled('target')) {
+            $totalTarget = (float) $request->target;
+        }
+
+        $pembayaran->target_uts   = $targetUts;
+        $pembayaran->target_uas   = $targetUas;
+        $pembayaran->target_ujian = $targetUjian;
+        $pembayaran->target       = $totalTarget;
+        // belum_lunas tetap terjaga utuh
+
+        $terbayarTotal = (float) $pembayaran->detailPembayaran()->sum('nominal');
+        $totalTagihan  = (float) $pembayaran->target + (float) ($pembayaran->belum_lunas ?? 0);
+        $pembayaran->status = ($totalTagihan > 0 && $terbayarTotal >= $totalTagihan) ? 'Lunas' : 'Belum Lunas';
         $pembayaran->save();
 
         return redirect()->route('ki.index')
-            ->with('success', 'Data berhasil diubah.');
+            ->with('success', 'Data tagihan KI berhasil diperbarui.');
     }
 
     public function destroy($id)

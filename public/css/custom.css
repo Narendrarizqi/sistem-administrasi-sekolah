@@ -995,7 +995,6 @@ a.btn-outline-danger.action-btn:focus {
 }
 
 /* Compact Status Badges */
-.table .badge,
 .table .badge.bg-success,
 .table .badge.badge-success {
     background-color: #f0fdf4 !important;
@@ -2489,4 +2488,26 @@ button.btn-secondary:active,
     color: #ffffff !important;
     transform: translateY(1px) !important;
     box-shadow: 0 1px 3px rgba(220, 38, 38, 0.25) !important;
+}
+
+/* Cetak Kuitansi Buttons: Always White Text & Icon */
+#btnCetakBukti,
+#btnCetakBuktiPage,
+.btn-cetak-kuitansi,
+a#btnCetakBukti,
+a#btnCetakBuktiPage,
+.modal-footer .btn-success,
+.modal-footer a.btn-success {
+    color: #ffffff !important;
+    text-decoration: none !important;
+}
+
+#btnCetakBukti *,
+#btnCetakBuktiPage *,
+.btn-cetak-kuitansi *,
+a#btnCetakBukti *,
+a#btnCetakBuktiPage *,
+.modal-footer .btn-success *,
+.modal-footer a.btn-success * {
+    color: #ffffff !important;
 }
