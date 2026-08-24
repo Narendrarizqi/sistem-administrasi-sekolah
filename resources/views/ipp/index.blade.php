@@ -890,7 +890,7 @@
                                             title="Hapus Tagihan"
                                             data-toggle="tooltip"
                                             onclick="$('#modalHapus{{ $item->id }}').modal('show')">
-                                        <i class="fas fa-trash"></i>
+                                        <i class="fas fa-trash-alt"></i>
                                     </button>
                                 </div>
                             </td>
@@ -1490,7 +1490,7 @@
                 <div class="modal-content border-0 shadow" style="border-radius: 14px; overflow: hidden;">
                     <div class="modal-header py-3 px-4 bg-light border-bottom">
                         <h5 class="modal-title font-weight-bold text-danger" style="font-size: 16px;">
-                            <i class="fas fa-trash text-danger mr-2"></i>
+                            <i class="fas fa-trash-alt text-danger mr-2"></i>
                             Konfirmasi Hapus Tagihan
                         </h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -1518,7 +1518,7 @@
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="btn btn-danger px-3 font-weight-bold" style="border-radius: 8px;">
-                                <i class="fas fa-trash mr-1"></i> Ya, Hapus Tagihan
+                                <i class="fas fa-trash-alt mr-1"></i> Ya, Hapus Tagihan
                             </button>
                         </form>
                     </div>

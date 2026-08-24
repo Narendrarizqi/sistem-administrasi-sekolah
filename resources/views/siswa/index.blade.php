@@ -343,33 +343,39 @@
             white-space: nowrap;
         }
 
-        /* Table Row Action Buttons */
+        /* Table Row Action Buttons (Standar Seragam Sistem) */
         .siswa-action-group {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 4px;
+            gap: 3px;
+            white-space: nowrap !important;
         }
 
-        .btn-table-edit {
-            width: 28px;
-            height: 28px;
+        .btn-act-edit,
+        .btn-act-hapus {
+            width: 24px;
+            height: 24px;
             padding: 0;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            background: #fffbeb;
-            border: 1px solid #fde68a;
-            color: #d97706 !important;
-            border-radius: 6px;
-            font-size: 11.5px;
+            border-radius: 5px;
+            font-size: 11px;
+            box-shadow: none;
             transition: all 0.15s ease;
             cursor: pointer;
             text-decoration: none !important;
         }
 
-        .btn-table-edit:hover,
-        .btn-table-edit:focus {
+        .btn-act-edit {
+            background: #fffbeb;
+            border: 1px solid #fde68a;
+            color: #d97706 !important;
+        }
+
+        .btn-act-edit:hover,
+        .btn-act-edit:focus {
             background: #d97706;
             border-color: #d97706;
             color: #ffffff !important;
@@ -377,25 +383,14 @@
             box-shadow: 0 2px 5px rgba(217, 119, 6, 0.25);
         }
 
-        .btn-table-hapus {
-            width: 28px;
-            height: 28px;
-            padding: 0;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
+        .btn-act-hapus {
             background: #fef2f2;
             border: 1px solid #fecaca;
             color: #dc2626 !important;
-            border-radius: 6px;
-            font-size: 11.5px;
-            transition: all 0.15s ease;
-            cursor: pointer;
-            text-decoration: none !important;
         }
 
-        .btn-table-hapus:hover,
-        .btn-table-hapus:focus {
+        .btn-act-hapus:hover,
+        .btn-act-hapus:focus {
             background: #dc2626;
             border-color: #dc2626;
             color: #ffffff !important;
@@ -595,28 +590,28 @@
                                     </td>
 
                                     <td class="col-aksi-cell">
-                                        <div class="siswa-action-group">
-                                            <button
-                                                type="button"
-                                                class="btn-table-edit"
-                                                title="Edit Data Siswa"
-                                                data-toggle="modal"
-                                                data-target="#modalEditSiswa{{ $item->id }}"
-                                            >
-                                                <i class="fas fa-pen"></i>
-                                            </button>
+                                         <div class="siswa-action-group">
+                                             <button
+                                                 type="button"
+                                                 class="btn-act-edit"
+                                                 title="Edit Data Siswa"
+                                                 data-toggle="modal"
+                                                 data-target="#modalEditSiswa{{ $item->id }}"
+                                             >
+                                                 <i class="fas fa-pen"></i>
+                                             </button>
 
-                                            <button
-                                                type="button"
-                                                class="btn-table-hapus"
-                                                title="Hapus Data Siswa"
-                                                data-toggle="modal"
-                                                data-target="#modalHapusSiswa{{ $item->id }}"
-                                            >
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        </div>
-                                    </td>
+                                             <button
+                                                 type="button"
+                                                 class="btn-act-hapus"
+                                                 title="Hapus Data Siswa"
+                                                 data-toggle="modal"
+                                                 data-target="#modalHapusSiswa{{ $item->id }}"
+                                             >
+                                                 <i class="fas fa-trash-alt"></i>
+                                             </button>
+                                         </div>
+                                     </td>
                                 </tr>
                             @endforeach
                         </tbody>
@@ -769,7 +764,7 @@
                 <div class="modal-content border-0 shadow" style="border-radius: 12px; overflow: hidden;">
                     <div class="modal-header modal-header-danger">
                         <h5 class="modal-title">
-                            <i class="fas fa-trash mr-2"></i>
+                            <i class="fas fa-trash-alt mr-2"></i>
                             Konfirmasi Hapus Siswa
                         </h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -802,7 +797,7 @@
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="btn btn-danger font-weight-bold px-3" style="height: 38px; border-radius: 8px;">
-                                <i class="fas fa-trash mr-1"></i> Ya, Hapus
+                                <i class="fas fa-trash-alt mr-1"></i> Ya, Hapus
                             </button>
                         </form>
                     </div>

@@ -149,7 +149,7 @@
                             @csrf
                             <input type="hidden" name="tahun_ajaran" value="{{ $tahunAjaran }}">
                             <button type="submit" class="btn btn-outline-danger btn-delete-year">
-                                <i class="fas fa-trash mr-1"></i>
+                                <i class="fas fa-trash-alt mr-1"></i>
                                 Hapus Tahun Ajaran
                             </button>
                         </form>
