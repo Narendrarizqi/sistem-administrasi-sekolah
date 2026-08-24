@@ -265,7 +265,7 @@
             <td class="kop-text">
                 <p class="kop-instansi">Pimpinan Cabang Muhammadiyah Margasari &bull; Majelis Dikdasmen</p>
                 <h2 class="kop-sekolah">SMK MUHAMMADIYAH MARGASARI</h2>
-                <p class="kop-alamat">Jl. Karanganyar Margasari, Kec. Margasari, Kab. Tegal, Jawa Tengah 52463 | Telp: (0283) 3467123</p>
+                <p class="kop-alamat">Jl. Raya Margasari, Kec. Margasari, Kab. Tegal, Jawa Tengah 52463</p>
             </td>
         </tr>
     </table>

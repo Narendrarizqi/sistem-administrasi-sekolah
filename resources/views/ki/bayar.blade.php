@@ -381,7 +381,7 @@ $activeSisa = (float) $activeSub['sisa'];
                         <i class="fas fa-arrow-left mr-1"></i> Kembali
                     </a>
                     <button type="submit" class="btn btn-success px-4 font-weight-bold" style="border-radius: 8px; height: 38px;" {{ $sisa <= 0 ? 'disabled' : '' }}>
-                        <i class="fas fa-money-bill-wave mr-1"></i> Simpan Pembayaran
+                        Simpan Pembayaran
                     </button>
                 </div>
             </form>

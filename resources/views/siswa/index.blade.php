@@ -197,6 +197,175 @@
             transform: translateY(1px);
         }
 
+        .btn-toolbar-import {
+            height: 38px;
+            padding: 0 14px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            color: #1e293b !important;
+            font-size: 13px;
+            font-weight: 600;
+            border-radius: 8px;
+            transition: all 0.18s ease;
+            cursor: pointer;
+            white-space: nowrap;
+            text-decoration: none !important;
+        }
+
+        .btn-toolbar-import i {
+            color: #16a34a;
+            transition: color 0.18s ease;
+        }
+
+        .btn-toolbar-import:hover,
+        .btn-toolbar-import:focus {
+            background: #f0fdf4;
+            border-color: #bbf7d0;
+            color: #15803d !important;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+            transform: translateY(-1px);
+        }
+
+        .btn-toolbar-import:active {
+            background: #dcfce7;
+            border-color: #86efac;
+            color: #15803d !important;
+            transform: translateY(1px);
+        }
+
+        /* Import Modal Specific Styles */
+        .import-dropzone {
+            border: 2px dashed #cbd5e1;
+            border-radius: 12px;
+            padding: 26px 20px;
+            text-align: center;
+            background: #f8fafc;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .import-dropzone:hover,
+        .import-dropzone.dragover {
+            border-color: #16a34a;
+            background: #f0fdf4;
+        }
+
+        .import-dropzone i.upload-icon {
+            font-size: 36px;
+            color: #16a34a;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .import-stat-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 10px 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .import-stat-icon {
+            width: 34px;
+            height: 34px;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            flex-shrink: 0;
+        }
+
+        .preview-table-container {
+            max-height: 340px;
+            overflow-y: auto;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+        }
+
+        .preview-table-container table {
+            margin-bottom: 0;
+            font-size: 12.5px;
+        }
+
+        .preview-table-container thead th {
+            position: sticky;
+            top: 0;
+            background: #f8fafc !important;
+            z-index: 2;
+            border-top: none;
+            padding: 10px 12px;
+        }
+
+        .preview-table-container tbody td {
+            padding: 9px 12px;
+            vertical-align: middle;
+        }
+
+        .status-badge-ready {
+            background: #f0fdf4;
+            color: #15803d;
+            border: 1px solid #bbf7d0;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .status-badge-duplicate {
+            background: #fffbeb;
+            color: #b45309;
+            border: 1px solid #fde68a;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .status-badge-error {
+            background: #fef2f2;
+            color: #b91c1c;
+            border: 1px solid #fecaca;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .filter-tab-btn {
+            border: 1px solid #e2e8f0;
+            background: #ffffff;
+            color: #475569;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .filter-tab-btn.active {
+            background: #16a34a;
+            border-color: #16a34a;
+            color: #ffffff;
+        }
+
         .btn-toolbar-tambah {
             height: 38px;
             padding: 0 16px;
@@ -526,6 +695,17 @@
                 </div>
 
                 <div class="siswa-toolbar-actions">
+                    <button
+                        type="button"
+                        class="btn-toolbar-import"
+                        data-toggle="modal"
+                        data-target="#modalImportSiswa"
+                        title="Import Data Siswa dari Berkas (.xlsx, .xls, .csv, .docx, .txt, .pdf)"
+                    >
+                        <i class="fas fa-file-import"></i>
+                        <span>Import Data</span>
+                    </button>
+
                     <button
                         type="button"
                         class="btn-toolbar-naik"
@@ -995,6 +1175,265 @@
                 </div>
             </div>
         </div>
+    {{-- MODAL IMPORT DATA SISWA (Multi-step: Upload, Mapping, Preview & Validation) --}}
+    <div class="modal fade" id="modalImportSiswa" tabindex="-1" role="dialog" aria-labelledby="modalImportSiswaLabel" aria-hidden="true" data-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+            <div class="modal-content border-0 shadow" style="border-radius: 14px; overflow: hidden;">
+                <div class="modal-header modal-header-clean">
+                    <h5 class="modal-title font-weight-bold text-white" id="modalImportSiswaLabel" style="font-size: 16px;">
+                        <i class="fas fa-file-import mr-2 text-white"></i>
+                        Import Data Siswa
+                    </h5>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                {{-- STEP 1: UPLOAD FILE & DOWNLOAD TEMPLATE --}}
+                <div id="importStepUpload" class="import-step-container">
+                    <div class="modal-body p-4">
+                        {{-- Info Banner & Template Download --}}
+                        <div class="p-3 mb-3" style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px;">
+                            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                                <div>
+                                    <h6 class="font-weight-bold text-success mb-1" style="font-size: 14px;">
+                                        <i class="fas fa-info-circle mr-1"></i> Format Berkas & Data yang Dibutuhkan
+                                    </h6>
+                                    <p class="text-muted small mb-0">
+                                        Sistem hanya mengambil 3 data utama: <strong>Nama</strong>, <strong>NIS</strong>, dan <strong>Kelas</strong>. Kolom lain dalam file akan diabaikan secara otomatis.
+                                    </p>
+                                    <div class="mt-2 d-flex align-items-center gap-1 flex-wrap">
+                                        <span class="badge badge-light border text-dark">.xlsx</span>
+                                        <span class="badge badge-light border text-dark">.xls</span>
+                                        <span class="badge badge-light border text-dark">.csv</span>
+                                        <span class="badge badge-light border text-dark">.docx</span>
+                                        <span class="badge badge-light border text-dark">.txt</span>
+                                        <span class="badge badge-light border text-dark">.pdf (berisi teks)</span>
+                                    </div>
+                                </div>
+                                <div class="mt-2 mt-sm-0">
+                                    <a href="{{ route('siswa.import.template') }}" class="btn btn-sm btn-outline-success font-weight-semibold px-3 py-2" style="border-radius: 8px; white-space: nowrap;">
+                                        <i class="fas fa-download mr-1"></i> Download Template Excel
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Alert Error Container --}}
+                        <div id="importUploadError" class="alert alert-danger alert-dismissible fade show d-none" role="alert" style="border-radius: 8px;">
+                            <i class="fas fa-exclamation-circle mr-1"></i>
+                            <span id="importUploadErrorMessage">Terjadi kesalahan.</span>
+                        </div>
+
+                        {{-- Drag & Drop Upload Zone --}}
+                        <div class="import-dropzone" id="importDropzone">
+                            <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                            <h6 class="font-weight-bold text-dark mb-1" style="font-size: 14px;">
+                                Seret & Lepas Berkas ke Sini atau Klik untuk Memilih
+                            </h6>
+                            <p class="text-muted small mb-2">
+                                Mendukung format Excel (.xlsx, .xls), CSV, Word (.docx), Teks (.txt), dan PDF
+                            </p>
+                            <input type="file" id="importFileInput" class="d-none" accept=".xlsx,.xls,.csv,.docx,.txt,.pdf">
+                            <button type="button" class="btn btn-sm btn-outline-secondary px-3 py-1 font-weight-semibold" style="border-radius: 6px;" onclick="document.getElementById('importFileInput').click();">
+                                <i class="fas fa-folder-open mr-1"></i> Pilih Berkas dari Komputer
+                            </button>
+                        </div>
+
+                        {{-- Selected File Info --}}
+                        <div id="selectedFileInfo" class="mt-3 p-3 bg-light border rounded d-none" style="border-radius: 8px;">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div class="d-flex align-items-center gap-2">
+                                    <i class="fas fa-file-alt text-success fa-2x"></i>
+                                    <div>
+                                        <strong id="selectedFileName" class="text-dark d-block" style="font-size: 13px;">nama-file.xlsx</strong>
+                                        <small id="selectedFileSize" class="text-muted">0 KB</small>
+                                    </div>
+                                </div>
+                                <button type="button" class="btn btn-xs btn-outline-danger" id="btnRemoveFile" style="border-radius: 4px;">
+                                    <i class="fas fa-times"></i> Ganti
+                                </button>
+                            </div>
+                        </div>
+
+                        {{-- Loading Indicator --}}
+                        <div id="importUploadLoading" class="text-center py-4 d-none">
+                            <div class="spinner-border text-success mb-2" role="status" style="width: 2.2rem; height: 2.2rem;">
+                                <span class="sr-only">Memuat...</span>
+                            </div>
+                            <h6 class="font-weight-bold text-dark mb-0" style="font-size: 13.5px;">Membaca dan Menganalisis Berkas...</h6>
+                            <small class="text-muted">Mohon tunggu sebentar, data sedang diproses dan divalidasi.</small>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer bg-light py-2 px-4 justify-content-end">
+                        <button type="button" class="btn btn-batal-merah px-4 mr-2" data-dismiss="modal">
+                            Batal
+                        </button>
+                        <button type="button" class="btn btn-success font-weight-bold px-4" id="btnSubmitParse" style="border-radius: 8px; height: 38px;" disabled>
+                            <i class="fas fa-search mr-1"></i> Baca & Analisis Berkas
+                        </button>
+                    </div>
+                </div>
+
+                {{-- STEP 2: COLUMN MAPPING (HANYA DITAMPILKAN JIKA KOLOM BELUM OTOMATIS COCOK) --}}
+                <div id="importStepMapping" class="import-step-container d-none">
+                    <div class="modal-body p-4">
+                        <div class="alert alert-warning mb-3" style="border-radius: 8px; font-size: 13px;">
+                            <i class="fas fa-exclamation-triangle mr-1"></i>
+                            Nama kolom pada berkas tidak dapat dikenali secara pasti. Silakan tentukan pemetaan kolom berikut:
+                        </div>
+
+                        <div class="card border mb-0" style="border-radius: 10px;">
+                            <div class="card-header bg-white font-weight-bold py-2" style="font-size: 13.5px;">
+                                <i class="fas fa-columns text-success mr-1"></i> Pemetaan Kolom Berkas ke Data Siswa
+                            </div>
+                            <div class="card-body p-3">
+                                <div class="row">
+                                    <div class="col-md-4 mb-3">
+                                        <label for="mappingColNama" class="font-weight-bold small text-dark">
+                                            Kolom Nama Siswa <span class="text-danger">*</span>
+                                        </label>
+                                        <select id="mappingColNama" class="form-control" style="border-radius: 8px;"></select>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label for="mappingColNis" class="font-weight-bold small text-dark">
+                                            Kolom NIS <span class="text-danger">*</span>
+                                        </label>
+                                        <select id="mappingColNis" class="form-control" style="border-radius: 8px;"></select>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label for="mappingColKelas" class="font-weight-bold small text-dark">
+                                            Kolom Kelas <span class="text-danger">*</span>
+                                        </label>
+                                        <select id="mappingColKelas" class="form-control" style="border-radius: 8px;"></select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer bg-light py-2 px-4 justify-content-between">
+                        <button type="button" class="btn btn-batal-merah px-4" id="btnBackToUploadFromMapping">
+                            <i class="fas fa-arrow-left mr-1"></i> Kembali ke Unggah
+                        </button>
+                        <button type="button" class="btn btn-success font-weight-bold px-4" id="btnApplyMapping" style="border-radius: 8px; height: 38px;">
+                            <i class="fas fa-arrow-right mr-1"></i> Terapkan & Lanjutkan ke Pratinjau
+                        </button>
+                    </div>
+                </div>
+
+                {{-- STEP 3: PREVIEW & VALIDATION (KONFIRMASI SEBELUM DATABASE BERUBAH) --}}
+                <div id="importStepPreview" class="import-step-container d-none">
+                    <div class="modal-body p-4">
+                        {{-- Ringkasan Statistik Hasil Analisis --}}
+                        <div class="row mb-3">
+                            <div class="col-md-4 mb-2 mb-md-0">
+                                <div class="import-stat-card border-success" style="background: #f0fdf4;">
+                                    <div class="import-stat-icon bg-success text-white">
+                                        <i class="fas fa-check"></i>
+                                    </div>
+                                    <div>
+                                        <div class="small text-muted font-weight-semibold">Siap Diimport</div>
+                                        <div class="font-weight-bold text-success" style="font-size: 18px;">
+                                            <span id="statCountReady">0</span> Siswa
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-2 mb-md-0">
+                                <div class="import-stat-card border-warning" style="background: #fffbeb;">
+                                    <div class="import-stat-icon bg-warning text-white">
+                                        <i class="fas fa-exclamation-triangle"></i>
+                                    </div>
+                                    <div>
+                                        <div class="small text-muted font-weight-semibold">NIS Sudah Ada (Duplikat)</div>
+                                        <div class="font-weight-bold text-warning" style="font-size: 18px;">
+                                            <span id="statCountDuplicate">0</span> Siswa
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="import-stat-card border-danger" style="background: #fef2f2;">
+                                    <div class="import-stat-icon bg-danger text-white">
+                                        <i class="fas fa-times"></i>
+                                    </div>
+                                    <div>
+                                        <div class="small text-muted font-weight-semibold">Data Bermasalah (Error)</div>
+                                        <div class="font-weight-bold text-danger" style="font-size: 18px;">
+                                            <span id="statCountError">0</span> Siswa
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Opsi Penanganan Data Duplikat --}}
+                        <div class="p-3 bg-light border rounded mb-3" style="border-radius: 8px;">
+                            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                                <div>
+                                    <strong class="text-dark small d-block mb-1">
+                                        <i class="fas fa-cog text-muted mr-1"></i> Opsi Penanganan untuk NIS yang Sudah Ada di Database:
+                                    </strong>
+                                    <div class="custom-control custom-radio custom-control-inline mr-3">
+                                        <input type="radio" id="duplicateActionSkip" name="duplicateAction" class="custom-control-input" value="skip" checked>
+                                        <label class="custom-control-label small font-weight-semibold" for="duplicateActionSkip" style="cursor: pointer;">
+                                            Lewati data yang sudah ada (Rekomendasi &mdash; Data lama tetap aman)
+                                        </label>
+                                    </div>
+                                    <div class="custom-control custom-radio custom-control-inline">
+                                        <input type="radio" id="duplicateActionUpdate" name="duplicateAction" class="custom-control-input" value="update">
+                                        <label class="custom-control-label small font-weight-semibold" for="duplicateActionUpdate" style="cursor: pointer;">
+                                            Perbarui data nama &amp; kelas pada NIS tersebut
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Filter Tabs & Search --}}
+                        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2">
+                            <div class="d-flex align-items-center gap-1" id="previewFilterTabs">
+                                <button type="button" class="filter-tab-btn active" data-filter="all">Semua (<span id="tabCountAll">0</span>)</button>
+                                <button type="button" class="filter-tab-btn" data-filter="ready">Siap (<span id="tabCountReady">0</span>)</button>
+                                <button type="button" class="filter-tab-btn" data-filter="duplicate">Duplikat (<span id="tabCountDuplicate">0</span>)</button>
+                                <button type="button" class="filter-tab-btn" data-filter="error">Error (<span id="tabCountError">0</span>)</button>
+                            </div>
+                            <small class="text-muted font-italic">Periksa kembali data sebelum menekan konfirmasi import.</small>
+                        </div>
+
+                        {{-- Tabel Pratinjau Data --}}
+                        <div class="preview-table-container">
+                            <table class="table table-hover align-middle mb-0" id="previewTable">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 50px;" class="text-center">No</th>
+                                        <th style="width: 140px;">NIS</th>
+                                        <th>Nama Siswa</th>
+                                        <th style="width: 140px;">Kelas</th>
+                                        <th style="width: 220px;">Status &amp; Keterangan</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="previewTableBody">
+                                    {{-- Baris diisi dinamis via JavaScript --}}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer bg-light py-2 px-4 justify-content-between">
+                        <button type="button" class="btn btn-batal-merah px-4" id="btnBackToUploadFromPreview">
+                            <i class="fas fa-arrow-left mr-1"></i> Ganti Berkas
+                        </button>
+                        <button type="button" class="btn btn-success font-weight-bold px-4" id="btnConfirmExecuteImport" style="border-radius: 8px; height: 38px;">
+                            <i class="fas fa-check-circle mr-1"></i> Konfirmasi &amp; Import (<span id="countImportFinal">0</span> Siswa)
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
     </div>
 
 @stop
@@ -1027,6 +1466,390 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         });
     }
+
+    /* =========================================================================
+       IMPORT DATA SISWA AJAX WORKFLOW
+       ========================================================================= */
+    let currentRawRows = [];
+    let currentParsedRows = [];
+    let currentSummary = { total: 0, ready: 0, duplicate: 0, error: 0 };
+    let selectedFile = null;
+
+    const modalImport = $('#modalImportSiswa');
+    const fileInput = document.getElementById('importFileInput');
+    const dropzone = document.getElementById('importDropzone');
+    const btnSubmitParse = document.getElementById('btnSubmitParse');
+    const selectedFileInfo = document.getElementById('selectedFileInfo');
+    const selectedFileName = document.getElementById('selectedFileName');
+    const selectedFileSize = document.getElementById('selectedFileSize');
+    const uploadError = document.getElementById('importUploadError');
+    const uploadErrorMessage = document.getElementById('importUploadErrorMessage');
+    const uploadLoading = document.getElementById('importUploadLoading');
+
+    // Drag & drop handlers
+    if (dropzone) {
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropzone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                dropzone.classList.add('dragover');
+            }, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropzone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                dropzone.classList.remove('dragover');
+            }, false);
+        });
+
+        dropzone.addEventListener('drop', (e) => {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            if (files.length > 0) {
+                handleFileSelected(files[0]);
+            }
+        });
+    }
+
+    if (fileInput) {
+        fileInput.addEventListener('change', function () {
+            if (this.files.length > 0) {
+                handleFileSelected(this.files[0]);
+            }
+        });
+    }
+
+    function handleFileSelected(file) {
+        selectedFile = file;
+        selectedFileName.textContent = file.name;
+        selectedFileSize.textContent = formatBytes(file.size);
+        selectedFileInfo.classList.remove('d-none');
+        uploadError.classList.add('d-none');
+        btnSubmitParse.disabled = false;
+    }
+
+    const btnRemoveFile = document.getElementById('btnRemoveFile');
+    if (btnRemoveFile) {
+        btnRemoveFile.addEventListener('click', function () {
+            selectedFile = null;
+            if (fileInput) fileInput.value = '';
+            selectedFileInfo.classList.add('d-none');
+            btnSubmitParse.disabled = true;
+        });
+    }
+
+    function formatBytes(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+
+    function switchStep(stepName) {
+        document.getElementById('importStepUpload').classList.add('d-none');
+        document.getElementById('importStepMapping').classList.add('d-none');
+        document.getElementById('importStepPreview').classList.add('d-none');
+
+        if (stepName === 'upload') {
+            document.getElementById('importStepUpload').classList.remove('d-none');
+        } else if (stepName === 'mapping') {
+            document.getElementById('importStepMapping').classList.remove('d-none');
+        } else if (stepName === 'preview') {
+            document.getElementById('importStepPreview').classList.remove('d-none');
+        }
+    }
+
+    // Tombol: Baca & Analisis Berkas
+    if (btnSubmitParse) {
+        btnSubmitParse.addEventListener('click', function () {
+            if (!selectedFile) return;
+
+            const formData = new FormData();
+            formData.append('file', selectedFile);
+            formData.append('_token', '{{ csrf_token() }}');
+
+            uploadLoading.classList.remove('d-none');
+            uploadError.classList.add('d-none');
+            btnSubmitParse.disabled = true;
+
+            fetch('{{ route("siswa.import.parse") }}', {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json',
+                },
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                uploadLoading.classList.add('d-none');
+                btnSubmitParse.disabled = false;
+
+                if (!data.success) {
+                    uploadErrorMessage.textContent = data.message || 'Gagal membaca berkas.';
+                    uploadError.classList.remove('d-none');
+                    return;
+                }
+
+                if (data.status === 'need_mapping') {
+                    renderMappingStep(data.headers, data.mapping, data.raw_rows);
+                    switchStep('mapping');
+                } else if (data.status === 'preview') {
+                    renderPreviewStep(data.summary, data.rows);
+                    switchStep('preview');
+                }
+            })
+            .catch(err => {
+                uploadLoading.classList.add('d-none');
+                btnSubmitParse.disabled = false;
+                uploadErrorMessage.textContent = 'Terjadi kesalahan saat mengunggah berkas: ' + err.message;
+                uploadError.classList.remove('d-none');
+            });
+        });
+    }
+
+    // Render Step 2: Mapping
+    function renderMappingStep(headers, currentMapping, rawRows) {
+        currentRawRows = rawRows;
+        const colNama = document.getElementById('mappingColNama');
+        const colNis = document.getElementById('mappingColNis');
+        const colKelas = document.getElementById('mappingColKelas');
+
+        [colNama, colNis, colKelas].forEach(select => {
+            select.innerHTML = '<option value="">-- Pilih Kolom Berkas --</option>';
+            headers.forEach((h, idx) => {
+                const opt = document.createElement('option');
+                opt.value = idx;
+                opt.textContent = `${h} (Kolom ${idx + 1})`;
+                select.appendChild(opt);
+            });
+        });
+
+        if (currentMapping.nama !== null) colNama.value = currentMapping.nama;
+        if (currentMapping.nis !== null) colNis.value = currentMapping.nis;
+        if (currentMapping.kelas !== null) colKelas.value = currentMapping.kelas;
+    }
+
+    // Submit Mapping
+    const btnApplyMapping = document.getElementById('btnApplyMapping');
+    if (btnApplyMapping) {
+        btnApplyMapping.addEventListener('click', function () {
+            const colNama = document.getElementById('mappingColNama').value;
+            const colNis = document.getElementById('mappingColNis').value;
+            const colKelas = document.getElementById('mappingColKelas').value;
+
+            if (colNama === '' || colNis === '' || colKelas === '') {
+                alert('Silakan pilih semua pemetaan kolom (Nama, NIS, dan Kelas).');
+                return;
+            }
+
+            btnApplyMapping.disabled = true;
+            btnApplyMapping.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Menerapkan...';
+
+            fetch('{{ route("siswa.import.mapping") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify({
+                    raw_rows: currentRawRows,
+                    mapping: {
+                        nama: parseInt(colNama),
+                        nis: parseInt(colNis),
+                        kelas: parseInt(colKelas),
+                    }
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                btnApplyMapping.disabled = false;
+                btnApplyMapping.innerHTML = '<i class="fas fa-arrow-right mr-1"></i> Terapkan & Lanjutkan ke Pratinjau';
+
+                if (!data.success) {
+                    alert(data.message || 'Gagal menerapkan pemetaan.');
+                    return;
+                }
+
+                renderPreviewStep(data.summary, data.rows);
+                switchStep('preview');
+            })
+            .catch(err => {
+                btnApplyMapping.disabled = false;
+                btnApplyMapping.innerHTML = '<i class="fas fa-arrow-right mr-1"></i> Terapkan & Lanjutkan ke Pratinjau';
+                alert('Terjadi kesalahan: ' + err.message);
+            });
+        });
+    }
+
+    // Render Step 3: Preview
+    function renderPreviewStep(summary, rows) {
+        currentSummary = summary;
+        currentParsedRows = rows;
+
+        document.getElementById('statCountReady').textContent = summary.ready;
+        document.getElementById('statCountDuplicate').textContent = summary.duplicate;
+        document.getElementById('statCountError').textContent = summary.error;
+
+        document.getElementById('tabCountAll').textContent = summary.total;
+        document.getElementById('tabCountReady').textContent = summary.ready;
+        document.getElementById('tabCountDuplicate').textContent = summary.duplicate;
+        document.getElementById('tabCountError').textContent = summary.error;
+
+        updateFinalImportCount();
+        renderTableRows('all');
+    }
+
+    function updateFinalImportCount() {
+        const dupAction = document.querySelector('input[name="duplicateAction"]:checked')?.value || 'skip';
+        let count = currentSummary.ready;
+        if (dupAction === 'update') {
+            count += currentSummary.duplicate;
+        }
+        document.getElementById('countImportFinal').textContent = count;
+    }
+
+    // Radio duplicate action change
+    document.querySelectorAll('input[name="duplicateAction"]').forEach(radio => {
+        radio.addEventListener('change', updateFinalImportCount);
+    });
+
+    function renderTableRows(filter) {
+        const tbody = document.getElementById('previewTableBody');
+        tbody.innerHTML = '';
+
+        const filtered = currentParsedRows.filter(row => {
+            if (filter === 'all') return true;
+            return row.status === filter;
+        });
+
+        if (filtered.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="5" class="text-center py-4 text-muted">
+                        Tidak ada data pada kategori ini.
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+
+        filtered.forEach((row, idx) => {
+            const tr = document.createElement('tr');
+
+            let badgeHtml = '';
+            if (row.status === 'ready') {
+                badgeHtml = '<span class="status-badge-ready"><i class="fas fa-check-circle"></i> Siap Diimport</span>';
+            } else if (row.status === 'duplicate') {
+                badgeHtml = `<span class="status-badge-duplicate" title="Data di database: ${escapeHtml(row.existing_nama || '')}"><i class="fas fa-exclamation-triangle"></i> NIS Sudah Ada</span>`;
+            } else {
+                const errText = escapeHtml(row.errors.join(', '));
+                badgeHtml = `<span class="status-badge-error" title="${errText}"><i class="fas fa-times-circle"></i> ${errText}</span>`;
+            }
+
+            tr.innerHTML = `
+                <td class="text-center text-muted">${row.index}</td>
+                <td><strong>${escapeHtml(row.nis || '-')}</strong></td>
+                <td>${escapeHtml(row.nama || '-')}</td>
+                <td><span class="badge badge-light border text-dark">${escapeHtml(row.kelas || '-')}</span></td>
+                <td>${badgeHtml}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    function escapeHtml(text) {
+        if (!text) return '';
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    // Filter tab clicks
+    document.querySelectorAll('#previewFilterTabs .filter-tab-btn').forEach(btn => {
+        btn.addEventListener('click', function () {
+            document.querySelectorAll('#previewFilterTabs .filter-tab-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            renderTableRows(this.getAttribute('data-filter'));
+        });
+    });
+
+    // Navigation back buttons
+    const btnBackToUploadFromMapping = document.getElementById('btnBackToUploadFromMapping');
+    if (btnBackToUploadFromMapping) {
+        btnBackToUploadFromMapping.addEventListener('click', () => switchStep('upload'));
+    }
+
+    const btnBackToUploadFromPreview = document.getElementById('btnBackToUploadFromPreview');
+    if (btnBackToUploadFromPreview) {
+        btnBackToUploadFromPreview.addEventListener('click', () => switchStep('upload'));
+    }
+
+    // Eksekusi Konfirmasi Import
+    const btnConfirmExecuteImport = document.getElementById('btnConfirmExecuteImport');
+    if (btnConfirmExecuteImport) {
+        btnConfirmExecuteImport.addEventListener('click', function () {
+            const dupAction = document.querySelector('input[name="duplicateAction"]:checked')?.value || 'skip';
+            const finalCount = parseInt(document.getElementById('countImportFinal').textContent) || 0;
+
+            if (finalCount === 0) {
+                alert('Tidak ada data siswa yang dapat diimport. Pastikan terdapat data yang valid atau aktifkan opsi perbarui data.');
+                return;
+            }
+
+            if (!confirm(`Konfirmasi import: Anda akan mengimport/memproses ${finalCount} data siswa ke database. Lanjutkan?`)) {
+                return;
+            }
+
+            btnConfirmExecuteImport.disabled = true;
+            btnConfirmExecuteImport.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Menyimpan ke Database...';
+
+            fetch('{{ route("siswa.import.confirm") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify({
+                    rows: currentParsedRows,
+                    duplicate_action: dupAction,
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (!data.success) {
+                    btnConfirmExecuteImport.disabled = false;
+                    btnConfirmExecuteImport.innerHTML = '<i class="fas fa-check-circle mr-1"></i> Konfirmasi & Import';
+                    alert(data.message || 'Gagal mengimport data.');
+                    return;
+                }
+
+                // Sukses -> tutup modal dan reload halaman agar data terbaru langsung tampil
+                modalImport.modal('hide');
+                window.location.reload();
+            })
+            .catch(err => {
+                btnConfirmExecuteImport.disabled = false;
+                btnConfirmExecuteImport.innerHTML = '<i class="fas fa-check-circle mr-1"></i> Konfirmasi & Import';
+                alert('Terjadi kesalahan saat menyimpan data: ' + err.message);
+            });
+        });
+    }
+
+    // Reset modal saat ditutup
+    modalImport.on('hidden.bs.modal', function () {
+        switchStep('upload');
+        selectedFile = null;
+        if (fileInput) fileInput.value = '';
+        selectedFileInfo.classList.add('d-none');
+        btnSubmitParse.disabled = true;
+        uploadError.classList.add('d-none');
+    });
 });
 </script>
 @stop

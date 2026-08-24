@@ -48,9 +48,11 @@
 
 <body>
 
-    <h2>LAPORAN BUKU KAS UMUM</h2>
-    <div class="subtitle">
-        Seluruh Pemasukan & Pengeluaran
+    <div style="text-align: center; margin-bottom: 15px;">
+        <h2 style="margin: 0 0 2px 0; font-size: 15px;">SMK MUHAMMADIYAH MARGASARI</h2>
+        <p style="margin: 0 0 8px 0; font-size: 10px; color: #555;">Jl. Raya Margasari, Kec. Margasari, Kab. Tegal</p>
+        <h3 style="margin: 0; font-size: 13px;">LAPORAN BUKU KAS UMUM</h3>
+        <p style="margin: 2px 0 0; font-size: 11px; color: #666;">Seluruh Pemasukan &amp; Pengeluaran</p>
     </div>
 
     <table>

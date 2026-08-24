@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Pembayaran;
 use App\Models\Siswa;
 use App\Models\TahunAjaran;
+use App\Services\SiswaImportService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -12,9 +13,157 @@ class SiswaController extends Controller
 {
     public function index()
     {
+        $taAktif = $this->getTahunAjaranAktif();
+        $tahunAjaranNama = $taAktif ? $taAktif->nama : $this->tahunAjaranSaatIni();
         $siswa = Siswa::orderBy('nama')->get();
 
-        return view('siswa.index', compact('siswa'));
+        return view('siswa.index', compact('siswa', 'tahunAjaranNama'));
+    }
+
+    /**
+     * Unduh template resmi import siswa
+     */
+    public function downloadTemplate(SiswaImportService $importService)
+    {
+        return $importService->downloadTemplate();
+    }
+
+    /**
+     * Parse berkas yang diunggah dan kembalikan pratinjau / kebutuhan mapping
+     */
+    public function parseImport(Request $request, SiswaImportService $importService)
+    {
+        $request->validate([
+            'file' => 'required|file|max:10240',
+        ], [
+            'file.required' => 'Silakan pilih berkas data siswa yang akan diimport.',
+            'file.file'     => 'Berkas yang diunggah tidak valid.',
+            'file.max'      => 'Ukuran berkas maksimal adalah 10 MB.',
+        ]);
+
+        $file = $request->file('file');
+        $ext = strtolower($file->getClientOriginalExtension());
+        $allowed = ['xlsx', 'xls', 'csv', 'docx', 'txt', 'pdf'];
+
+        if (!in_array($ext, $allowed)) {
+            return response()->json([
+                'success' => false,
+                'message' => "Format berkas .{$ext} tidak didukung. Silakan gunakan format: .xlsx, .xls, .csv, .docx, .txt, atau .pdf.",
+            ], 422);
+        }
+
+        try {
+            $parsed = $importService->parseFile($file);
+
+            // Jika kolom belum terdeteksi lengkap, minta admin memetakan kolom
+            if ($parsed['requires_mapping'] ?? false) {
+                return response()->json([
+                    'success'  => true,
+                    'status'   => 'need_mapping',
+                    'headers'  => $parsed['headers'],
+                    'mapping'  => $parsed['mapping'],
+                    'raw_rows' => $parsed['rows'],
+                    'message'  => 'Kolom tidak dapat dikenali secara otomatis. Silakan lakukan pemetaan kolom.',
+                ]);
+            }
+
+            // Validasi baris data terhadap database
+            $validated = $importService->validateRows($parsed['rows']);
+
+            return response()->json([
+                'success' => true,
+                'status'  => 'preview',
+                'summary' => $validated['summary'],
+                'rows'    => $validated['rows'],
+            ]);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 422);
+        }
+    }
+
+    /**
+     * Terapkan pemetaan kolom manual dan kembalikan pratinjau
+     */
+    public function applyMapping(Request $request, SiswaImportService $importService)
+    {
+        $request->validate([
+            'raw_rows' => 'required|array',
+            'mapping'  => 'required|array',
+        ]);
+
+        try {
+            $mappedRows = $importService->applyMapping($request->input('raw_rows'), $request->input('mapping'));
+            $validated = $importService->validateRows($mappedRows);
+
+            return response()->json([
+                'success' => true,
+                'status'  => 'preview',
+                'summary' => $validated['summary'],
+                'rows'    => $validated['rows'],
+            ]);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 422);
+        }
+    }
+
+    /**
+     * Konfirmasi dan eksekusi import siswa dengan Database Transaction
+     */
+    public function confirmImport(Request $request, SiswaImportService $importService)
+    {
+        $request->validate([
+            'rows'             => 'required|array',
+            'duplicate_action' => 'nullable|string|in:skip,update',
+        ], [
+            'rows.required' => 'Tidak ada data siswa untuk diimport.',
+        ]);
+
+        $rows = $request->input('rows');
+        $duplicateAction = $request->input('duplicate_action', 'skip');
+
+        try {
+            $result = $importService->executeImport($rows, $duplicateAction);
+
+            $msgParts = [];
+            if ($result['imported'] > 0) {
+                $msgParts[] = "{$result['imported']} siswa baru berhasil ditambahkan";
+            }
+            if ($result['updated'] > 0) {
+                $msgParts[] = "{$result['updated']} siswa berhasil diperbarui";
+            }
+            if ($result['skipped'] > 0) {
+                $msgParts[] = "{$result['skipped']} data dilewati";
+            }
+
+            $successMsg = !empty($msgParts)
+                ? 'Import berhasil: ' . implode(', ', $msgParts) . '.'
+                : 'Tidak ada data baru yang diimport.';
+
+            if ($request->wantsJson() || $request->ajax()) {
+                return response()->json([
+                    'success' => true,
+                    'result'  => $result,
+                    'message' => $successMsg,
+                ]);
+            }
+
+            return redirect()->route('siswa.index')->with('success', $successMsg);
+        } catch (\Throwable $e) {
+            if ($request->wantsJson() || $request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Gagal mengimport data: ' . $e->getMessage(),
+                ], 500);
+            }
+
+            return redirect()->route('siswa.index')->with('error', 'Gagal mengimport data: ' . $e->getMessage());
+        }
     }
 
     public function create()
