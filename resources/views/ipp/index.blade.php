@@ -377,8 +377,8 @@
         }
 
         .val-terbayar {
-            color: #16a34a;
-            font-weight: 700;
+            color: #16a34a !important;
+            font-weight: 700 !important;
         }
 
         .val-sisa-active {
@@ -391,31 +391,47 @@
             font-weight: 400;
         }
 
-        /* 5. Status Badges (Kompak Tetap 1 Baris) */
+        /* 5. Status Badges (Dinamis Bulanan, Kompak & Rapi) */
         .badge-status-lunas {
             background: #dcfce7;
             border: 1px solid #86efac;
             color: #15803d;
-            font-size: 9.5px;
+            font-size: 10px;
             font-weight: 600;
             border-radius: 999px;
-            padding: 1.5px 4.5px;
+            padding: 2.5px 7px;
             display: inline-flex;
             align-items: center;
             white-space: nowrap !important;
+            gap: 3.5px;
         }
 
         .badge-status-belum {
             background: #fef2f2;
             border: 1px solid #fecaca;
             color: #dc2626;
-            font-size: 9.5px;
+            font-size: 10px;
             font-weight: 600;
             border-radius: 999px;
-            padding: 1.5px 4.5px;
+            padding: 2.5px 7px;
             display: inline-flex;
             align-items: center;
             white-space: nowrap !important;
+            gap: 3.5px;
+        }
+
+        .badge-status-neutral {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            color: #64748b;
+            font-size: 10px;
+            font-weight: 600;
+            border-radius: 999px;
+            padding: 2.5px 7px;
+            display: inline-flex;
+            align-items: center;
+            white-space: nowrap !important;
+            gap: 3.5px;
         }
 
         /* 6. Action Buttons */
@@ -797,7 +813,7 @@
                             Sisa (Rp)
                             <i class="fas fa-sort sort-icon"></i>
                         </th>
-                        <th style="width: 66px;" class="text-center">Status</th>
+                        <th style="min-width: 125px;" class="text-center">Status</th>
                         <th style="width: 82px;" class="text-center">Aksi</th>
                     </tr>
                 </thead>
@@ -809,7 +825,8 @@
                             $sisaTerbawa = max($terbawaAwal - $terbayar, 0);
                             $totalTagihan = (float) $item->target + $terbawaAwal;
                             $sisa = max($totalTagihan - $terbayar, 0);
-                            $isLunas = ($sisa <= 0 && $totalTagihan > 0);
+                            $isLunasPenuh = ($sisa <= 0 && $totalTagihan > 0);
+                            $ippStatus = $item->statusIpp();
                         @endphp
                         <tr
                             data-nis="{{ $item->siswa->nis ?? '' }}"
@@ -878,17 +895,12 @@
                                 @endif
                             </td>
 
-                            {{-- 9. Status --}}
+                            {{-- 9. Status (Dinamis Diperbarui Tiap Bulan) --}}
                             <td class="text-center">
-                                @if($isLunas)
-                                    <span class="badge-status-lunas">
-                                        <i class="fas fa-check-circle mr-1"></i> Lunas
-                                    </span>
-                                @else
-                                    <span class="badge-status-belum">
-                                        <i class="fas fa-clock mr-1"></i> Belum Lunas
-                                    </span>
-                                @endif
+                                <span class="{{ $ippStatus['badge_class'] }}">
+                                    <i class="{{ $ippStatus['icon'] }}"></i>
+                                    <span>{{ $ippStatus['status_text'] }}</span>
+                                </span>
                             </td>
 
                             {{-- 10. Aksi (Interactive Soft Tonal: Hijau, Kuning, Merah) --}}
@@ -901,7 +913,7 @@
                                             data-toggle="tooltip"
                                             data-target="#modalBayar{{ $item->id }}"
                                             onclick="$('#modalBayar{{ $item->id }}').modal('show')"
-                                            {{ $isLunas ? 'disabled' : '' }}>
+                                            {{ $isLunasPenuh ? 'disabled' : '' }}>
                                         <i class="fas fa-money-bill-wave"></i>
                                     </button>
 
