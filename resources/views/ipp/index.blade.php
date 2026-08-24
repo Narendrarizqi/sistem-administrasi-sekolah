@@ -392,32 +392,44 @@
         }
 
         /* 5. Status Badges (Dinamis Bulanan, Kompak & Rapi) */
-        .badge-status-lunas {
-            background: #dcfce7;
-            border: 1px solid #86efac;
-            color: #15803d;
-            font-size: 10px;
-            font-weight: 600;
-            border-radius: 999px;
-            padding: 2.5px 7px;
-            display: inline-flex;
-            align-items: center;
+        .badge-status-lunas,
+        .table .badge-status-lunas {
+            background-color: #eff6ff !important;
+            border: 1px solid #bfdbfe !important;
+            color: #1d4ed8 !important;
+            font-size: 10px !important;
+            font-weight: 600 !important;
+            border-radius: 999px !important;
+            padding: 2.5px 7px !important;
+            display: inline-flex !important;
+            align-items: center !important;
             white-space: nowrap !important;
-            gap: 3.5px;
+            gap: 3.5px !important;
         }
 
-        .badge-status-belum {
-            background: #fef2f2;
-            border: 1px solid #fecaca;
-            color: #dc2626;
-            font-size: 10px;
-            font-weight: 600;
-            border-radius: 999px;
-            padding: 2.5px 7px;
-            display: inline-flex;
-            align-items: center;
+        .badge-status-lunas *,
+        .table .badge-status-lunas * {
+            color: #1d4ed8 !important;
+        }
+
+        .badge-status-belum,
+        .table .badge-status-belum {
+            background-color: #fef2f2 !important;
+            border: 1px solid #fecaca !important;
+            color: #dc2626 !important;
+            font-size: 10px !important;
+            font-weight: 600 !important;
+            border-radius: 999px !important;
+            padding: 2.5px 7px !important;
+            display: inline-flex !important;
+            align-items: center !important;
             white-space: nowrap !important;
-            gap: 3.5px;
+            gap: 3.5px !important;
+        }
+
+        .badge-status-belum *,
+        .table .badge-status-belum * {
+            color: #dc2626 !important;
         }
 
         .badge-status-neutral {
@@ -519,11 +531,12 @@
         }
 
         /* 7. Modals Scoped */
-        .modal-header-payment {
-            background: #16a34a !important; /* Solid hijau tanpa gradasi */
+        .modal-header-payment,
+        .modal-header-clean {
+            background: #16a34a !important; /* Solid hijau */
             color: #ffffff !important;
-            border-top-left-radius: calc(0.5rem - 1px);
-            border-top-right-radius: calc(0.5rem - 1px);
+            border-top-left-radius: 14px !important;
+            border-top-right-radius: 14px !important;
             padding: 16px 20px;
             border-bottom: none !important;
         }
@@ -534,10 +547,19 @@
         .modal-header-payment i,
         .modal-header-payment span,
         .modal-header-payment button,
-        .modal-header-payment .close {
+        .modal-header-payment .close,
+        .modal-header-clean .modal-title,
+        .modal-header-clean .modal-title *,
+        .modal-header-clean h5,
+        .modal-header-clean i,
+        .modal-header-clean span,
+        .modal-header-clean button,
+        .modal-header-clean .close {
             color: #ffffff !important;
             opacity: 1 !important;
             text-shadow: none !important;
+            font-size: 16px !important;
+            font-weight: 700 !important;
         }
 
         /* Tombol Tutup / Batal / Kembali Solid Merah dengan Animasi Interaktif */
@@ -582,51 +604,6 @@
             color: #ffffff !important;
             transform: translateY(1px) !important;
             box-shadow: 0 1px 3px rgba(220, 38, 38, 0.25) !important;
-        }
-
-        /* Tombol Cetak Bukti Modal */
-        #btnCetakBukti,
-        .btn-cetak-bukti-modal {
-            background-color: #16a34a !important;
-            border: 1px solid #16a34a !important;
-            color: #ffffff !important;
-            font-size: 13px !important;
-            font-weight: 600 !important;
-            border-radius: 8px !important;
-            padding: 8px 22px !important;
-            height: 38px !important;
-            display: inline-flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            box-shadow: 0 2px 6px rgba(22, 163, 74, 0.2) !important;
-            transition: transform 0.18s ease, background-color 0.18s ease, box-shadow 0.18s ease !important;
-            cursor: pointer;
-            text-decoration: none !important;
-        }
-
-        #btnCetakBukti *,
-        .btn-cetak-bukti-modal * {
-            color: #ffffff !important;
-        }
-
-        #btnCetakBukti:hover,
-        #btnCetakBukti:focus,
-        .btn-cetak-bukti-modal:hover,
-        .btn-cetak-bukti-modal:focus {
-            background-color: #15803d !important;
-            border-color: #15803d !important;
-            color: #ffffff !important;
-            transform: translateY(-1px) !important;
-            box-shadow: 0 6px 16px rgba(22, 163, 74, 0.35) !important;
-        }
-
-        #btnCetakBukti:active,
-        .btn-cetak-bukti-modal:active {
-            background-color: #166534 !important;
-            border-color: #166534 !important;
-            color: #ffffff !important;
-            transform: translateY(1px) !important;
-            box-shadow: 0 1px 3px rgba(22, 163, 74, 0.25) !important;
         }
 
         .payment-mode-box {
@@ -755,24 +732,6 @@
                             placeholder="Cari NIS atau nama siswa..."
                         >
                     </div>
-
-                    {{-- Filter Tahun Ajaran --}}
-                    @if(isset($daftarTahunAjaran) && $daftarTahunAjaran->isNotEmpty())
-                        <form action="{{ route('ipp.index') }}" method="GET" class="d-inline-flex m-0">
-                            <select
-                                name="tahun_ajaran_id"
-                                class="ipp-select-ta"
-                                onchange="this.form.submit()"
-                                title="Pilih Tahun Ajaran"
-                            >
-                                @foreach($daftarTahunAjaran as $ta)
-                                    <option value="{{ $ta->id }}" {{ $selectedTa && $selectedTa->id == $ta->id ? 'selected' : '' }}>
-                                        T.A. {{ $ta->nama }}{{ $ta->is_active ? ' (Aktif)' : '' }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </form>
-                    @endif
                 </div>
 
                 {{-- Button Tambah Tagihan --}}
@@ -857,49 +816,48 @@
 
                             {{-- 4. Target (Netral Dark) --}}
                             <td class="text-right text-end font-num val-target">
-                                Rp {{ number_format($item->target, 0, ',', '.') }}
+                                {{ number_format($item->target, 0, ',', '.') }}
                             </td>
 
                             {{-- 5. Terbawa (Tahun Lalu - berkurang saat dibayar) --}}
                             <td class="text-right text-end font-num">
                                 @if($sisaTerbawa > 0)
                                     <div class="val-terbawa-active">
-                                        Rp {{ number_format($sisaTerbawa, 0, ',', '.') }}
+                                        {{ number_format($sisaTerbawa, 0, ',', '.') }}
                                     </div>
                                     <span class="sub-terbawa-tag" title="Sisa tagihan belum lunas dari tahun sebelumnya">
                                         Thn lalu
                                     </span>
                                 @else
-                                    <span class="val-terbawa-zero">Rp 0</span>
+                                    <span class="val-terbawa-zero">0</span>
                                 @endif
                             </td>
 
                             {{-- 6. Total Tagihan (Prominent Bold Dark) --}}
                             <td class="text-right text-end font-num val-total-tagihan">
-                                Rp {{ number_format($totalTagihan, 0, ',', '.') }}
+                                {{ number_format($totalTagihan, 0, ',', '.') }}
                             </td>
 
                             {{-- 7. Terbayar (Hijau) --}}
                             <td class="text-right text-end font-num val-terbayar">
-                                Rp {{ number_format($terbayar, 0, ',', '.') }}
+                                {{ number_format($terbayar, 0, ',', '.') }}
                             </td>
 
                             {{-- 8. Sisa (Merah bila ada sisa) --}}
                             <td class="text-right text-end font-num">
                                 @if($sisa > 0)
                                     <span class="val-sisa-active">
-                                        Rp {{ number_format($sisa, 0, ',', '.') }}
+                                        {{ number_format($sisa, 0, ',', '.') }}
                                     </span>
                                 @else
-                                    <span class="val-sisa-zero">Rp 0</span>
+                                    <span class="val-sisa-zero">0</span>
                                 @endif
                             </td>
 
                             {{-- 9. Status (Dinamis Diperbarui Tiap Bulan) --}}
                             <td class="text-center">
                                 <span class="{{ $ippStatus['badge_class'] }}">
-                                    <i class="{{ $ippStatus['icon'] }}"></i>
-                                    <span>{{ $ippStatus['status_text'] }}</span>
+                                    {{ $ippStatus['status_text'] }}
                                 </span>
                             </td>
 
@@ -917,13 +875,14 @@
                                         <i class="fas fa-money-bill-wave"></i>
                                     </button>
 
-                                    {{-- Tombol 2: Edit (Kuning) --}}
-                                    <a href="{{ route('ipp.edit', $item->id) }}"
-                                       class="btn-act-edit"
-                                       title="Edit Data Tagihan"
-                                       data-toggle="tooltip">
+                                    {{-- Tombol 2: Edit (Kuning) Modal Popup --}}
+                                    <button type="button"
+                                            class="btn-act-edit"
+                                            title="Edit Data Tagihan"
+                                            data-toggle="modal"
+                                            data-target="#modalEditIpp{{ $item->id }}">
                                         <i class="fas fa-pen"></i>
-                                    </a>
+                                    </button>
 
                                     {{-- Tombol 3: Hapus (Merah) --}}
                                     <button type="button"
@@ -1136,6 +1095,16 @@
             $totalTagihanItem = (float) $item->target + $terbawaItem;
             $sisaItem = max($totalTagihanItem - $terbayarItem, 0);
             $sisaTerbawaItem = max($terbawaItem - $terbayarItem, 0);
+            $ippStatusItem = $item->statusIpp();
+            $tagihanBulanIniItem = $ippStatusItem['tagihan_bulan_ini'] ?? 0;
+            $tunggakanBulanItem = $ippStatusItem['tunggakan_bulan'] ?? 0;
+            $tarifBulananItem = $ippStatusItem['tarif_bulanan'] ?? 0;
+            $bulanIndoList = [
+                1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
+                5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
+                9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'
+            ];
+            $namaBulanSekarang = ($bulanIndoList[(int)\Carbon\Carbon::now()->format('n')] ?? 'Agustus') . ' ' . \Carbon\Carbon::now()->format('Y');
         @endphp
 
         {{-- MODAL BAYAR --}}
@@ -1174,13 +1143,62 @@
                                         <div class="font-weight-bold text-success font-num">Rp {{ number_format($terbayarItem, 0, ',', '.') }}</div>
                                     </div>
                                     <div class="col-md-3 col-6">
-                                        <div class="text-muted small">Sisa Tagihan</div>
+                                        <div class="text-muted small">Sisa Tagihan Total</div>
                                         <div class="font-weight-bold text-danger font-num" style="font-size: 17px;">
                                             Rp {{ number_format($sisaItem, 0, ',', '.') }}
                                         </div>
                                     </div>
                                 </div>
                             </div>
+
+                            {{-- Keterangan Tagihan Yang Perlu Dibayarkan Bulan Ini --}}
+                            @if($sisaItem <= 0)
+                                <div class="alert alert-success py-2 px-3 mb-3 d-flex align-items-center justify-content-between" style="border-radius: 8px;">
+                                    <div>
+                                        <i class="fas fa-check-circle mr-1 text-success"></i>
+                                        Seluruh tagihan IPP tahun ajaran ini sudah <strong>LUNAS</strong>.
+                                    </div>
+                                    <span class="badge badge-success px-3 py-1 font-weight-bold">Lunas</span>
+                                </div>
+                            @elseif($tagihanBulanIniItem > 0)
+                                <div class="alert alert-info py-2 px-3 mb-3" style="border-radius: 8px; background: #f0fdf4; border: 1.5px solid #86efac; color: #166534;">
+                                    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                                        <div>
+                                            <i class="fas fa-calendar-alt mr-1 text-success"></i>
+                                            <strong>Tagihan Yang Perlu Dibayarkan Bulan Ini ({{ $namaBulanSekarang }}):</strong>
+                                            @if($tunggakanBulanItem >= 2)
+                                                <span class="badge badge-danger ml-1 font-weight-bold">{{ $tunggakanBulanItem }} Bulan Belum Lunas</span>
+                                            @else
+                                                <span class="badge badge-warning text-dark ml-1 font-weight-bold">Bulan Ini Belum Lunas</span>
+                                            @endif
+                                        </div>
+                                        <div class="font-weight-bold text-success font-num" style="font-size: 17px;">
+                                            Rp {{ number_format($tagihanBulanIniItem, 0, ',', '.') }}
+                                        </div>
+                                    </div>
+                                    <div class="small mt-1 text-dark" style="font-size: 12px; line-height: 1.4;">
+                                        @if($tunggakanBulanItem == 1)
+                                            💡 Siswa perlu membayar <strong>Rp {{ number_format($tagihanBulanIniItem, 0, ',', '.') }}</strong> untuk melunasi tagihan IPP bulan <strong>{{ $namaBulanSekarang }}</strong>.
+                                        @elseif($tunggakanBulanItem >= 2)
+                                            💡 Siswa memiliki tunggakan {{ $tunggakanBulanItem }} bulan. Perlu membayar <strong>Rp {{ number_format($tagihanBulanIniItem, 0, ',', '.') }}</strong> untuk melunasi seluruh kewajiban hingga bulan <strong>{{ $namaBulanSekarang }}</strong>.
+                                        @endif
+                                        (Tarif IPP: Rp {{ number_format($tarifBulananItem, 0, ',', '.') }}/bulan{{ $sisaTerbawaItem > 0 ? ' + Sisa Tahun Lalu Rp ' . number_format($sisaTerbawaItem, 0, ',', '.') : '' }}).
+                                    </div>
+                                </div>
+                            @else
+                                <div class="alert alert-success py-2 px-3 mb-3" style="border-radius: 8px; background: #f0fdf4; border: 1px solid #bbf7d0; color: #166534;">
+                                    <div class="d-flex align-items-center justify-content-between">
+                                        <div>
+                                            <i class="fas fa-check-circle mr-1 text-success"></i>
+                                            Tagihan IPP hingga bulan <strong>{{ $namaBulanSekarang }}</strong> sudah <strong>LUNAS</strong>.
+                                        </div>
+                                        <span class="badge badge-status-lunas">Bulan Ini Lunas</span>
+                                    </div>
+                                    <div class="small mt-1 text-muted" style="font-size: 11.5px;">
+                                        Sisa tagihan tahun ini tersisa Rp {{ number_format($sisaItem, 0, ',', '.') }} untuk bulan-bulan berikutnya.
+                                    </div>
+                                </div>
+                            @endif
 
                             @if($sisaTerbawaItem > 0)
                                 <div class="alert alert-warning py-2 px-3 mb-3 small" style="border-radius: 8px;">
@@ -1206,16 +1224,28 @@
                                         </div>
                                         <input type="number"
                                                name="nominal"
+                                               id="nominalInputModal{{ $item->id }}"
                                                class="form-control font-weight-bold text-success font-num"
                                                max="{{ $sisaItem }}"
                                                min="1"
+                                               value=""
                                                placeholder="Masukkan nominal pembayaran..."
                                                style="border-radius: 0 8px 8px 0;"
                                                required>
                                     </div>
-                                    <small class="form-text text-muted">
-                                        Maksimal pembayaran: Rp {{ number_format($sisaItem, 0, ',', '.') }}
-                                    </small>
+                                    <div class="d-flex justify-content-between align-items-center mt-1 flex-wrap gap-1">
+                                        <small class="form-text text-muted mb-0">
+                                            Maksimal pembayaran 1 tahun: <strong>Rp {{ number_format($sisaItem, 0, ',', '.') }}</strong>
+                                        </small>
+                                        @if($tagihanBulanIniItem > 0)
+                                            <button type="button"
+                                                    class="btn btn-xs btn-outline-success font-weight-bold mt-1"
+                                                    style="border-radius: 6px; font-size: 11px;"
+                                                    onclick="document.getElementById('nominalInputModal{{ $item->id }}').value = '{{ (int)$tagihanBulanIniItem }}';">
+                                                <i class="fas fa-coins mr-1"></i> Isi Tagihan Bulan Ini (Rp {{ number_format($tagihanBulanIniItem, 0, ',', '.') }})
+                                            </button>
+                                        @endif
+                                    </div>
                                 </div>
                             </div>
 
@@ -1287,7 +1317,7 @@
                                                     <th width="30" class="text-center">No</th>
                                                     <th>Tanggal</th>
                                                     <th class="text-center" style="background:#e8f5e9; color:#1b5e20;">Bulan Dibayar</th>
-                                                    <th>Nominal</th>
+                                                    <th>Nominal (Rp)</th>
                                                     <th>Metode</th>
                                                     <th>Bukti</th>
                                                     <th>Keterangan</th>
@@ -1302,10 +1332,10 @@
                                                         <td class="text-center">
                                                             <span class="badge badge-status-lunas" style="font-size: 10.5px;">
                                                                 <i class="fas fa-calendar-check mr-1 text-success"></i>
-                                                                {{ \Carbon\Carbon::parse($detail->tanggal)->translatedFormat('F Y') }}
+                                                                {{ ($bulanIndoList[(int)\Carbon\Carbon::parse($detail->tanggal)->format('n')] ?? \Carbon\Carbon::parse($detail->tanggal)->format('F')) . ' ' . \Carbon\Carbon::parse($detail->tanggal)->format('Y') }}
                                                             </span>
                                                         </td>
-                                                        <td class="font-weight-bold text-success font-num">Rp {{ number_format($detail->nominal, 0, ',', '.') }}</td>
+                                                        <td class="font-weight-bold text-success font-num">{{ number_format($detail->nominal, 0, ',', '.') }}</td>
                                                         <td><span class="badge badge-light border">{{ $detail->metode }}</span></td>
                                                         <td class="text-center">
                                                             @if($detail->bukti)
@@ -1342,6 +1372,111 @@
                             </button>
                             <button type="submit" class="btn btn-success px-4 font-weight-bold" style="border-radius: 8px; height: 38px;" {{ $sisaItem <= 0 ? 'disabled' : '' }}>
                                 <i class="fas fa-money-bill-wave mr-1"></i> Simpan Pembayaran
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        {{-- MODAL EDIT DATA TAGIHAN IPP (Identical clean style to Siswa modal) --}}
+        <div class="modal fade" id="modalEditIpp{{ $item->id }}" tabindex="-1" role="dialog" aria-labelledby="modalEditIppLabel{{ $item->id }}" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                <div class="modal-content border-0 shadow" style="border-radius: 14px; overflow: hidden;">
+                    <div class="modal-header modal-header-clean">
+                        <h5 class="modal-title font-weight-bold text-white" id="modalEditIppLabel{{ $item->id }}" style="font-size: 16px;">
+                            <i class="fas fa-user-edit mr-2 text-white"></i>
+                            Edit Data Tagihan IPP
+                        </h5>
+                        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+
+                    <form action="{{ route('ipp.update', $item->id) }}" method="POST" id="formModalEditIpp{{ $item->id }}">
+                        @csrf
+                        @method('PUT')
+
+                        <div class="modal-body p-4">
+
+                            {{-- Section 1: Siswa --}}
+                            <div class="form-group row mb-3">
+                                <label for="modal_edit_siswa_{{ $item->id }}" class="col-sm-3 col-form-label font-weight-bold">
+                                    Siswa <span class="text-danger">*</span>
+                                </label>
+                                <div class="col-sm-9">
+                                    <select name="siswa_id"
+                                            id="modal_edit_siswa_{{ $item->id }}"
+                                            class="form-control @error('siswa_id') is-invalid @enderror"
+                                            style="border-radius: 8px;"
+                                            required>
+                                        @foreach($allSiswaIpp as $itemSiswa)
+                                            <option value="{{ $itemSiswa->id }}" {{ old('siswa_id', $item->siswa_id) == $itemSiswa->id ? 'selected' : '' }}>
+                                                {{ $itemSiswa->nis }} - {{ $itemSiswa->nama }} ({{ $itemSiswa->kelas }})
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @error('siswa_id')
+                                        <div class="invalid-feedback">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            {{-- Section 2: Info Terbawa Tahun Lalu --}}
+                            @if((float) ($item->belum_lunas ?? 0) > 0)
+                                <div class="alert alert-warning py-2 px-3 mb-3 small" style="border-radius: 8px;">
+                                    <div class="font-weight-bold">
+                                        <i class="fas fa-history mr-1"></i> Tagihan Terbawa Tahun Lalu: Rp {{ number_format($item->belum_lunas, 0, ',', '.') }}
+                                    </div>
+                                    <div class="text-muted mt-1" style="font-size: 11.5px;">
+                                        Tagihan terbawa ini tetap tersimpan dan otomatis ditambahkan ke target baru. Total tagihan siswa = Target Baru + Tagihan Terbawa.
+                                    </div>
+                                </div>
+                            @endif
+
+                            {{-- Section 3: Target Pembayaran --}}
+                            <div class="form-group row mb-3">
+                                <label for="modal_edit_target_{{ $item->id }}" class="col-sm-3 col-form-label font-weight-bold">
+                                    Target Pembayaran (Tahun Ini) <span class="text-danger">*</span>
+                                </label>
+                                <div class="col-sm-9">
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text font-weight-bold bg-light">Rp</span>
+                                        </div>
+                                        <input type="number"
+                                               name="target"
+                                               id="modal_edit_target_{{ $item->id }}"
+                                               class="form-control font-weight-bold text-success font-num"
+                                               value="{{ old('target', (int)$item->target) }}"
+                                               min="0"
+                                               step="1000"
+                                               placeholder="Masukkan target pembayaran..."
+                                               style="border-radius: 0 8px 8px 0;"
+                                               required>
+                                    </div>
+                                    <small class="form-text text-muted">
+                                        Tarif per bulan otomatis = Target / 12 (Rp {{ number_format($item->target / 12, 0, ',', '.') }}/bulan).
+                                    </small>
+                                    @error('target')
+                                        <div class="invalid-feedback d-block">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="modal-footer bg-light py-2 px-4 justify-content-end">
+                            <button type="button" class="btn btn-batal-merah px-4 mr-2" data-dismiss="modal">
+                                Batal
+                            </button>
+                            <button type="submit" class="btn btn-success px-4 font-weight-bold" style="border-radius: 8px; height: 38px;">
+                                <i class="fas fa-save mr-1"></i>
+                                Simpan Perubahan
                             </button>
                         </div>
                     </form>
@@ -1404,19 +1539,16 @@
                     <div class="modal-body text-center py-4 px-4">
                         <i class="fas fa-receipt text-success fa-3x mb-3"></i>
                         <h5 class="font-weight-bold text-dark">Pembayaran IPP berhasil dicatat!</h5>
-                        <p class="text-muted mb-0">Apakah Anda ingin mencetak bukti kuitansi pembayaran sekarang?</p>
+                        <p class="text-muted mb-0">Apakah Anda ingin mencetak kuitansi pembayaran sekarang?</p>
                     </div>
-                    <div class="modal-footer justify-content-center bg-light py-3">
-                        <button type="button"
-                                class="btn btn-tutup-merah px-4 mr-2"
-                                data-dismiss="modal">
-                            Tutup
-                        </button>
+                    <div class="modal-footer bg-light justify-content-center py-3">
+                        <button type="button" class="btn btn-batal-merah px-4 mr-2" data-dismiss="modal">Tutup</button>
                         <a href="{{ route('bukti.cetak', session('last_detail_id')) }}"
                            target="_blank"
-                           class="btn btn-success font-weight-bold px-4"
+                           class="btn btn-success px-4 font-weight-bold"
+                           style="border-radius: 8px; height: 38px; color: #ffffff !important;"
                            id="btnCetakBukti">
-                            <i class="fas fa-print mr-1"></i> Cetak Bukti Pembayaran
+                            <i class="fas fa-print mr-1" style="color: #ffffff !important;"></i> <span style="color: #ffffff !important;">Cetak Kuitansi</span>
                         </a>
                     </div>
                 </div>

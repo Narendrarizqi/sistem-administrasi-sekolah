@@ -93,6 +93,16 @@ $totalTagihan = (float) $pembayaran->target + $terbawa;
 $sisa = max($totalTagihan - $terbayar, 0);
 $persen = $totalTagihan > 0 ? min(($terbayar / $totalTagihan) * 100, 100) : 0;
 $sisaTerbawa = max($terbawa - $terbayar, 0);
+$ippStatus = $pembayaran->statusIpp();
+$tagihanBulanIni = $ippStatus['tagihan_bulan_ini'] ?? 0;
+$tunggakanBulan = $ippStatus['tunggakan_bulan'] ?? 0;
+$tarifBulanan = $ippStatus['tarif_bulanan'] ?? 0;
+$bulanIndoList = [
+    1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
+    5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
+    9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'
+];
+$namaBulanSekarang = ($bulanIndoList[(int)\Carbon\Carbon::now()->format('n')] ?? 'Agustus') . ' ' . \Carbon\Carbon::now()->format('Y');
 @endphp
 
 <div class="row">
@@ -119,7 +129,7 @@ $sisaTerbawa = max($terbawa - $terbayar, 0);
                     </tr>
                     <tr>
                         <th class="text-muted">Kelas</th>
-                        <td><span class="badge badge-light border">{{ $pembayaran->siswa->kelas->nama_kelas ?? '-' }}</span></td>
+                        <td><span class="badge badge-light border">{{ $pembayaran->siswa->kelas->nama_kelas ?? $pembayaran->siswa->kelas ?? '-' }}</span></td>
                     </tr>
                     <tr>
                         <th class="text-muted">Tahun Ajaran</th>
@@ -153,10 +163,32 @@ $sisaTerbawa = max($terbawa - $terbayar, 0);
                     </div>
 
                     <div class="d-flex justify-content-between pt-2 border-top">
-                        <span class="font-weight-bold">Sisa Tagihan</span>
+                        <span class="font-weight-bold">Sisa Tagihan Total</span>
                         <span class="font-weight-bold text-danger" style="font-size: 16px;">Rp {{ number_format($sisa, 0, ',', '.') }}</span>
                     </div>
                 </div>
+
+                {{-- Alert Tagihan Bulan Ini --}}
+                @if($sisa <= 0)
+                    <div class="alert alert-success py-2 px-3 mt-3 mb-0 small">
+                        <i class="fas fa-check-circle mr-1"></i>
+                        Seluruh tagihan IPP tahun ajaran ini sudah <strong>LUNAS</strong>.
+                    </div>
+                @elseif($tagihanBulanIni > 0)
+                    <div class="alert alert-info py-2 px-3 mt-3 mb-0 small" style="background: #f0fdf4; border: 1.5px solid #86efac; color: #166534;">
+                        <div class="d-flex align-items-center justify-content-between flex-wrap">
+                            <span><i class="fas fa-calendar-alt mr-1 text-success"></i> <strong>Tagihan Bulan Ini ({{ $namaBulanSekarang }}):</strong></span>
+                            <strong class="text-success font-num" style="font-size: 15px;">Rp {{ number_format($tagihanBulanIni, 0, ',', '.') }}</strong>
+                        </div>
+                        <div class="mt-1" style="font-size: 11.5px;">
+                            💡 Perlu membayar <strong>Rp {{ number_format($tagihanBulanIni, 0, ',', '.') }}</strong> untuk melunasi kewajiban IPP hingga bulan ini.
+                        </div>
+                    </div>
+                @else
+                    <div class="alert alert-success py-2 px-3 mt-3 mb-0 small" style="background: #f0fdf4; border: 1px solid #bbf7d0; color: #166534;">
+                        <i class="fas fa-check-circle mr-1"></i> Tagihan bulan <strong>{{ $namaBulanSekarang }}</strong> sudah <strong>Lunas</strong>.
+                    </div>
+                @endif
 
                 @if($terbawa > 0 && $sisaTerbawa > 0)
                     <div class="alert alert-warning py-2 px-3 mt-3 mb-0 small">
@@ -208,16 +240,28 @@ $sisaTerbawa = max($terbawa - $terbayar, 0);
                                 </div>
                                 <input type="number"
                                        name="nominal"
-                                       class="form-control font-weight-bold text-success"
+                                       id="nominalInputPage"
+                                       class="form-control font-weight-bold text-success font-num"
                                        max="{{ $sisa }}"
                                        min="1"
+                                       value=""
                                        placeholder="Masukkan nominal pembayaran..."
                                        required
                                        {{ $sisa <= 0 ? 'disabled' : '' }}>
                             </div>
-                            <small class="form-text text-muted">
-                                Sisa tagihan saat ini: Rp {{ number_format($sisa, 0, ',', '.') }}
-                            </small>
+                            <div class="d-flex justify-content-between align-items-center mt-1 flex-wrap gap-1">
+                                <small class="form-text text-muted mb-0">
+                                    Sisa tagihan total saat ini: <strong>Rp {{ number_format($sisa, 0, ',', '.') }}</strong>
+                                </small>
+                                @if($tagihanBulanIni > 0)
+                                    <button type="button"
+                                            class="btn btn-xs btn-outline-success font-weight-bold mt-1"
+                                            style="border-radius: 6px; font-size: 11px;"
+                                            onclick="document.getElementById('nominalInputPage').value = '{{ (int)$tagihanBulanIni }}';">
+                                        <i class="fas fa-coins mr-1"></i> Isi Tagihan Bulan Ini (Rp {{ number_format($tagihanBulanIni, 0, ',', '.') }})
+                                    </button>
+                                @endif
+                            </div>
                         </div>
                     </div>
 
@@ -304,7 +348,7 @@ $sisaTerbawa = max($terbawa - $terbayar, 0);
                     <tr>
                         <th width="50">No</th>
                         <th>Tanggal</th>
-                        <th>Nominal</th>
+                        <th>Nominal (Rp)</th>
                         <th>Metode</th>
                         <th>Bukti Transfer</th>
                         <th>Keterangan</th>
@@ -317,7 +361,7 @@ $sisaTerbawa = max($terbawa - $terbayar, 0);
                             <td>{{ $loop->iteration }}</td>
                             <td>{{ \Carbon\Carbon::parse($detail->tanggal)->format('d/m/Y') }}</td>
                             <td class="font-weight-bold text-success">
-                                Rp {{ number_format($detail->nominal, 0, ',', '.') }}
+                                {{ number_format($detail->nominal, 0, ',', '.') }}
                             </td>
                             <td>
                                 <span class="badge badge-light border">{{ $detail->metode }}</span>
@@ -365,21 +409,16 @@ $sisaTerbawa = max($terbawa - $terbayar, 0);
             <div class="modal-body text-center py-4">
                 <i class="fas fa-receipt text-success fa-3x mb-3"></i>
                 <h5>Pembayaran IPP berhasil dicatat!</h5>
-                <p class="text-muted mb-0">Apakah Anda ingin mencetak bukti pembayaran sekarang?</p>
+                <p class="text-muted mb-0">Apakah Anda ingin mencetak kuitansi pembayaran sekarang?</p>
             </div>
-            <div class="modal-footer justify-content-center">
-                <button type="button"
-                        class="btn btn-tutup-merah px-4 mr-2"
-                        data-dismiss="modal"
-                        style="background-color: #dc2626 !important; border: 1px solid #dc2626 !important; color: #ffffff !important; font-weight: 600; border-radius: 8px;">
-                    Tutup
-                </button>
+            <div class="modal-footer bg-light justify-content-center py-3">
+                <button type="button" class="btn btn-batal-merah px-4 mr-2" data-dismiss="modal">Tutup</button>
                 <a href="{{ route('bukti.cetak', session('last_detail_id')) }}"
                    target="_blank"
-                   class="btn btn-success font-weight-bold px-4 text-white"
-                   id="btnCetakBukti"
-                   style="background-color: #16a34a !important; border: 1px solid #16a34a !important; color: #ffffff !important; font-weight: 600; border-radius: 8px;">
-                    <i class="fas fa-print mr-1 text-white" style="color: #ffffff !important;"></i> Cetak Bukti Pembayaran
+                   class="btn btn-success px-4 font-weight-bold"
+                   style="border-radius: 8px; height: 38px; color: #ffffff !important;"
+                   id="btnCetakBukti">
+                    <i class="fas fa-print mr-1" style="color: #ffffff !important;"></i> <span style="color: #ffffff !important;">Cetak Kuitansi</span>
                 </a>
             </div>
         </div>

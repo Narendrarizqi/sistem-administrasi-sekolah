@@ -12,6 +12,7 @@ class DetailPembayaran extends Model
         'pembayaran_id',
         'tanggal',
         'nominal',
+        'kategori',
         'metode',
         'keterangan',
         'bukti',

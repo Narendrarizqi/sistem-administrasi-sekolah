@@ -16,6 +16,9 @@ class Pembayaran extends Model
         'tahun_ajaran_id',
         'tahun_ajaran',
         'target',
+        'target_uts',
+        'target_uas',
+        'target_ujian',
         'status',
         'belum_lunas',
         'carryover_from_pembayaran_id',
@@ -114,21 +117,31 @@ class Pembayaran extends Model
 
         if ($totalTagihan <= 0) {
             return [
-                'status_text'     => 'Belum Ada Tagihan',
-                'badge_class'     => 'badge-status-neutral',
-                'icon'            => 'fas fa-minus-circle',
-                'is_lunas'        => false,
-                'tunggakan_bulan' => 0,
+                'status_text'          => 'Belum Ada Tagihan',
+                'badge_class'          => 'badge-status-neutral',
+                'icon'                 => 'fas fa-minus-circle',
+                'is_lunas'             => false,
+                'tunggakan_bulan'      => 0,
+                'bulan_berjalan'       => 0,
+                'bulan_terbayar'       => 0,
+                'tarif_bulanan'        => 0,
+                'tagihan_bulan_ini'    => 0,
+                'keterangan_bulan_ini' => 'Belum ada tagihan',
             ];
         }
 
         if ($sisa <= 0) {
             return [
-                'status_text'     => 'Lunas',
-                'badge_class'     => 'badge-status-lunas',
-                'icon'            => 'fas fa-check-circle',
-                'is_lunas'        => true,
-                'tunggakan_bulan' => 0,
+                'status_text'          => 'Lunas',
+                'badge_class'          => 'badge-status-lunas',
+                'icon'                 => 'fas fa-check-circle',
+                'is_lunas'             => true,
+                'tunggakan_bulan'      => 0,
+                'bulan_berjalan'       => 12,
+                'bulan_terbayar'       => 12,
+                'tarif_bulanan'        => $target > 0 ? ($target / 12) : 0,
+                'tagihan_bulan_ini'    => 0,
+                'keterangan_bulan_ini' => 'Sudah lunas penuh 1 tahun',
             ];
         }
 
@@ -169,31 +182,150 @@ class Pembayaran extends Model
         }
 
         $tunggakanBulan = max(0, $bulanBerjalan - $bulanTerbayar);
+        $kewajibanSdSekarang = ($bulanBerjalan * $tarifBulanan) + $terbawa;
+        $tagihanBulanIni = max(0, min($sisa, $kewajibanSdSekarang - $terbayar));
+        
+        $bulanIndoList = [
+            1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
+            5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
+            9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'
+        ];
+        $namaBulan = ($bulanIndoList[(int)$now->format('n')] ?? 'Agustus') . ' ' . $now->format('Y');
 
         if ($tunggakanBulan == 0) {
             return [
-                'status_text'     => 'Bulan Ini Lunas',
-                'badge_class'     => 'badge-status-lunas',
-                'icon'            => 'fas fa-check-circle',
-                'is_lunas'        => true,
-                'tunggakan_bulan' => 0,
+                'status_text'          => 'Bulan Ini Lunas',
+                'badge_class'          => 'badge-status-lunas',
+                'icon'                 => 'fas fa-check-circle',
+                'is_lunas'             => true,
+                'tunggakan_bulan'      => 0,
+                'bulan_berjalan'       => $bulanBerjalan,
+                'bulan_terbayar'       => $bulanTerbayar,
+                'tarif_bulanan'        => $tarifBulanan,
+                'tagihan_bulan_ini'    => $tagihanBulanIni,
+                'keterangan_bulan_ini' => "Bulan {$namaBulan} sudah Lunas",
             ];
         } elseif ($tunggakanBulan == 1) {
             return [
-                'status_text'     => 'Bulan Ini Belum Lunas',
-                'badge_class'     => 'badge-status-belum',
-                'icon'            => 'fas fa-clock',
-                'is_lunas'        => false,
-                'tunggakan_bulan' => 1,
+                'status_text'          => 'Bulan Ini Belum Lunas',
+                'badge_class'          => 'badge-status-belum',
+                'icon'                 => 'fas fa-clock',
+                'is_lunas'             => false,
+                'tunggakan_bulan'      => 1,
+                'bulan_berjalan'       => $bulanBerjalan,
+                'bulan_terbayar'       => $bulanTerbayar,
+                'tarif_bulanan'        => $tarifBulanan,
+                'tagihan_bulan_ini'    => $tagihanBulanIni,
+                'keterangan_bulan_ini' => 'Rp ' . number_format($tagihanBulanIni, 0, ',', '.') . " (Bulan {$namaBulan})",
             ];
         } else {
             return [
-                'status_text'     => "{$tunggakanBulan} Bulan Belum Lunas",
-                'badge_class'     => 'badge-status-belum',
-                'icon'            => 'fas fa-exclamation-circle',
-                'is_lunas'        => false,
-                'tunggakan_bulan' => $tunggakanBulan,
+                'status_text'          => "{$tunggakanBulan} Bulan Belum Lunas",
+                'badge_class'          => 'badge-status-belum',
+                'icon'                 => 'fas fa-exclamation-circle',
+                'is_lunas'             => false,
+                'tunggakan_bulan'      => $tunggakanBulan,
+                'bulan_berjalan'       => $bulanBerjalan,
+                'bulan_terbayar'       => $bulanTerbayar,
+                'tarif_bulanan'        => $tarifBulanan,
+                'tagihan_bulan_ini'    => $tagihanBulanIni,
+                'keterangan_bulan_ini' => 'Rp ' . number_format($tagihanBulanIni, 0, ',', '.') . " ({$tunggakanBulan} bulan s/d {$namaBulan})",
             ];
         }
+    }
+
+    /**
+     * Accessor untuk target_uts: jika target > 0 dan subtagihan belum diset, bagi rata
+     */
+    public function getTargetUtsAttribute($value): float
+    {
+        $val = (float) ($value ?? 0);
+        if ($val == 0 && (float) ($this->attributes['target_uas'] ?? 0) == 0 && (float) ($this->attributes['target_ujian'] ?? 0) == 0 && (float) ($this->attributes['target'] ?? 0) > 0) {
+            return round((float) $this->attributes['target'] / 3, 2);
+        }
+        return $val;
+    }
+
+    public function getTargetUasAttribute($value): float
+    {
+        $val = (float) ($value ?? 0);
+        if ($val == 0 && (float) ($this->attributes['target_uts'] ?? 0) == 0 && (float) ($this->attributes['target_ujian'] ?? 0) == 0 && (float) ($this->attributes['target'] ?? 0) > 0) {
+            return round((float) $this->attributes['target'] / 3, 2);
+        }
+        return $val;
+    }
+
+    public function getTargetUjianAttribute($value): float
+    {
+        $val = (float) ($value ?? 0);
+        if ($val == 0 && (float) ($this->attributes['target_uts'] ?? 0) == 0 && (float) ($this->attributes['target_uas'] ?? 0) == 0 && (float) ($this->attributes['target'] ?? 0) > 0) {
+            $uts = round((float) $this->attributes['target'] / 3, 2);
+            return (float) $this->attributes['target'] - ($uts * 2);
+        }
+        return $val;
+    }
+
+    /**
+     * Hitung nominal terbayar untuk sub-kategori KI (UTS, UAS, Ujian)
+     */
+    public function terbayarKiKategori(string $kategori): float
+    {
+        if ($this->relationLoaded('detailPembayaran')) {
+            return (float) $this->detailPembayaran->where('kategori', $kategori)->sum('nominal');
+        }
+        return (float) $this->detailPembayaran()->where('kategori', $kategori)->sum('nominal');
+    }
+
+    /**
+     * Sisa tagihan per sub-kategori KI (UTS, UAS, Ujian)
+     */
+    public function sisaKiKategori(string $kategori): float
+    {
+        $target = 0;
+        if ($kategori === 'UTS') {
+            $target = (float) $this->target_uts;
+        } elseif ($kategori === 'UAS') {
+            $target = (float) $this->target_uas;
+        } elseif ($kategori === 'Ujian') {
+            $target = (float) $this->target_ujian;
+        }
+        $terbayar = $this->terbayarKiKategori($kategori);
+        return max($target - $terbayar, 0);
+    }
+
+    /**
+     * Status 3 sub-tagihan KI (UTS, UAS, Ujian)
+     */
+    public function statusKiSubtagihan(): array
+    {
+        $kategoriList = ['UTS', 'UAS', 'Ujian'];
+        $results = [];
+
+        foreach ($kategoriList as $kat) {
+            $target = 0;
+            if ($kat === 'UTS') {
+                $target = (float) $this->target_uts;
+            } elseif ($kat === 'UAS') {
+                $target = (float) $this->target_uas;
+            } elseif ($kat === 'Ujian') {
+                $target = (float) $this->target_ujian;
+            }
+
+            $terbayar = $this->terbayarKiKategori($kat);
+            $sisa = max($target - $terbayar, 0);
+            $isLunas = ($target > 0 && $sisa <= 0);
+
+            $results[$kat] = [
+                'kategori'    => $kat,
+                'target'      => $target,
+                'terbayar'    => $terbayar,
+                'sisa'        => $sisa,
+                'is_lunas'    => $isLunas,
+                'status_text' => $isLunas ? 'Lunas' : 'Belum Lunas',
+                'badge_class' => $isLunas ? 'badge-status-lunas' : 'badge-status-belum',
+            ];
+        }
+
+        return $results;
     }
 }

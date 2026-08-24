@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Bukti Pembayaran</title>
+    <title>Kuitansi Pembayaran</title>
     <style>
         * { box-sizing: border-box; }
         body {
@@ -115,8 +115,8 @@
     </div>
 
     <div class="title">
-        <h1>BUKTI PEMBAYARAN</h1>
-        <p>No. Transaksi: DP-{{ str_pad($detail->id, 6, '0', STR_PAD_LEFT) }}</p>
+        <h1>KUITANSI PEMBAYARAN</h1>
+        <p>No. Kuitansi: KW-{{ str_pad($detail->id, 6, '0', STR_PAD_LEFT) }}</p>
     </div>
 
     <table class="info">
@@ -143,7 +143,7 @@
         <tr>
             <td class="label">Jenis Pembayaran</td>
             <td class="sep">:</td>
-            <td>{{ $pembayaran->jenisPembayaran->nama ?? '-' }}</td>
+            <td>{{ $pembayaran->jenisPembayaran->nama ?? '-' }} {{ $detail->kategori ? "({$detail->kategori})" : '' }}</td>
         </tr>
         <tr>
             <td class="label">Metode Pembayaran</td>

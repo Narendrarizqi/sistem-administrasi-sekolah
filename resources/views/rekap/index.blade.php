@@ -416,31 +416,42 @@
             font-weight: 400;
         }
 
-        /* Status Badges */
-        .badge-status-lunas {
-            background: #dcfce7;
-            border: 1px solid #86efac;
-            color: #15803d;
-            font-size: 11px;
-            font-weight: 600;
-            border-radius: 999px;
-            padding: 2.5px 8px;
-            display: inline-flex;
-            align-items: center;
-            white-space: nowrap;
+        .badge-status-lunas,
+        .table .badge-status-lunas {
+            background-color: #eff6ff !important;
+            border: 1px solid #bfdbfe !important;
+            color: #1d4ed8 !important;
+            font-size: 11px !important;
+            font-weight: 600 !important;
+            border-radius: 999px !important;
+            padding: 2.5px 8px !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            white-space: nowrap !important;
         }
 
-        .badge-status-belum {
-            background: #fef2f2;
-            border: 1px solid #fecaca;
-            color: #dc2626;
-            font-size: 11px;
-            font-weight: 600;
-            border-radius: 999px;
-            padding: 2.5px 8px;
-            display: inline-flex;
-            align-items: center;
-            white-space: nowrap;
+        .badge-status-lunas *,
+        .table .badge-status-lunas * {
+            color: #1d4ed8 !important;
+        }
+
+        .badge-status-belum,
+        .table .badge-status-belum {
+            background-color: #fef2f2 !important;
+            border: 1px solid #fecaca !important;
+            color: #dc2626 !important;
+            font-size: 11px !important;
+            font-weight: 600 !important;
+            border-radius: 999px !important;
+            padding: 2.5px 8px !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            white-space: nowrap !important;
+        }
+
+        .badge-status-belum *,
+        .table .badge-status-belum * {
+            color: #dc2626 !important;
         }
 
         .badge-status-none {

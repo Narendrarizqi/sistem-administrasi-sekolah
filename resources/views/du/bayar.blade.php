@@ -1,13 +1,19 @@
 @extends('adminlte::page')
 
-@section('title','Pembayaran Daftar Ulang')
+@section('title', 'Pembayaran Daftar Ulang')
 
 @section('css')
     <link rel="stylesheet" href="{{ asset('css/custom.css') }}">
     <style>
         .card-header-payment {
-            background: linear-gradient(135deg, #15803D, #16A34A);
-            color: #ffffff;
+            background: #16a34a !important;
+            color: #ffffff !important;
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
+        }
+        .card-header-payment .modal-title,
+        .card-header-payment h5 {
+            color: #ffffff !important;
         }
         .payment-mode-box {
             display: flex;
@@ -15,9 +21,9 @@
             align-items: center;
             flex-wrap: wrap;
             padding: 8px 12px;
-            background: #f8f9fa;
+            background: #f8fafc;
             border-radius: 8px;
-            border: 1px solid #e9ecef;
+            border: 1px solid #e2e8f0;
         }
         .payment-mode-box label {
             margin-bottom: 0;
@@ -25,7 +31,7 @@
             font-weight: 500;
         }
         .fee-info-box {
-            background: #f8f9fa;
+            background: #f8fafc;
             border: 1px solid #e2e8f0;
             border-radius: 8px;
             padding: 12px 16px;
@@ -54,7 +60,7 @@
             height: 40px;
         }
         .file-upload-label:hover {
-            border-color: #16A34A !important;
+            border-color: #16a34a !important;
             background: #f0fdf4;
         }
     </style>
@@ -63,7 +69,7 @@
 @section('content')
 
 @if(session('success'))
-    <div class="alert alert-success alert-dismissible fade show">
+    <div class="alert alert-success alert-dismissible fade show" style="border-radius: 10px;">
         <i class="fas fa-check-circle mr-1"></i>
         {{ session('success') }}
         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -73,9 +79,9 @@
 @endif
 
 @if($errors->any())
-    <div class="alert alert-danger alert-dismissible fade show">
+    <div class="alert alert-danger alert-dismissible fade show" style="border-radius: 10px;">
         <strong>Terjadi kesalahan:</strong>
-        <ul class="mb-0 mt-1">
+        <ul class="mb-0 mt-1 pl-3">
             @foreach($errors->all() as $err)
                 <li>{{ $err }}</li>
             @endforeach
@@ -99,7 +105,7 @@ $sisaTerbawa = max($terbawa - $terbayar, 0);
 
     {{-- INFORMASI SISWA & TAGIHAN --}}
     <div class="col-md-5">
-        <div class="card shadow-sm border-0 mb-4">
+        <div class="card shadow-sm border-0 mb-4" style="border-radius: 12px; overflow: hidden;">
             <div class="card-header card-header-payment py-3">
                 <h5 class="mb-0 font-weight-bold" style="font-size: 16px;">
                     <i class="fas fa-id-card mr-2"></i>
@@ -119,7 +125,7 @@ $sisaTerbawa = max($terbawa - $terbayar, 0);
                     </tr>
                     <tr>
                         <th class="text-muted">Kelas</th>
-                        <td><span class="badge badge-light border">{{ $pembayaran->siswa->kelas->nama_kelas ?? '-' }}</span></td>
+                        <td><span class="badge badge-light border">{{ $pembayaran->siswa->kelas->nama_kelas ?? $pembayaran->siswa->kelas ?? '-' }}</span></td>
                     </tr>
                     <tr>
                         <th class="text-muted">Tahun Ajaran</th>
@@ -153,13 +159,18 @@ $sisaTerbawa = max($terbawa - $terbayar, 0);
                     </div>
 
                     <div class="d-flex justify-content-between pt-2 border-top">
-                        <span class="font-weight-bold">Sisa Tagihan</span>
+                        <span class="font-weight-bold">Sisa Tagihan Total</span>
                         <span class="font-weight-bold text-danger" style="font-size: 16px;">Rp {{ number_format($sisa, 0, ',', '.') }}</span>
                     </div>
                 </div>
 
-                @if($terbawa > 0 && $sisaTerbawa > 0)
-                    <div class="alert alert-warning py-2 px-3 mt-3 mb-0 small">
+                @if($sisa <= 0)
+                    <div class="alert alert-success py-2 px-3 mt-3 mb-0 small" style="border-radius: 8px;">
+                        <i class="fas fa-check-circle mr-1 text-success"></i>
+                        Tagihan Daftar Ulang siswa ini sudah <strong>LUNAS</strong>.
+                    </div>
+                @elseif($terbawa > 0 && $sisaTerbawa > 0)
+                    <div class="alert alert-warning py-2 px-3 mt-3 mb-0 small" style="border-radius: 8px;">
                         <i class="fas fa-info-circle mr-1"></i>
                         Siswa memiliki <strong>tagihan terbawa tahun lalu</strong> sebesar <strong>Rp {{ number_format($sisaTerbawa, 0, ',', '.') }}</strong>. Pembayaran yang dimasukkan akan melunasi tagihan terbawa terlebih dahulu.
                     </div>
@@ -180,7 +191,7 @@ $sisaTerbawa = max($terbawa - $terbayar, 0);
 
     {{-- FORM INPUT PEMBAYARAN --}}
     <div class="col-md-7">
-        <div class="card shadow-sm border-0 mb-4">
+        <div class="card shadow-sm border-0 mb-4" style="border-radius: 12px; overflow: hidden;">
             <div class="card-header card-header-payment py-3">
                 <h5 class="mb-0 font-weight-bold" style="font-size: 16px;">
                     <i class="fas fa-coins mr-2"></i>
@@ -195,7 +206,7 @@ $sisaTerbawa = max($terbawa - $terbayar, 0);
                     <div class="form-group row mb-3">
                         <label class="col-sm-3 col-form-label font-weight-bold">Tanggal <span class="text-danger">*</span></label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control bg-light" value="{{ date('d/m/Y') }}" readonly>
+                            <input type="text" class="form-control bg-light font-num" value="{{ date('d/m/Y') }}" readonly style="border-radius: 8px;">
                         </div>
                     </div>
 
@@ -204,20 +215,33 @@ $sisaTerbawa = max($terbawa - $terbayar, 0);
                         <div class="col-sm-9">
                             <div class="input-group">
                                 <div class="input-group-prepend">
-                                    <span class="input-group-text font-weight-bold">Rp</span>
+                                    <span class="input-group-text font-weight-bold bg-light">Rp</span>
                                 </div>
                                 <input type="number"
                                        name="nominal"
-                                       class="form-control font-weight-bold text-success"
+                                       id="nominalInputDuPage"
+                                       class="form-control font-weight-bold text-success font-num"
                                        max="{{ $sisa }}"
                                        min="1"
+                                       value=""
                                        placeholder="Masukkan nominal pembayaran..."
+                                       style="border-radius: 0 8px 8px 0;"
                                        required
                                        {{ $sisa <= 0 ? 'disabled' : '' }}>
                             </div>
-                            <small class="form-text text-muted">
-                                Sisa tagihan saat ini: Rp {{ number_format($sisa, 0, ',', '.') }}
-                            </small>
+                            <div class="d-flex justify-content-between align-items-center mt-1 flex-wrap gap-1">
+                                <small class="form-text text-muted mb-0">
+                                    Sisa tagihan total: <strong>Rp {{ number_format($sisa, 0, ',', '.') }}</strong>
+                                </small>
+                                @if($sisa > 0)
+                                    <button type="button"
+                                            class="btn btn-xs btn-outline-success font-weight-bold mt-1"
+                                            style="border-radius: 6px; font-size: 11px;"
+                                            onclick="document.getElementById('nominalInputDuPage').value = '{{ (int)$sisa }}';">
+                                        <i class="fas fa-coins mr-1"></i> Bayar Lunas (Rp {{ number_format($sisa, 0, ',', '.') }})
+                                    </button>
+                                @endif
+                            </div>
                         </div>
                     </div>
 
@@ -267,6 +291,7 @@ $sisaTerbawa = max($terbawa - $terbayar, 0);
                             <textarea name="keterangan"
                                       class="form-control"
                                       rows="2"
+                                      style="border-radius: 8px;"
                                       placeholder="Catatan pembayaran (opsional)..."></textarea>
                         </div>
                     </div>
@@ -289,10 +314,10 @@ $sisaTerbawa = max($terbawa - $terbayar, 0);
 </div>
 
 {{-- RIWAYAT PEMBAYARAN --}}
-<div class="card shadow-sm border-0">
+<div class="card shadow-sm border-0" style="border-radius: 12px; overflow: hidden;">
     <div class="card-header bg-white border-bottom py-3">
         <h5 class="mb-0 font-weight-bold" style="font-size: 15px;">
-            <i class="fas fa-history mr-2 text-primary"></i>
+            <i class="fas fa-history mr-2 text-success"></i>
             Riwayat Pembayaran Daftar Ulang
         </h5>
     </div>
@@ -304,7 +329,7 @@ $sisaTerbawa = max($terbawa - $terbayar, 0);
                     <tr>
                         <th width="50">No</th>
                         <th>Tanggal</th>
-                        <th>Nominal</th>
+                        <th>Nominal (Rp)</th>
                         <th>Metode</th>
                         <th>Bukti Transfer</th>
                         <th>Keterangan</th>
@@ -317,7 +342,7 @@ $sisaTerbawa = max($terbawa - $terbayar, 0);
                             <td>{{ $loop->iteration }}</td>
                             <td>{{ \Carbon\Carbon::parse($detail->tanggal)->format('d/m/Y') }}</td>
                             <td class="font-weight-bold text-success">
-                                Rp {{ number_format($detail->nominal, 0, ',', '.') }}
+                                {{ number_format($detail->nominal, 0, ',', '.') }}
                             </td>
                             <td>
                                 <span class="badge badge-light border">{{ $detail->metode }}</span>
@@ -336,7 +361,8 @@ $sisaTerbawa = max($terbawa - $terbayar, 0);
                                 <a href="{{ route('bukti.cetak', $detail->id) }}"
                                    target="_blank"
                                    class="btn btn-sm btn-outline-primary"
-                                   title="Cetak Kuitansi">
+                                   title="Cetak Kuitansi"
+                                   style="border-radius: 4px;">
                                     <i class="fas fa-print"></i>
                                 </a>
                             </td>
@@ -357,23 +383,24 @@ $sisaTerbawa = max($terbawa - $terbayar, 0);
 @if(session('last_detail_id'))
 <div class="modal fade" id="modalCetakBukti" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content border-0 shadow">
+        <div class="modal-content border-0 shadow" style="border-radius: 14px; overflow: hidden;">
             <div class="modal-header card-header-payment">
-                <h5 class="modal-title font-weight-bold"><i class="fas fa-check-circle text-white mr-2"></i> Pembayaran Berhasil</h5>
+                <h5 class="modal-title font-weight-bold text-white"><i class="fas fa-check-circle text-white mr-2"></i> Pembayaran Berhasil</h5>
                 <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close"><span>&times;</span></button>
             </div>
-            <div class="modal-body text-center py-4">
+            <div class="modal-body text-center py-4 px-4">
                 <i class="fas fa-receipt text-success fa-3x mb-3"></i>
-                <h5>Pembayaran Daftar Ulang berhasil dicatat!</h5>
-                <p class="text-muted mb-0">Apakah Anda ingin mencetak bukti pembayaran sekarang?</p>
+                <h5 class="font-weight-bold">Pembayaran Daftar Ulang berhasil dicatat!</h5>
+                <p class="text-muted mb-0">Apakah Anda ingin mencetak kuitansi pembayaran sekarang?</p>
             </div>
-            <div class="modal-footer justify-content-center">
-                <button type="button" class="btn btn-secondary px-4 mr-2" data-dismiss="modal">Tutup</button>
+            <div class="modal-footer bg-light justify-content-center py-3">
+                <button type="button" class="btn btn-batal-merah px-4 mr-2" data-dismiss="modal">Tutup</button>
                 <a href="{{ route('bukti.cetak', session('last_detail_id')) }}"
                    target="_blank"
-                   class="btn btn-add px-4"
+                   class="btn btn-success px-4 font-weight-bold"
+                   style="border-radius: 8px; height: 38px; color: #ffffff !important;"
                    id="btnCetakBukti">
-                    <i class="fas fa-print mr-1"></i> Cetak Bukti Pembayaran
+                    <i class="fas fa-print mr-1" style="color: #ffffff !important;"></i> <span style="color: #ffffff !important;">Cetak Kuitansi</span>
                 </a>
             </div>
         </div>
