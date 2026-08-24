@@ -596,14 +596,15 @@
 
                                     <td class="col-aksi-cell">
                                         <div class="siswa-action-group">
-                                            <a
-                                                href="{{ route('siswa.edit', $item->id) }}"
+                                            <button
+                                                type="button"
                                                 class="btn-table-edit"
                                                 title="Edit Data Siswa"
-                                                data-toggle="tooltip"
+                                                data-toggle="modal"
+                                                data-target="#modalEditSiswa{{ $item->id }}"
                                             >
                                                 <i class="fas fa-pen"></i>
-                                            </a>
+                                            </button>
 
                                             <button
                                                 type="button"
@@ -628,15 +629,138 @@
                     <p class="text-muted small mb-3">
                         Silakan tambahkan data siswa aktif terlebih dahulu.
                     </p>
-                    <a href="{{ route('siswa.create') }}" class="btn-toolbar-tambah">
+                    <button type="button" class="btn-toolbar-tambah" data-toggle="modal" data-target="#modalTambahSiswa">
                         <i class="fas fa-plus"></i>
                         <span>Tambah Siswa Baru</span>
-                    </a>
+                    </button>
                 </div>
             @endif
 
         </div>
     </div>
+
+    {{-- MODAL EDIT DATA SISWA (Identical style to Modal Tambah Siswa) --}}
+    @foreach($siswa as $item)
+        <div class="modal fade" id="modalEditSiswa{{ $item->id }}" tabindex="-1" role="dialog" aria-labelledby="modalEditSiswaLabel{{ $item->id }}" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                <div class="modal-content border-0 shadow" style="border-radius: 14px; overflow: hidden;">
+                    <div class="modal-header modal-header-clean">
+                        <h5 class="modal-title font-weight-bold text-white" id="modalEditSiswaLabel{{ $item->id }}" style="font-size: 16px;">
+                            <i class="fas fa-user-edit mr-2 text-white"></i>
+                            Edit Data Siswa
+                        </h5>
+                        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+
+                    <form action="{{ route('siswa.update', $item->id) }}" method="POST" id="formModalEditSiswa{{ $item->id }}">
+                        @csrf
+                        @method('PUT')
+
+                        <div class="modal-body p-4">
+
+                            {{-- Section 1: Input NIS --}}
+                            <div class="form-group row mb-3">
+                                <label for="modal_edit_nis_{{ $item->id }}" class="col-sm-3 col-form-label font-weight-bold">
+                                    NIS <span class="text-danger">*</span>
+                                </label>
+                                <div class="col-sm-9">
+                                    <input
+                                        type="text"
+                                        name="nis"
+                                        id="modal_edit_nis_{{ $item->id }}"
+                                        class="form-control @error('nis') is-invalid @enderror"
+                                        value="{{ old('nis', $item->nis) }}"
+                                        placeholder="Masukkan Nomor Induk Siswa"
+                                        maxlength="30"
+                                        required
+                                        style="border-radius: 8px;"
+                                    >
+                                    @error('nis')
+                                        <div class="invalid-feedback">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            {{-- Section 2: Input Nama Siswa --}}
+                            <div class="form-group row mb-3">
+                                <label for="modal_edit_nama_{{ $item->id }}" class="col-sm-3 col-form-label font-weight-bold">
+                                    Nama Siswa <span class="text-danger">*</span>
+                                </label>
+                                <div class="col-sm-9">
+                                    <input
+                                        type="text"
+                                        name="nama"
+                                        id="modal_edit_nama_{{ $item->id }}"
+                                        class="form-control @error('nama') is-invalid @enderror"
+                                        value="{{ old('nama', $item->nama) }}"
+                                        placeholder="Masukkan nama lengkap siswa"
+                                        maxlength="255"
+                                        required
+                                        style="border-radius: 8px;"
+                                    >
+                                    @error('nama')
+                                        <div class="invalid-feedback">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            {{-- Section 3: Pilih Kelas --}}
+                            <div class="form-group row mb-2">
+                                <label for="modal_edit_kelas_{{ $item->id }}" class="col-sm-3 col-form-label font-weight-bold">
+                                    Kelas <span class="text-danger">*</span>
+                                </label>
+                                <div class="col-sm-9">
+                                    <select
+                                        name="kelas"
+                                        id="modal_edit_kelas_{{ $item->id }}"
+                                        class="form-control @error('kelas') is-invalid @enderror"
+                                        required
+                                        style="border-radius: 8px;"
+                                    >
+                                        <option value="" disabled>-- Pilih Kelas --</option>
+                                        <option value="X TKJ" {{ old('kelas', $item->kelas) == 'X TKJ' ? 'selected' : '' }}>X TKJ</option>
+                                        <option value="X TKR 1" {{ old('kelas', $item->kelas) == 'X TKR 1' ? 'selected' : '' }}>X TKR 1</option>
+                                        <option value="X TKR 2" {{ old('kelas', $item->kelas) == 'X TKR 2' ? 'selected' : '' }}>X TKR 2</option>
+                                        <option value="XI TKJ" {{ old('kelas', $item->kelas) == 'XI TKJ' ? 'selected' : '' }}>XI TKJ</option>
+                                        <option value="XI TKR 1" {{ old('kelas', $item->kelas) == 'XI TKR 1' ? 'selected' : '' }}>XI TKR 1</option>
+                                        <option value="XI TKR 2" {{ old('kelas', $item->kelas) == 'XI TKR 2' ? 'selected' : '' }}>XI TKR 2</option>
+                                        <option value="XII TKJ" {{ old('kelas', $item->kelas) == 'XII TKJ' ? 'selected' : '' }}>XII TKJ</option>
+                                        <option value="XII TKR 1" {{ old('kelas', $item->kelas) == 'XII TKR 1' ? 'selected' : '' }}>XII TKR 1</option>
+                                        <option value="XII TKR 2" {{ old('kelas', $item->kelas) == 'XII TKR 2' ? 'selected' : '' }}>XII TKR 2</option>
+                                        @if($item->kelas == 'Lulus')
+                                            <option value="Lulus" selected>Lulus</option>
+                                        @endif
+                                    </select>
+                                    @error('kelas')
+                                        <div class="invalid-feedback">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="modal-footer bg-light py-2 px-4 justify-content-end">
+                            <button type="button" class="btn btn-batal-merah px-4 mr-2" data-dismiss="modal">
+                                Batal
+                            </button>
+                            <button type="submit" class="btn btn-success px-4 font-weight-bold" style="border-radius: 8px; height: 38px;">
+                                <i class="fas fa-save mr-1"></i>
+                                Simpan Perubahan
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    @endforeach
 
     {{-- MODAL HAPUS SISWA (Cleanly Separated Outside Table) --}}
     @foreach($siswa as $item)
