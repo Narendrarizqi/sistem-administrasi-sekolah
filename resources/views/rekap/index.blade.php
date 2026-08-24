@@ -626,6 +626,17 @@
                                 </select>
                             </form>
                         @endif
+
+                        <a
+                            href="{{ route('rekap.cetak', ['tahun_ajaran_id' => $tahunAjaranId]) }}"
+                            target="_blank"
+                            class="btn btn-add-success btn-sm font-weight-bold d-inline-flex align-items-center"
+                            style="height: 38px; border-radius: 8px; gap: 6px; padding: 6px 14px;"
+                            title="Cetak Laporan Rekap Seluruh Siswa (PDF)"
+                        >
+                            <i class="fas fa-file-pdf"></i>
+                            <span>Cetak Rekap PDF</span>
+                        </a>
                     </div>
                 </div>
 
@@ -748,7 +759,7 @@
                                     <td class="text-center col-aksi">
                                         <div class="d-inline-flex align-items-center" style="gap: 4px;">
                                             <a
-                                                href="{{ route('rekap.cetak-siswa', $siswa->id) }}"
+                                                href="{{ route('rekap.cetak-siswa', $siswa->id) }}?tahun_ajaran_id={{ $tahunAjaranId }}"
                                                 target="_blank"
                                                 class="btn-act-pdf"
                                                 title="Cetak Laporan Tagihan (PDF)"

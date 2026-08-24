@@ -123,7 +123,7 @@
         <tr>
             <td class="label">Tanggal Pembayaran</td>
             <td class="sep">:</td>
-            <td>{{ \Carbon\Carbon::parse($detail->tanggal)->format('d F Y') }}</td>
+            <td>{{ \Carbon\Carbon::parse($detail->tanggal)->translatedFormat('d F Y') }}</td>
         </tr>
         <tr>
             <td class="label">NIS</td>
@@ -203,7 +203,7 @@
     </table>
 
     <p class="footer-note">
-        Dicetak pada {{ now()->format('d F Y, H:i') }} WIB — dokumen ini sah tanpa tanda tangan basah untuk keperluan administrasi internal.
+        Dicetak pada {{ now()->translatedFormat('d F Y, H:i') }} WIB — dokumen ini sah tanpa tanda tangan basah untuk keperluan administrasi internal.
     </p>
 
 </body>
