@@ -1247,9 +1247,6 @@
                         </div>
                     </div>
                     <div class="modal-footer bg-light py-2 px-4 justify-content-end">
-                        <button type="button" class="btn btn-batal-merah px-4 mr-2" data-dismiss="modal">
-                            Batal
-                        </button>
                         <form action="{{ route('pengeluaran.destroy', $item->id) }}" method="POST" class="d-inline">
                             @csrf
                             @method('DELETE')

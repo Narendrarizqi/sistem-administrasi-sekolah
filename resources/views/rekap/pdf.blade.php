@@ -2,188 +2,384 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Laporan Pembayaran</title>
+    <title>Laporan Rekap Pembayaran Seluruh Siswa - {{ $tahunAjaranNama }}</title>
     <style>
-        * { box-sizing: border-box; }
+        @page {
+            margin: 12mm 10mm 12mm 10mm;
+        }
+        * {
+            box-sizing: border-box;
+        }
         body {
             font-family: 'DejaVu Sans', sans-serif;
-            font-size: 11px;
-            color: #1E293B;
+            font-size: 9.5px;
+            color: #1e293b;
+            line-height: 1.35;
         }
-        .header {
+
+        /* 1. Header & Kop Surat */
+        .kop-table {
             width: 100%;
-            border-bottom: 2px solid #16A34A;
-            padding-bottom: 10px;
-            margin-bottom: 14px;
+            border-collapse: collapse;
+            border-bottom: 2px solid #16a34a;
+            padding-bottom: 6px;
+            margin-bottom: 10px;
         }
-        .header table {
-            width: 100%;
+        .kop-logo {
+            width: 48px;
+            vertical-align: middle;
+            text-align: left;
         }
-        .header .logo {
-            width: 60px;
+        .kop-logo img {
+            width: 44px;
+            height: 44px;
         }
-        .header .logo img {
-            width: 55px;
-            height: 55px;
-        }
-        .header .sekolah h2 {
-            margin: 0;
-            font-size: 15px;
-            color: #15803D;
-        }
-        .header .sekolah p {
-            margin: 2px 0 0;
-            font-size: 10px;
-            color: #64748B;
-        }
-        .title {
+        .kop-text {
+            vertical-align: middle;
             text-align: center;
-            margin: 10px 0 4px;
+            padding-right: 48px;
         }
-        .title h1 {
-            font-size: 14px;
+        .kop-instansi {
+            font-size: 8.5px;
+            font-weight: bold;
+            color: #475569;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin: 0;
+        }
+        .kop-sekolah {
+            font-size: 13.5px;
+            font-weight: bold;
+            color: #15803d;
+            margin: 1px 0;
+            letter-spacing: 0.5px;
+        }
+        .kop-alamat {
+            font-size: 7.5px;
+            color: #64748b;
+            margin: 0;
+        }
+
+        /* 2. Judul Laporan */
+        .doc-title {
+            text-align: center;
+            margin: 8px 0 10px 0;
+        }
+        .doc-title h1 {
+            font-size: 12.5px;
+            font-weight: bold;
+            color: #0f172a;
             margin: 0;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
-        .title p {
-            margin: 3px 0 0;
-            font-size: 10.5px;
-            color: #64748B;
+        .doc-title p {
+            font-size: 8.5px;
+            color: #64748b;
+            margin: 2px 0 0 0;
         }
-        table.data {
+
+        /* 3. Info Meta */
+        .info-card {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 12px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+            margin-bottom: 12px;
         }
-        table.data th {
-            background: #E7F7EE;
-            color: #15803D;
-            font-size: 10px;
-            text-transform: uppercase;
-            padding: 6px 5px;
-            border: 1px solid #CBD5E1;
-            text-align: left;
-        }
-        table.data td {
-            padding: 5px;
-            border: 1px solid #CBD5E1;
-            font-size: 10px;
+        .info-card td {
+            padding: 4px 8px;
+            font-size: 9px;
             vertical-align: top;
         }
-        table.data tbody tr:nth-child(even) {
-            background: #F8FAFC;
+        .info-label {
+            color: #64748b;
+            width: 18%;
         }
-        .text-right { text-align: right; }
+        .info-sep {
+            width: 2%;
+            color: #64748b;
+            text-align: center;
+        }
+        .info-val {
+            font-weight: bold;
+            color: #0f172a;
+            width: 30%;
+        }
+
+        /* 4. Tabel Data */
+        .table-data {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 10px;
+        }
+        .table-data th {
+            background-color: #f1f5f9;
+            color: #334155;
+            font-size: 8.5px;
+            font-weight: bold;
+            padding: 5px 6px;
+            border: 1px solid #cbd5e1;
+            text-align: left;
+            text-transform: uppercase;
+        }
+        .table-data td {
+            padding: 4.5px 6px;
+            border: 1px solid #cbd5e1;
+            font-size: 8.5px;
+            vertical-align: middle;
+        }
+        .table-data tfoot td {
+            font-weight: bold;
+            background-color: #f8fafc;
+        }
+
+        /* Alignment Utilities */
         .text-center { text-align: center; }
+        .text-right  { text-align: right; }
+        .text-left   { text-align: left; }
+
+        /* Status Colors */
         .status-lunas {
-            color: #15803D;
+            color: #15803d;
+            font-weight: bold;
+        }
+        .status-sebagian {
+            color: #b45309;
             font-weight: bold;
         }
         .status-belum {
-            color: #B91C1C;
+            color: #dc2626;
             font-weight: bold;
         }
-        .total-row td {
-            font-weight: bold;
-            background: #F1F5F9 !important;
+        .status-none {
+            color: #94a3b8;
         }
-        .footer-note {
-            margin-top: 18px;
+
+        /* Box Total */
+        .box-sisa {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 12px 0 14px 0;
+            border: 1.5px solid #16a34a;
+            background: #f0fdf4;
+            border-radius: 4px;
+            page-break-inside: avoid;
+        }
+        .box-sisa td {
+            padding: 8px 12px;
+            vertical-align: middle;
+        }
+        .box-sisa-label {
             font-size: 9.5px;
-            color: #94A3B8;
+            font-weight: bold;
+            color: #15803d;
+            text-transform: uppercase;
+        }
+        .box-sisa-sub {
+            font-size: 8px;
+            color: #166534;
+            margin-top: 1px;
+        }
+        .box-sisa-val {
+            font-size: 15px;
+            font-weight: bold;
+            color: #dc2626;
+            text-align: right;
+        }
+
+        /* Lembar Tanda Tangan */
+        .ttd-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+            page-break-inside: avoid;
+        }
+        .ttd-table td {
+            width: 50%;
+            vertical-align: top;
+            text-align: center;
+            font-size: 8.5px;
+        }
+        .ttd-space {
+            height: 48px;
+        }
+        .ttd-nama {
+            font-weight: bold;
+            text-decoration: underline;
+            color: #0f172a;
+        }
+
+        /* Footer Note */
+        .footer-note {
+            font-size: 7.5px;
+            color: #94a3b8;
+            margin-top: 12px;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 4px;
+            text-align: center;
         }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <table>
-            <tr>
-                <td class="logo">
-                    <img src="{{ public_path('images/logo.png') }}">
-                </td>
-                <td class="sekolah">
-                    <h2>SMK Muhammadiyah Margasari</h2>
-                    <p>Sistem Informasi Pembayaran Sekolah</p>
-                </td>
-            </tr>
-        </table>
+    {{-- 1. KOP SURAT SEKOLAH RESMI --}}
+    <table class="kop-table">
+        <tr>
+            <td class="kop-logo">
+                <img src="{{ public_path('images/logo.png') }}" alt="Logo">
+            </td>
+            <td class="kop-text">
+                <p class="kop-instansi">Pimpinan Cabang Muhammadiyah Margasari &bull; Majelis Dikdasmen</p>
+                <h2 class="kop-sekolah">SMK MUHAMMADIYAH MARGASARI</h2>
+                <p class="kop-alamat">Jl. Karanganyar Margasari, Kec. Margasari, Kab. Tegal, Jawa Tengah 52463 | Telp: (0283) 3467123</p>
+            </td>
+        </tr>
+    </table>
+
+    {{-- 2. JUDUL DOKUMEN --}}
+    <div class="doc-title">
+        <h1>LAPORAN REKAP PEMBAYARAN SISWA</h1>
+        <p>Rekapitulasi Keuangan Seluruh Siswa &bull; Tahun Ajaran {{ $tahunAjaranNama }}</p>
     </div>
 
-    <div class="title">
-        <h1>Laporan Pembayaran</h1>
-        <p>
-            @if($tanggalMulai && $tanggalAkhir)
-                Periode: {{ \Carbon\Carbon::parse($tanggalMulai)->format('d F Y') }}
-                s/d
-                {{ \Carbon\Carbon::parse($tanggalAkhir)->format('d F Y') }}
-            @else
-                Periode: Seluruh Riwayat Transaksi
-            @endif
-        </p>
-    </div>
+    {{-- 3. INFORMASI METADATA --}}
+    <table class="info-card">
+        <tr>
+            <td class="info-label">Cakupan Laporan</td>
+            <td class="info-sep">:</td>
+            <td class="info-val">Seluruh Siswa (Aktif)</td>
+            <td class="info-label">Tahun Ajaran</td>
+            <td class="info-sep">:</td>
+            <td class="info-val">{{ $tahunAjaranNama }}</td>
+        </tr>
+        <tr>
+            <td class="info-label">Total Siswa Terdaftar</td>
+            <td class="info-sep">:</td>
+            <td class="info-val">{{ $students->count() }} Siswa</td>
+            <td class="info-label">Tanggal Cetak</td>
+            <td class="info-sep">:</td>
+            <td class="info-val">{{ $tanggalCetak }}</td>
+        </tr>
+    </table>
 
-    <table class="data">
+    {{-- 4. TABEL REKAPITULASI SELURUH SISWA --}}
+    <table class="table-data">
         <thead>
             <tr>
-                <th style="width:4%;">No</th>
-                <th style="width:9%;">NIS</th>
-                <th style="width:15%;">Nama Siswa</th>
-                <th style="width:11%;">Jenis</th>
-                <th style="width:9%;">Tanggal</th>
-                <th style="width:13%; background:#C6F6D5; color:#15803D;">Bulan Dibayar</th>
-                <th style="width:11%;">Nominal (Rp)</th>
-                <th style="width:8%;">Metode</th>
-                <th style="width:11%;">Keterangan</th>
-                <th style="width:9%;">Status</th>
+                <th style="width: 4%;" class="text-center">No</th>
+                <th style="width: 10%;">NIS</th>
+                <th style="width: 22%;">Nama Lengkap Siswa</th>
+                <th style="width: 10%;" class="text-center">Kelas</th>
+                <th style="width: 14%;" class="text-right">Total Tagihan (Rp)</th>
+                <th style="width: 14%;" class="text-right">Total Terbayar (Rp)</th>
+                <th style="width: 14%;" class="text-right">Sisa Tagihan (Rp)</th>
+                <th style="width: 12%;" class="text-center">Status</th>
             </tr>
         </thead>
         <tbody>
-            @forelse($transaksi as $i => $detail)
-                @php
-                    $siswa = $detail->pembayaran->siswa ?? null;
-                    $jenis = $detail->pembayaran->jenisPembayaran->nama ?? '-';
-                    $status = $detail->pembayaran->status ?? '-';
-                @endphp
+            @forelse($students as $idx => $st)
                 <tr>
-                    <td class="text-center">{{ $i + 1 }}</td>
-                    <td>{{ $siswa->nis ?? '-' }}</td>
-                    <td>{{ $siswa->nama ?? '-' }}</td>
-                    <td>{{ $jenis }}</td>
-                    <td>{{ \Carbon\Carbon::parse($detail->tanggal)->format('d-m-Y') }}</td>
-                    <td class="text-center" style="font-weight:bold; color:#15803D; background:#F0FDF4;">
-                        {{ \Carbon\Carbon::parse($detail->tanggal)->translatedFormat('F Y') }}
+                    <td class="text-center">{{ $idx + 1 }}</td>
+                    <td>{{ $st['siswa']->nis ?? '-' }}</td>
+                    <td><strong>{{ $st['siswa']->nama ?? '-' }}</strong></td>
+                    <td class="text-center">{{ $st['siswa']->kelas ?? '-' }}</td>
+                    <td class="text-right"><strong>{{ number_format($st['total_tagihan'], 0, ',', '.') }}</strong></td>
+                    <td class="text-right" style="color:#15803d;">
+                        @if($st['terbayar'] > 0)
+                            {{ number_format($st['terbayar'], 0, ',', '.') }}
+                        @else
+                            <span class="status-none">0</span>
+                        @endif
                     </td>
-                    <td class="text-right">{{ number_format($detail->nominal, 0, ',', '.') }}</td>
-                    <td>{{ $detail->metode ?? '-' }}</td>
-                    <td>{{ $detail->keterangan ?: '-' }}</td>
-                    <td class="{{ $status === 'Lunas' ? 'status-lunas' : 'status-belum' }}">
-                        {{ $status }}
+                    <td class="text-right">
+                        @if($st['sisa'] > 0)
+                            <strong class="status-belum">{{ number_format($st['sisa'], 0, ',', '.') }}</strong>
+                        @elseif($st['total_tagihan'] > 0)
+                            <span class="status-lunas">0</span>
+                        @else
+                            <span class="status-none">-</span>
+                        @endif
+                    </td>
+                    <td class="text-center">
+                        @if($st['status'] === 'Lunas')
+                            <span class="status-lunas">Lunas</span>
+                        @elseif($st['status'] === 'Sebagian')
+                            <span class="status-sebagian">Sebagian</span>
+                        @elseif($st['status'] === 'Belum Lunas')
+                            <span class="status-belum">Belum Lunas</span>
+                        @else
+                            <span class="status-none">-</span>
+                        @endif
                     </td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="10" class="text-center">
-                        Tidak ada transaksi pembayaran pada periode ini.
+                    <td colspan="8" class="text-center" style="padding: 12px; color: #94a3b8;">
+                        Tidak ada data pembayaran yang ditemukan pada tahun ajaran ini.
                     </td>
                 </tr>
             @endforelse
         </tbody>
-        @if($transaksi->count() > 0)
+        @if($students->count() > 0)
             <tfoot>
-                <tr class="total-row">
-                    <td colspan="6" class="text-right">TOTAL</td>
-                    <td class="text-right">{{ number_format($totalNominal, 0, ',', '.') }}</td>
-                    <td colspan="3"></td>
+                <tr>
+                    <td colspan="4" class="text-center" style="font-weight: bold; background:#f1f5f9;">TOTAL KESELURUHAN</td>
+                    <td class="text-right">{{ number_format($grandTotal['total_tagihan'], 0, ',', '.') }}</td>
+                    <td class="text-right" style="color:#15803d;">{{ number_format($grandTotal['terbayar'], 0, ',', '.') }}</td>
+                    <td class="text-right" style="color:#dc2626;">{{ number_format($grandTotal['sisa'], 0, ',', '.') }}</td>
+                    <td class="text-center">
+                        @if($grandTotal['sisa'] <= 0 && $grandTotal['total_tagihan'] > 0)
+                            <span class="status-lunas">LUNAS</span>
+                        @elseif($grandTotal['terbayar'] > 0)
+                            <span class="status-sebagian">SEBAGIAN</span>
+                        @else
+                            <span class="status-belum">BELUM LUNAS</span>
+                        @endif
+                    </td>
                 </tr>
             </tfoot>
         @endif
     </table>
 
-    <p class="footer-note">
-        Dicetak pada {{ now()->format('d F Y, H:i') }} WIB melalui Sistem Informasi Pembayaran Sekolah.
-    </p>
+    {{-- 5. BOX TOTAL SISA PIUTANG SEKOLAH --}}
+    <table class="box-sisa">
+        <tr>
+            <td>
+                <div class="box-sisa-label">Total Sisa Piutang Pembayaran Siswa</div>
+                <div class="box-sisa-sub">
+                    Akumulasi seluruh kewajiban tagihan yang belum terbayarkan oleh siswa per {{ $tanggalCetak }}
+                </div>
+            </td>
+            <td class="box-sisa-val {{ $grandTotal['sisa'] <= 0 ? 'status-lunas' : '' }}">
+                Rp {{ number_format($grandTotal['sisa'], 0, ',', '.') }}
+            </td>
+        </tr>
+    </table>
+
+    {{-- 6. LEMBAR TANDA TANGAN --}}
+    <table class="ttd-table">
+        <tr>
+            <td>
+                Mengetahui,<br>
+                Kepala Sekolah SMK Muhammadiyah Margasari
+                <div class="ttd-space"></div>
+                <div class="ttd-nama">( ...................................................... )</div>
+            </td>
+            <td>
+                Margasari, {{ $tanggalCetak }}<br>
+                Bendahara / Petugas Administrasi Keuangan
+                <div class="ttd-space"></div>
+                <div class="ttd-nama">Admin Keuangan SMK Muhammadiyah</div>
+            </td>
+        </tr>
+    </table>
+
+    {{-- 7. FOOTER NOTE --}}
+    <div class="footer-note">
+        Dokumen ini diterbitkan secara resmi melalui Sistem Informasi Pembayaran Sekolah SMK Muhammadiyah Margasari &bull; Dicetak pada {{ now()->format('d/m/Y H:i') }} WIB
+    </div>
 
 </body>
 </html>
