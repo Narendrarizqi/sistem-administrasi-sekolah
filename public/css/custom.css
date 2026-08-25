@@ -1806,13 +1806,62 @@ button.btn-secondary:active,
     color: #B91C1C;
 }
 
-.alert .close {
-    text-shadow: none;
-    opacity: .6;
+.alert.alert-dismissible,
+.alert-dismissible {
+    position: relative !important;
+    display: flex !important;
+    align-items: center !important;
+    min-height: 46px !important;
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
+    padding-left: 16px !important;
+    padding-right: 48px !important;
 }
 
-.alert .close:hover {
-    opacity: 1;
+.alert-dismissible .close,
+.alert .close,
+button.close[data-dismiss="alert"] {
+    position: absolute !important;
+    top: 0 !important;
+    bottom: 0 !important;
+    right: 14px !important;
+    left: auto !important;
+    margin: auto 0 !important;
+    height: 24px !important;
+    width: 24px !important;
+    padding: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    line-height: 1 !important;
+    font-size: 22px !important;
+    font-weight: 300 !important;
+    text-shadow: none !important;
+    opacity: .55 !important;
+    background: transparent !important;
+    border: none !important;
+    outline: none !important;
+    cursor: pointer !important;
+    transition: all 0.15s ease !important;
+}
+
+.alert-dismissible .close > span,
+.alert .close > span,
+button.close[data-dismiss="alert"] > span {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    line-height: 0 !important;
+    font-size: 22px !important;
+    height: 100% !important;
+    margin-top: -3px !important;
+}
+
+.alert-dismissible .close:hover,
+.alert .close:hover,
+button.close[data-dismiss="alert"]:hover {
+    opacity: 1 !important;
+    transform: scale(1.15) !important;
 }
 
 /* Table font size */
@@ -1986,13 +2035,62 @@ button.btn-secondary:active,
     color: #B91C1C;
 }
 
-.alert .close {
-    text-shadow: none;
-    opacity: .6;
+.alert.alert-dismissible,
+.alert-dismissible {
+    position: relative !important;
+    display: flex !important;
+    align-items: center !important;
+    min-height: 46px !important;
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
+    padding-left: 16px !important;
+    padding-right: 48px !important;
 }
 
-.alert .close:hover {
-    opacity: 1;
+.alert-dismissible .close,
+.alert .close,
+button.close[data-dismiss="alert"] {
+    position: absolute !important;
+    top: 0 !important;
+    bottom: 0 !important;
+    right: 14px !important;
+    left: auto !important;
+    margin: auto 0 !important;
+    height: 24px !important;
+    width: 24px !important;
+    padding: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    line-height: 1 !important;
+    font-size: 22px !important;
+    font-weight: 300 !important;
+    text-shadow: none !important;
+    opacity: .55 !important;
+    background: transparent !important;
+    border: none !important;
+    outline: none !important;
+    cursor: pointer !important;
+    transition: all 0.15s ease !important;
+}
+
+.alert-dismissible .close > span,
+.alert .close > span,
+button.close[data-dismiss="alert"] > span {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    line-height: 0 !important;
+    font-size: 22px !important;
+    height: 100% !important;
+    margin-top: -3px !important;
+}
+
+.alert-dismissible .close:hover,
+.alert .close:hover,
+button.close[data-dismiss="alert"]:hover {
+    opacity: 1 !important;
+    transform: scale(1.15) !important;
 }
 
 
@@ -2489,6 +2587,83 @@ button.btn-secondary:active,
     color: #ffffff !important;
     transform: translateY(1px) !important;
     box-shadow: 0 1px 3px rgba(220, 38, 38, 0.25) !important;
+}
+
+/* ---------------------------------------------------------------
+   SELECT2 SEARCHABLE DROPDOWNS FOR PAYMENT PAGES
+--------------------------------------------------------------- */
+.select2-container--bootstrap4 .select2-selection--single {
+    height: 38px !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 8px !important;
+    padding: 6px 12px !important;
+    font-size: 13.5px !important;
+    background-color: #ffffff !important;
+    display: flex !important;
+    align-items: center !important;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease !important;
+}
+
+.select2-container--bootstrap4.select2-container--focus .select2-selection--single,
+.select2-container--bootstrap4.select2-container--open .select2-selection--single {
+    border-color: #16a34a !important;
+    box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.15) !important;
+}
+
+.select2-container--bootstrap4 .select2-dropdown {
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 8px !important;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
+    overflow: hidden !important;
+    z-index: 9999 !important;
+}
+
+.select2-container--bootstrap4 .select2-search--dropdown {
+    padding: 8px !important;
+    background: #f8fafc !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+}
+
+.select2-container--bootstrap4 .select2-search--dropdown .select2-search__field {
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 6px !important;
+    padding: 6px 10px !important;
+    font-size: 13px !important;
+    background: #ffffff !important;
+}
+
+.select2-container--bootstrap4 .select2-search--dropdown .select2-search__field:focus {
+    border-color: #16a34a !important;
+    box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.15) !important;
+    outline: none !important;
+}
+
+.select2-container--bootstrap4 .select2-results__option {
+    padding: 8px 12px !important;
+    font-size: 13px !important;
+    color: #1e293b !important;
+}
+
+.select2-container--bootstrap4 .select2-results__option--highlighted[aria-selected] {
+    background-color: #16a34a !important;
+    color: #ffffff !important;
+}
+
+.select2-container--bootstrap4 .select2-results__option[aria-selected=true] {
+    background-color: #f0fdf4 !important;
+    color: #15803d !important;
+    font-weight: 600 !important;
+}
+
+.select2-container--bootstrap4 .select2-selection__arrow {
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    right: 10px !important;
+}
+
+.select2-selection__clear,
+.select2-container--bootstrap4 .select2-selection__clear {
+    display: none !important;
 }
 
 /* Cetak Kuitansi Buttons: Always White Text & Icon */

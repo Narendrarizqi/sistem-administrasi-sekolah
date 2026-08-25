@@ -14,7 +14,7 @@
            Aplikasi Administrasi Sekolah Profesional, Rapi, & Matang
            =============================================================== */
 
-        /* 1. Header Box (Clean White, Compact Height, Vertically Centered) */
+        /* 1. Header Box */
         .ipp-page-header {
             background: #ffffff;
             border: 1px solid #e2e8f0;
@@ -43,7 +43,6 @@
             gap: 8px;
         }
 
-        /* Icon IPP: Soft green background with darker green icon */
         .ipp-title-icon {
             width: 32px;
             height: 32px;
@@ -1443,9 +1442,6 @@
                                         <option value="4">4 Bulan</option>
                                         <option value="5">5 Bulan</option>
                                     </select>
-                                    <span class="badge badge-status-lunas" style="font-size: 11px;">
-                                        Standar IPP: 1 Tahun (12 Bulan)
-                                    </span>
                                 </div>
 
                                 {{-- Visual Breakdown 12 Bulan --}}

@@ -13,7 +13,9 @@ return new class extends Migration
     public function up(): void
     {
         // Update enum sumber_dana pada tabel pengeluaran agar menyertakan 'BOS'
-        DB::statement("ALTER TABLE `pengeluaran` MODIFY COLUMN `sumber_dana` ENUM('IPP', 'DU', 'Sarpras', 'KI', 'BOS') NULL");
+        if (DB::getDriverName() === 'mysql') {
+            DB::statement("ALTER TABLE `pengeluaran` MODIFY COLUMN `sumber_dana` ENUM('IPP', 'DU', 'Sarpras', 'KI', 'BOS') NULL");
+        }
     }
 
     /**
@@ -21,6 +23,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        DB::statement("ALTER TABLE `pengeluaran` MODIFY COLUMN `sumber_dana` ENUM('IPP', 'DU', 'Sarpras', 'KI') NULL");
+        if (DB::getDriverName() === 'mysql') {
+            DB::statement("ALTER TABLE `pengeluaran` MODIFY COLUMN `sumber_dana` ENUM('IPP', 'DU', 'Sarpras', 'KI') NULL");
+        }
     }
 };

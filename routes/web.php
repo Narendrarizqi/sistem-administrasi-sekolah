@@ -123,7 +123,6 @@ Route::middleware('auth')->group(function () {
     Route::put('/bos/{bo}', [BosController::class, 'update'])->name('bos.update');
     Route::delete('/bos/{bo}', [BosController::class, 'destroy'])->name('bos.destroy');
     Route::post('/bos/pengeluaran', [BosController::class, 'storePengeluaran'])->name('bos.pengeluaran.store');
-    Route::get('/bos/cetak', [BosController::class, 'cetakPdf'])->name('bos.cetak');
 
     Route::resource('pengeluaran', PengeluaranController::class)
         ->except(['show']);
