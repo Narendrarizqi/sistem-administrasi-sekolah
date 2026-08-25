@@ -174,9 +174,6 @@
                                         <option value="4">4 Bulan</option>
                                         <option value="5">5 Bulan</option>
                                     </select>
-                                    <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1 small">
-                                        Standar IPP: 1 Tahun (12 Bulan)
-                                    </span>
                                 </div>
 
                                 {{-- Visual Breakdown Tiap Bulan --}}

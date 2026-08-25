@@ -109,5 +109,31 @@
 
 </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        (function () {
+            function autoDismissAlerts() {
+                setTimeout(function () {
+                    var alerts = document.querySelectorAll('.alert.alert-dismissible, .alert-success, .alert-info, .alert-danger.alert-dismissible');
+                    alerts.forEach(function (alert) {
+                        alert.style.transition = 'opacity 0.5s ease, margin 0.3s ease, padding 0.3s ease, height 0.3s ease';
+                        alert.style.opacity = '0';
+                        setTimeout(function () {
+                            alert.style.display = 'none';
+                            if (alert.parentNode) {
+                                alert.parentNode.removeChild(alert);
+                            }
+                        }, 500);
+                    });
+                }, 4000);
+            }
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', autoDismissAlerts);
+            } else {
+                autoDismissAlerts();
+            }
+        })();
+    </script>
 </body>
 </html>

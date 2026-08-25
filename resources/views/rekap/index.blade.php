@@ -6,12 +6,12 @@
     <link rel="stylesheet" href="{{ asset('css/custom.css') }}">
 
     <style>
-        /* Scoped Rekap Page Styling */
+        /* 1. Header Area */
         .rekap-page-header {
             background: #ffffff;
             border: 1px solid #e2e8f0;
             border-radius: 12px;
-            padding: 18px 22px;
+            padding: 16px 20px;
             margin-bottom: 18px;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
         }
@@ -46,15 +46,17 @@
             width: 32px;
             height: 32px;
             background: #f0fdf4;
-            color: #16a34a;
+            border: 1px solid #bbf7d0;
+            color: #15803d;
             border-radius: 8px;
-            font-size: 15px;
+            font-size: 14.5px;
+            flex-shrink: 0;
         }
 
         .rekap-page-desc {
             font-size: 12.5px;
             color: #64748b;
-            margin-bottom: 0;
+            margin: 0;
             line-height: 1.4;
         }
 
@@ -65,50 +67,54 @@
             flex-wrap: wrap;
         }
 
-        .badge-info-pill {
+        .rekap-badge-ta {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            color: #15803d;
+            font-size: 11.5px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 7px;
             display: inline-flex;
             align-items: center;
-            gap: 6px;
+            gap: 5px;
+        }
+
+        .rekap-badge-bulan {
             background: #f8fafc;
             border: 1px solid #e2e8f0;
-            color: #334155;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 12px;
+            color: #475569;
+            font-size: 11.5px;
             font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 7px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
         }
 
-        .badge-info-pill i {
-            font-size: 12px;
-        }
-
-        .badge-info-pill.badge-ta {
-            background: #f0fdf4;
-            border-color: #bbf7d0;
-            color: #15803d;
-        }
-
-        /* Card Container */
+        /* 2. Card Container & Toolbar */
         .rekap-card {
             background: #ffffff;
             border: 1px solid #e2e8f0;
             border-radius: 12px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
             overflow: hidden;
+            margin-bottom: 24px;
         }
 
-        .rekap-card-body {
-            padding: 18px 20px;
+        .rekap-card-header {
+            background: #ffffff;
+            padding: 13px 18px;
+            border-bottom: 1px solid #f1f5f9;
         }
 
-        /* Toolbar (Search & Filters) */
         .rekap-toolbar {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 12px;
-            margin-bottom: 16px;
             flex-wrap: wrap;
+            gap: 12px;
         }
 
         .rekap-toolbar-left {
@@ -121,104 +127,167 @@
 
         .rekap-search-box {
             position: relative;
-            flex: 1;
-            min-width: 220px;
-            max-width: 420px;
+            width: 290px;
+            max-width: 100%;
         }
 
         .rekap-search-box i {
             position: absolute;
-            left: 12px;
+            left: 11px;
             top: 50%;
             transform: translateY(-50%);
             color: #94a3b8;
-            font-size: 13px;
-            pointer-events: none;
+            font-size: 12.5px;
         }
 
         .rekap-search-input {
             width: 100%;
             height: 38px;
-            padding: 8px 12px 8px 36px;
-            background: #ffffff;
-            border: 1px solid #cbd5e1;
+            padding: 6px 12px 6px 34px;
             border-radius: 8px;
+            border: 1px solid #cbd5e1;
+            background: #ffffff;
+            color: #1e293b;
             font-size: 13px;
-            color: #0f172a;
-            transition: border-color 0.15s ease, box-shadow 0.15s ease;
+            transition: all 0.15s ease;
+            outline: none;
         }
 
         .rekap-search-input:focus {
-            outline: none;
             border-color: #16a34a;
             box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.12);
         }
 
-        .rekap-ta-select {
+        .rekap-select-ta {
             height: 38px;
-            min-width: 180px;
-            padding: 6px 12px;
-            background: #ffffff;
-            border: 1px solid #cbd5e1;
             border-radius: 8px;
+            border: 1px solid #cbd5e1;
+            background: #ffffff;
+            color: #1e293b;
             font-size: 13px;
             font-weight: 500;
-            color: #1e293b;
-            cursor: pointer;
+            padding: 6px 12px;
+            min-width: 185px;
+            outline: none;
             transition: border-color 0.15s ease;
         }
 
-        .rekap-ta-select:focus {
-            outline: none;
+        .rekap-select-ta:focus {
             border-color: #16a34a;
             box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.12);
         }
 
-        /* Table & Inner Scroll Container */
-        .rekap-table-wrap {
+        .btn-rekap-pdf {
+            height: 38px;
+            background: #16a34a;
+            border: 1px solid #15803d;
+            color: #ffffff !important;
+            font-size: 13px;
+            font-weight: 600;
+            padding: 0 15px;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            transition: all 0.15s ease;
+            cursor: pointer;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+            text-decoration: none !important;
+        }
+
+        .btn-rekap-pdf:hover {
+            background: #15803d;
+            color: #ffffff !important;
+            box-shadow: 0 2px 5px rgba(22, 163, 74, 0.2);
+            transform: translateY(-1px);
+        }
+
+        /* 3. Table Container & Scrollbar */
+        .rekap-table-responsive {
             width: 100%;
-            border: 1px solid #e2e8f0;
-            border-radius: 10px;
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
-            background: #ffffff;
+            scrollbar-width: thin;
+            scrollbar-color: #cbd5e1 #f8fafc;
+        }
+
+        .rekap-table-responsive::-webkit-scrollbar {
+            height: 6px;
+        }
+
+        .rekap-table-responsive::-webkit-scrollbar-track {
+            background: #f8fafc;
+            border-radius: 999px;
+        }
+
+        .rekap-table-responsive::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 999px;
+        }
+
+        .rekap-table-responsive::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
         }
 
         #rekapTable {
-            font-size: 12.5px;
-            table-layout: auto !important;
             width: 100%;
-            min-width: 1260px;
+            margin-bottom: 0;
             border-collapse: separate;
             border-spacing: 0;
-            margin-bottom: 0;
-            white-space: nowrap;
+            font-size: 12px;
         }
 
+        /* Table Header */
         #rekapTable thead th {
-            background: #f8fafc !important;
-            color: #334155 !important;
+            background: #f0fdf4 !important;
+            color: #14532d !important;
             font-weight: 650 !important;
-            font-size: 12px;
-            padding: 10px 12px;
+            font-size: 11.5px !important;
+            letter-spacing: -0.01em;
+            padding: 7px 4px;
             border-top: none;
             border-bottom: 1px solid #e2e8f0;
-            white-space: nowrap;
+            white-space: nowrap !important;
             vertical-align: middle;
+        }
+
+        #rekapTable th.sortable {
+            cursor: pointer;
+            user-select: none;
+            transition: background-color 0.15s ease, color 0.15s ease;
+        }
+
+        #rekapTable th.sortable:hover {
+            background-color: #e6f9ed !important;
+            color: #0f172a !important;
+        }
+
+        #rekapTable .sort-icon {
+            margin-left: 2px;
+            font-size: 9.5px;
+            opacity: 0.45;
+        }
+
+        #rekapTable th.sort-active,
+        #rekapTable .sortable.active {
+            color: #15803d !important;
+        }
+
+        #rekapTable th.sort-active .sort-icon,
+        #rekapTable .sortable.active .sort-icon {
+            opacity: 1;
+            color: #15803d;
         }
 
         #rekapTable tbody td {
+            padding: 6px 4px;
             vertical-align: middle;
-            padding: 9px 12px;
+            color: #1e293b;
             border-top: none;
             border-bottom: 1px solid #f1f5f9;
+            line-height: 1.25;
+            font-size: 12px;
             white-space: nowrap;
-            color: #1e293b;
-            line-height: 1.35;
-        }
-
-        #rekapTable tbody tr:last-child td {
-            border-bottom: none;
         }
 
         #rekapTable tbody tr {
@@ -226,52 +295,59 @@
         }
 
         #rekapTable tbody tr:hover {
-            background-color: #f8fafc;
+            background-color: #f6fcf8;
         }
 
-        /* Sorting Headers */
-        .sortable {
-            cursor: pointer;
-            user-select: none;
-            transition: background-color 0.15s ease, color 0.15s ease;
+        #rekapTable tbody tr:last-child td {
+            border-bottom: none;
         }
 
-        .sortable:hover {
-            background-color: #f1f5f9 !important;
-            color: #0f172a !important;
+        /* Column Specific Formatting */
+        .row-number {
+            font-size: 11px !important;
+            white-space: nowrap !important;
+            padding-left: 1px !important;
+            padding-right: 1px !important;
+            text-align: center;
+            color: #64748b;
+            font-weight: 500;
         }
 
-        .sort-icon {
-            margin-left: 3px;
-            font-size: 10px;
-            opacity: 0.45;
+        .nama-siswa-wrap {
+            max-width: 140px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            line-height: 1.25;
+            font-size: 11.5px;
+            font-weight: 650;
+            color: #0f172a;
+            word-break: break-word;
+            white-space: normal !important;
         }
 
-        .sortable.active .sort-icon {
-            opacity: 1;
-            color: #15803d;
+        .badge-kelas-simple {
+            display: inline-block;
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            color: #334155;
+            font-size: 10.5px;
+            font-weight: 600;
+            padding: 1.5px 6px;
+            border-radius: 4px;
+            white-space: nowrap;
         }
 
-        /* Column Specific Sizes */
-        #rekapTable th.col-no,    #rekapTable td.col-no    { width: 45px; text-align: center; color: #64748b; font-weight: 500; font-size: 12px; }
-        #rekapTable th.col-nis,   #rekapTable td.col-nis   { min-width: 90px; font-variant-numeric: tabular-nums; color: #334155; font-weight: 500; }
-        #rekapTable th.col-nama,  #rekapTable td.col-nama  { min-width: 150px; font-weight: 600; color: #0f172a; }
-        #rekapTable th.col-kelas, #rekapTable td.col-kelas { width: 80px; text-align: center; }
-        #rekapTable th.col-jenis, #rekapTable td.col-jenis { min-width: 140px; }
-        #rekapTable th.col-uang,  #rekapTable td.col-uang  { min-width: 110px; text-align: right !important; font-variant-numeric: tabular-nums; }
-        #rekapTable th.col-bulan, #rekapTable td.col-bulan { min-width: 160px; text-align: center; }
-        #rekapTable th.col-status,#rekapTable td.col-status{ min-width: 100px; text-align: center; }
-        #rekapTable th.col-aksi,  #rekapTable td.col-aksi  { width: 85px; text-align: center; }
-
-        /* Dropdown Jenis Tagihan Per Baris */
         #rekapTable .jenis-select {
             display: block;
             width: 100%;
-            min-width: 145px;
-            height: 32px;
-            font-size: 12px;
+            min-width: 135px;
+            height: 28px;
+            font-size: 11.5px;
             font-weight: 600;
-            padding: 4px 24px 4px 8px !important;
+            padding: 2px 20px 2px 8px !important;
             border-radius: 6px;
             background-color: #ffffff !important;
             border: 1px solid #cbd5e1 !important;
@@ -284,8 +360,8 @@
             -moz-appearance: none;
             background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23334155' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e") !important;
             background-repeat: no-repeat !important;
-            background-position: right 8px center !important;
-            background-size: 10px 8px !important;
+            background-position: right 6px center !important;
+            background-size: 8px 6px !important;
         }
 
         #rekapTable .jenis-select:hover,
@@ -303,38 +379,30 @@
             background-color: #ffffff !important;
             color: #0f172a !important;
             font-weight: 500;
-            padding: 4px 8px;
+            padding: 3px 6px;
         }
 
-        /* Kelas Badge Simple */
-        .badge-kelas-simple {
-            display: inline-block;
-            background: #f1f5f9;
-            border: 1px solid #e2e8f0;
-            color: #334155;
-            font-size: 11.5px;
-            font-weight: 600;
-            padding: 2.5px 8px;
-            border-radius: 6px;
-            white-space: nowrap;
-        }
-
-        /* Action Buttons */
-        .btn-act-pdf {
-            width: 28px;
-            height: 28px;
+        /* Action Buttons (Standar Seragam Halaman Pembayaran) */
+        .btn-act-pdf,
+        .btn-act-bukti {
+            width: 26px;
+            height: 26px;
             padding: 0;
             display: inline-flex;
             align-items: center;
             justify-content: center;
             border-radius: 6px;
-            border: 1px solid #fecaca;
-            background: #fef2f2;
-            color: #dc2626 !important;
+            font-size: 11px;
             box-shadow: none;
             transition: all 0.15s ease;
             cursor: pointer;
             text-decoration: none !important;
+        }
+
+        .btn-act-pdf {
+            border: 1px solid #fecaca;
+            background: #fef2f2;
+            color: #dc2626 !important;
         }
 
         .btn-act-pdf:hover,
@@ -346,25 +414,10 @@
             box-shadow: 0 2px 5px rgba(220, 38, 38, 0.25);
         }
 
-        .btn-act-pdf i {
-            font-size: 11.5px;
-        }
-
         .btn-act-bukti {
-            width: 28px;
-            height: 28px;
-            padding: 0;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 6px;
             border: 1px solid #bbf7d0;
             background: #f0fdf4;
             color: #15803d !important;
-            box-shadow: none;
-            transition: all 0.15s ease;
-            cursor: pointer;
-            text-decoration: none !important;
         }
 
         .btn-act-bukti:hover,
@@ -376,11 +429,14 @@
             box-shadow: 0 2px 5px rgba(22, 163, 74, 0.25);
         }
 
-        .btn-act-bukti i {
+        /* Financial Numbers */
+        .font-num {
+            font-variant-numeric: tabular-nums;
+            font-feature-settings: "tnum";
+            white-space: nowrap !important;
             font-size: 11.5px;
         }
 
-        /* Semantic Financial Numbers & Badges */
         .val-num-target {
             color: #334155;
             font-weight: 500;
@@ -416,23 +472,19 @@
             font-weight: 400;
         }
 
+        /* Badges */
         .badge-status-lunas,
         .table .badge-status-lunas {
-            background-color: #eff6ff !important;
-            border: 1px solid #bfdbfe !important;
-            color: #1d4ed8 !important;
-            font-size: 11px !important;
+            background-color: #dcfce7 !important;
+            border: 1px solid #86efac !important;
+            color: #15803d !important;
+            font-size: 10.5px !important;
             font-weight: 600 !important;
             border-radius: 999px !important;
-            padding: 2.5px 8px !important;
+            padding: 2px 8px !important;
             display: inline-flex !important;
             align-items: center !important;
             white-space: nowrap !important;
-        }
-
-        .badge-status-lunas *,
-        .table .badge-status-lunas * {
-            color: #1d4ed8 !important;
         }
 
         .badge-status-belum,
@@ -440,55 +492,37 @@
             background-color: #fef2f2 !important;
             border: 1px solid #fecaca !important;
             color: #dc2626 !important;
-            font-size: 11px !important;
+            font-size: 10.5px !important;
             font-weight: 600 !important;
             border-radius: 999px !important;
-            padding: 2.5px 8px !important;
+            padding: 2px 8px !important;
             display: inline-flex !important;
             align-items: center !important;
             white-space: nowrap !important;
-        }
-
-        .badge-status-belum *,
-        .table .badge-status-belum * {
-            color: #dc2626 !important;
         }
 
         .badge-status-none {
             background: #f1f5f9;
             border: 1px solid #e2e8f0;
             color: #64748b;
-            font-size: 11px;
+            font-size: 10px;
             font-weight: 500;
             border-radius: 999px;
-            padding: 2.5px 8px;
+            padding: 2px 8px;
             display: inline-flex;
             align-items: center;
             white-space: nowrap;
         }
 
-        /* Pengingat Bulan Ini Badges */
-        .badge-notif-lunas {
-            background: #f0fdf4;
-            border: 1px solid #bbf7d0;
-            color: #15803d;
-            font-size: 11px;
-            font-weight: 600;
-            border-radius: 6px;
-            padding: 3px 8px;
-            display: inline-flex;
-            align-items: center;
-            white-space: nowrap;
-        }
-
+        .badge-notif-lunas,
         .badge-notif-sudah {
             background: #f0fdf4;
             border: 1px solid #bbf7d0;
             color: #15803d;
-            font-size: 11px;
+            font-size: 10.5px;
             font-weight: 600;
-            border-radius: 6px;
-            padding: 3px 8px;
+            border-radius: 5px;
+            padding: 2.5px 7px;
             display: inline-flex;
             align-items: center;
             white-space: nowrap;
@@ -498,25 +532,13 @@
             background: #fffbeb;
             border: 1px solid #fde68a;
             color: #b45309;
-            font-size: 11px;
+            font-size: 10.5px;
             font-weight: 600;
-            border-radius: 6px;
-            padding: 3px 8px;
+            border-radius: 5px;
+            padding: 2.5px 7px;
             display: inline-flex;
             align-items: center;
             white-space: nowrap;
-        }
-
-        .badge-bulan-bayar {
-            background: #f0fdf4;
-            border: 1px solid #bbf7d0;
-            color: #15803d;
-            font-size: 11.5px;
-            font-weight: 600;
-            padding: 3px 8px;
-            border-radius: 6px;
-            display: inline-flex;
-            align-items: center;
         }
 
         /* Modal Solid Header */
@@ -545,8 +567,8 @@
             .rekap-page-header {
                 padding: 14px 16px;
             }
-            .rekap-card-body {
-                padding: 14px 14px;
+            .rekap-card-header {
+                padding: 12px 14px;
             }
             .rekap-toolbar {
                 flex-direction: column;
@@ -557,7 +579,12 @@
                 align-items: stretch;
             }
             .rekap-search-box {
+                width: 100%;
                 max-width: 100%;
+            }
+            .btn-rekap-pdf {
+                width: 100%;
+                justify-content: center;
             }
         }
     </style>
@@ -578,11 +605,11 @@
                 </p>
             </div>
             <div class="rekap-header-badges">
-                <span class="badge-info-pill badge-ta">
+                <span class="rekap-badge-ta">
                     <i class="far fa-calendar-alt"></i>
                     Tahun Ajaran: {{ $selectedTa->nama ?? 'Aktif' }}
                 </span>
-                <span class="badge-info-pill">
+                <span class="rekap-badge-bulan">
                     <i class="far fa-clock text-muted"></i>
                     Bulan Aktif: {{ \Carbon\Carbon::now()->translatedFormat('F Y') }}
                 </span>
@@ -592,11 +619,9 @@
 
     {{-- MAIN CARD --}}
     <div class="rekap-card">
-        <div class="rekap-card-body">
-
+        <div class="rekap-card-header">
             @if($students->count() > 0)
-
-                {{-- Toolbar: Search & Year Filter --}}
+                {{-- Toolbar: Search & Year Filter & Cetak PDF --}}
                 <div class="rekap-toolbar">
                     <div class="rekap-toolbar-left">
                         <div class="rekap-search-box">
@@ -614,7 +639,7 @@
                             <form action="{{ route('rekap.index') }}" method="GET" class="d-flex align-items-center mb-0">
                                 <select
                                     name="tahun_ajaran_id"
-                                    class="rekap-ta-select"
+                                    class="rekap-select-ta"
                                     onchange="this.form.submit()"
                                     title="Pilih Tahun Ajaran"
                                 >
@@ -626,12 +651,13 @@
                                 </select>
                             </form>
                         @endif
+                    </div>
 
+                    <div class="rekap-toolbar-right">
                         <a
                             href="{{ route('rekap.cetak', ['tahun_ajaran_id' => $tahunAjaranId]) }}"
                             target="_blank"
-                            class="btn btn-add-success btn-sm font-weight-bold d-inline-flex align-items-center"
-                            style="height: 38px; border-radius: 8px; gap: 6px; padding: 6px 14px;"
+                            class="btn-rekap-pdf"
                             title="Cetak Laporan Rekap Seluruh Siswa (PDF)"
                         >
                             <i class="fas fa-file-pdf"></i>
@@ -639,13 +665,16 @@
                         </a>
                     </div>
                 </div>
+            @endif
+        </div>
 
-                {{-- Table Container with Native Smooth Horizontal Scroll --}}
-                <div class="rekap-table-wrap">
-                    <table class="table" id="rekapTable">
-                        <thead>
-                            <tr>
-                                <th class="text-center col-no">No</th>
+        @if($students->count() > 0)
+            {{-- Table Container with Native Smooth Horizontal Scroll --}}
+            <div class="rekap-table-responsive">
+                <table class="table" id="rekapTable">
+                    <thead>
+                        <tr>
+                            <th width="35" class="text-center col-no">No</th>
                                 <th class="sortable col-nis" data-sort="nis" onclick="sortTable('nis')" title="Klik untuk mengurutkan berdasarkan NIS">
                                     NIS <i class="fas fa-sort sort-icon"></i>
                                 </th>
@@ -671,7 +700,7 @@
                                 <th class="sortable col-uang" data-sort="sisa" onclick="sortTable('sisa')" title="Klik untuk mengurutkan berdasarkan Sisa">
                                     Sisa (Rp) <i class="fas fa-sort sort-icon"></i>
                                 </th>
-                                <th class="col-bulan text-center" style="background:#fffbeb; color:#92400e; min-width: 165px;">
+                                <th class="col-bulan text-center">
                                     <i class="fas fa-bell mr-1 text-warning"></i> Pengingat Bulan Ini
                                 </th>
                                 <th class="col-status">Status</th>
@@ -887,7 +916,6 @@
 
             @endif
 
-        </div>
     </div>
 
 @stop
@@ -973,10 +1001,10 @@
                 bulanCell.innerHTML = `<span class="badge-notif-lunas"><i class="fas fa-check-double mr-1"></i> ${data.notif_text}</span>`;
             } else if (data.notif_status === 'sudah') {
                 bulanCell.innerHTML = `<span class="badge-notif-sudah"><i class="fas fa-check-circle mr-1"></i> ${data.notif_text}</span>` +
-                    (data.notif_sub ? `<div class="text-success small font-weight-bold mt-1" style="font-size:11px;">${data.notif_sub}</div>` : '');
+                    (data.notif_sub ? `<div class="text-success font-weight-bold mt-1" style="font-size:9.5px; line-height: 1.1;">${data.notif_sub}</div>` : '');
             } else if (data.notif_status === 'belum') {
                 bulanCell.innerHTML = `<span class="badge-notif-belum"><i class="fas fa-exclamation-circle mr-1"></i> ${data.notif_text}</span>` +
-                    (data.notif_sub ? `<div class="text-muted small font-weight-bold mt-1" style="font-size:11px;">${data.notif_sub}</div>` : '');
+                    (data.notif_sub ? `<div class="text-muted font-weight-bold mt-1" style="font-size:9.5px; line-height: 1.1;">${data.notif_sub}</div>` : '');
             } else {
                 bulanCell.innerHTML = '<span class="text-muted small">-</span>';
             }
