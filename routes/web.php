@@ -16,6 +16,7 @@ use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\BuktiPembayaranController;
 use App\Http\Controllers\TargetTahunanController;
 use App\Http\Controllers\TahunAjaranController;
+use App\Http\Controllers\BosController;
 
 Route::middleware('auth')->group(function () {
 
@@ -115,6 +116,14 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/sarpras/{id}/bayar', [SarprasController::class,'bayar'])
         ->name('sarpras.bayar');
+
+    // Bantuan Operasional Sekolah (BOS)
+    Route::get('/bos', [BosController::class, 'index'])->name('bos.index');
+    Route::post('/bos', [BosController::class, 'store'])->name('bos.store');
+    Route::put('/bos/{bo}', [BosController::class, 'update'])->name('bos.update');
+    Route::delete('/bos/{bo}', [BosController::class, 'destroy'])->name('bos.destroy');
+    Route::post('/bos/pengeluaran', [BosController::class, 'storePengeluaran'])->name('bos.pengeluaran.store');
+    Route::get('/bos/cetak', [BosController::class, 'cetakPdf'])->name('bos.cetak');
 
     Route::resource('pengeluaran', PengeluaranController::class)
         ->except(['show']);
