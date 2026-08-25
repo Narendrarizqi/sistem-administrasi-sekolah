@@ -4,12 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\DetailPembayaran;
 use App\Models\Pengeluaran;
+use App\Models\Bos;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 class LaporanController extends Controller
 {
     /**
-     * 4 kategori sumber dana yang dipakai di seluruh Laporan.
+     * Kategori sumber dana yang dipakai di seluruh Laporan (IPP, DU, Sarpras, KI, BOS).
      * 'aliases' menampung variasi penulisan yang mungkin ada di data lama
      * (misal 'SARPAS' vs 'Sarpras') supaya tetap terhitung dalam 1 baris.
      */
@@ -20,12 +21,13 @@ class LaporanController extends Controller
             'DU'      => ['DU'],
             'Sarpras' => ['Sarpras', 'SARPAS'],
             'KI'      => ['KI'],
+            'BOS'     => ['BOS'],
         ];
     }
 
     /**
      * Hitung rincian Pemasukan, Pengeluaran, dan Saldo per sumber dana
-     * (IPP/DU/Sarpras/KI). Dipakai bareng oleh halaman Laporan dan PDF
+     * (IPP/DU/Sarpras/KI/BOS). Dipakai bareng oleh halaman Laporan dan PDF
      * Rincian Saldo Akhir, supaya angkanya selalu konsisten.
      */
     private function hitungRincianSumberDana()
@@ -38,7 +40,10 @@ class LaporanController extends Controller
             ->groupBy(fn ($d) => $d->pembayaran->jenisPembayaran->nama ?? '-')
             ->map(fn ($group) => $group->sum('nominal'));
 
-        // Pengeluaran aktual per sumber dana (dari kolom sumber_dana, Prompt 1)
+        // Pemasukan BOS (dari tabel bos)
+        $bosPemasukan = (float) Bos::sum('nominal');
+
+        // Pengeluaran aktual per sumber dana (dari kolom sumber_dana)
         $pengeluaranPerSumber = Pengeluaran::whereNotNull('sumber_dana')
             ->get()
             ->groupBy('sumber_dana')
@@ -50,8 +55,15 @@ class LaporanController extends Controller
             $pemasukan = 0;
             $pengeluaran = 0;
 
+            if ($label === 'BOS') {
+                $pemasukan = $bosPemasukan;
+            } else {
+                foreach ($aliases as $alias) {
+                    $pemasukan += $pemasukanPerJenis[$alias] ?? 0;
+                }
+            }
+
             foreach ($aliases as $alias) {
-                $pemasukan += $pemasukanPerJenis[$alias] ?? 0;
                 $pengeluaran += $pengeluaranPerSumber[$alias] ?? 0;
             }
 
@@ -100,6 +112,22 @@ class LaporanController extends Controller
                 ]);
             });
 
+        // Pemasukan dari Bantuan Operasional Sekolah (BOS)
+        Bos::all()->each(function ($item) use ($transaksi) {
+            $transaksi->push([
+                'tanggal' => $item->tanggal,
+                'created_at' => $item->created_at,
+
+                'uraian' => 'Penerimaan Dana BOS '
+                    . $item->tahap
+                    . ' (' . ($item->tahun_anggaran ?? '-') . ')'
+                    . ($item->keterangan ? ' - ' . $item->keterangan : ''),
+
+                'masuk' => (float) $item->nominal,
+                'keluar' => 0,
+            ]);
+        });
+
         // Pengeluaran
         Pengeluaran::all()->each(function ($item) use ($transaksi) {
 
@@ -107,7 +135,7 @@ class LaporanController extends Controller
                 'tanggal' => $item->tanggal,
                 'created_at' => $item->created_at,
 
-                'uraian' => $item->keterangan,
+                'uraian' => $item->keterangan . ($item->sumber_dana ? ' [' . $item->sumber_dana . ']' : ''),
 
                 'masuk' => 0,
                 'keluar' => (float) $item->nominal,
@@ -203,6 +231,21 @@ class LaporanController extends Controller
                 ]);
             });
 
+        // Pemasukan dari Bantuan Operasional Sekolah (BOS)
+        Bos::all()->each(function ($item) use ($transaksi) {
+            $transaksi->push([
+                'tanggal' => $item->tanggal,
+                'created_at' => $item->created_at,
+
+                'uraian' => 'Penerimaan Dana BOS '
+                    . $item->tahap
+                    . ' (' . ($item->tahun_anggaran ?? '-') . ')'
+                    . ($item->keterangan ? ' - ' . $item->keterangan : ''),
+
+                'masuk' => (float) $item->nominal,
+                'keluar' => 0,
+            ]);
+        });
 
         // ==========================================
         // PENGELUARAN
@@ -214,7 +257,7 @@ class LaporanController extends Controller
                 'tanggal' => $item->tanggal,
                 'created_at' => $item->created_at,
 
-                'uraian' => $item->keterangan,
+                'uraian' => $item->keterangan . ($item->sumber_dana ? ' [' . $item->sumber_dana . ']' : ''),
 
                 'masuk' => 0,
                 'keluar' => (float) $item->nominal,

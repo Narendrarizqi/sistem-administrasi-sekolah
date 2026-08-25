@@ -39,6 +39,7 @@ class PengeluaranController extends Controller
             'DU'      => 'Daftar Ulang',
             'Sarpras' => 'Sarana & Prasarana',
             'KI'      => 'Kegiatan Intrakurikuler',
+            'BOS'     => 'Dana BOS',
         ];
 
         $ringkasanSumber = [];
@@ -112,7 +113,7 @@ class PengeluaranController extends Controller
     {
         $validated = $request->validate([
             'tanggal'     => 'required|date',
-            'sumber_dana' => 'required|in:IPP,DU,Sarpras,KI',
+            'sumber_dana' => 'required|in:IPP,DU,Sarpras,KI,BOS',
             'keterangan'  => 'required|string|max:500',
             'nominal'     => 'required|numeric|min:1',
         ]);
@@ -133,7 +134,7 @@ class PengeluaranController extends Controller
     {
         $validated = $request->validate([
             'tanggal'     => 'required|date',
-            'sumber_dana' => 'required|in:IPP,DU,Sarpras,KI',
+            'sumber_dana' => 'required|in:IPP,DU,Sarpras,KI,BOS',
             'keterangan'  => 'required|string|max:500',
             'nominal'     => 'required|numeric|min:1',
         ]);

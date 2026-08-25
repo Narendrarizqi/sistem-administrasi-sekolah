@@ -419,6 +419,16 @@
             padding: 2.5px 8px !important;
         }
 
+        .badge-sumber-bos {
+            background: #ecfeff !important;
+            border: 1px solid #a5f3fc !important;
+            color: #0e7490 !important;
+            font-size: 11px !important;
+            font-weight: 600 !important;
+            border-radius: 999px !important;
+            padding: 2.5px 8px !important;
+        }
+
         /* 6. Action Buttons */
         .pengeluaran-actions {
             display: inline-flex;
@@ -789,6 +799,7 @@
                     <option value="DU">Daftar Ulang (DU)</option>
                     <option value="Sarpras">Sarana & Prasarana</option>
                     <option value="KI">Kegiatan Intrakurikuler</option>
+                    <option value="BOS">Bantuan Operasional Sekolah (BOS)</option>
                 </select>
 
                 {{-- Filter Bulan --}}
@@ -864,6 +875,9 @@
                             } elseif ($sumber === 'KI') {
                                 $badgeClass = 'badge-sumber-ki';
                                 $sumberLabel = 'KI';
+                            } elseif ($sumber === 'BOS') {
+                                $badgeClass = 'badge-sumber-bos';
+                                $sumberLabel = 'BOS';
                             }
                             $parsedDate = \Carbon\Carbon::parse($item->tanggal);
                         @endphp
@@ -963,6 +977,7 @@
                             'DU'      => 'Daftar Ulang',
                             'Sarpras' => 'Sarana & Prasarana',
                             'KI'      => 'Kegiatan Intrakurikuler',
+                            'BOS'     => 'Dana BOS',
                         ];
                     @endphp
 
@@ -1061,6 +1076,7 @@
                                     <option value="DU" {{ old('sumber_dana') === 'DU' ? 'selected' : '' }}>DU (Daftar Ulang)</option>
                                     <option value="Sarpras" {{ old('sumber_dana') === 'Sarpras' ? 'selected' : '' }}>Sarpras (Sarana Prasarana)</option>
                                     <option value="KI" {{ old('sumber_dana') === 'KI' ? 'selected' : '' }}>KI (Kegiatan Intrakurikuler)</option>
+                                    <option value="BOS" {{ old('sumber_dana') === 'BOS' ? 'selected' : '' }}>BOS (Bantuan Operasional Sekolah)</option>
                                 </select>
                             </div>
                         </div>
@@ -1162,6 +1178,7 @@
                                         <option value="DU" {{ old('sumber_dana', $item->sumber_dana) === 'DU' ? 'selected' : '' }}>DU (Daftar Ulang)</option>
                                         <option value="Sarpras" {{ old('sumber_dana', $item->sumber_dana) === 'Sarpras' ? 'selected' : '' }}>Sarpras (Sarana Prasarana)</option>
                                         <option value="KI" {{ old('sumber_dana', $item->sumber_dana) === 'KI' ? 'selected' : '' }}>KI (Kegiatan Intrakurikuler)</option>
+                                        <option value="BOS" {{ old('sumber_dana', $item->sumber_dana) === 'BOS' ? 'selected' : '' }}>BOS (Bantuan Operasional Sekolah)</option>
                                     </select>
                                 </div>
                             </div>

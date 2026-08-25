@@ -351,6 +351,16 @@ return [
     ],
 
     [
+        'header' => 'DANA BOS',
+    ],
+
+    [
+        'text' => 'Dana BOS',
+        'route' => 'bos.index',
+        'icon' => 'fas fa-hand-holding-usd',
+    ],
+
+    [
         'header' => 'PENGELUARAN',
     ],
 
