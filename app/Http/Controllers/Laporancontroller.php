@@ -34,20 +34,23 @@ class LaporanController extends Controller
     {
         $kategori = $this->kategoriSumberDana();
 
-        // Pemasukan aktual per jenis pembayaran (dari detail_pembayaran)
-        $pemasukanPerJenis = DetailPembayaran::with('pembayaran.jenisPembayaran')
-            ->get()
-            ->groupBy(fn ($d) => $d->pembayaran->jenisPembayaran->nama ?? '-')
-            ->map(fn ($group) => $group->sum('nominal'));
+        // Pemasukan aktual per jenis pembayaran (direct SQL aggregate)
+        $pemasukanPerJenis = \Illuminate\Support\Facades\DB::table('detail_pembayaran')
+            ->join('pembayaran', 'detail_pembayaran.pembayaran_id', '=', 'pembayaran.id')
+            ->join('jenis_pembayaran', 'pembayaran.jenis_id', '=', 'jenis_pembayaran.id')
+            ->groupBy('jenis_pembayaran.nama')
+            ->pluck(\Illuminate\Support\Facades\DB::raw('SUM(detail_pembayaran.nominal) as total'), 'jenis_pembayaran.nama')
+            ->map(fn($v) => (float) $v);
 
         // Pemasukan BOS (dari tabel bos)
         $bosPemasukan = (float) Bos::sum('nominal');
 
-        // Pengeluaran aktual per sumber dana (dari kolom sumber_dana)
-        $pengeluaranPerSumber = Pengeluaran::whereNotNull('sumber_dana')
-            ->get()
+        // Pengeluaran aktual per sumber dana (direct SQL aggregate)
+        $pengeluaranPerSumber = \Illuminate\Support\Facades\DB::table('pengeluaran')
+            ->whereNotNull('sumber_dana')
             ->groupBy('sumber_dana')
-            ->map(fn ($group) => $group->sum('nominal'));
+            ->pluck(\Illuminate\Support\Facades\DB::raw('SUM(nominal) as total'), 'sumber_dana')
+            ->map(fn($v) => (float) $v);
 
         $rincian = collect();
 

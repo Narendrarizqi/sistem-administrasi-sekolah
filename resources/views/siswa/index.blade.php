@@ -769,30 +769,36 @@
                                         </span>
                                     </td>
 
-                                    <td class="col-aksi-cell">
-                                         <div class="siswa-action-group">
-                                             <button
-                                                 type="button"
-                                                 class="btn-act-edit"
-                                                 title="Edit Data Siswa"
-                                                 data-toggle="modal"
-                                                 data-target="#modalEditSiswa{{ $item->id }}"
-                                             >
-                                                 <i class="fas fa-pen"></i>
-                                             </button>
+                                     <td class="col-aksi-cell">
+                                          <div class="siswa-action-group">
+                                              <button
+                                                  type="button"
+                                                  class="btn-act-edit btn-trigger-edit"
+                                                  title="Edit Data Siswa"
+                                                  data-id="{{ $item->id }}"
+                                                  data-nis="{{ $item->nis }}"
+                                                  data-nama="{{ $item->nama }}"
+                                                  data-kelas="{{ $item->kelas }}"
+                                                  data-url="{{ route('siswa.update', $item->id) }}"
+                                              >
+                                                  <i class="fas fa-pen"></i>
+                                              </button>
 
-                                             <button
-                                                 type="button"
-                                                 class="btn-act-hapus"
-                                                 title="Hapus Data Siswa"
-                                                 data-toggle="modal"
-                                                 data-target="#modalHapusSiswa{{ $item->id }}"
-                                             >
-                                                 <i class="fas fa-trash-alt"></i>
-                                             </button>
-                                         </div>
-                                     </td>
-                                </tr>
+                                              <button
+                                                  type="button"
+                                                  class="btn-act-hapus btn-trigger-hapus"
+                                                  title="Hapus Data Siswa"
+                                                  data-id="{{ $item->id }}"
+                                                  data-nis="{{ $item->nis }}"
+                                                  data-nama="{{ $item->nama }}"
+                                                  data-kelas="{{ $item->kelas }}"
+                                                  data-url="{{ route('siswa.destroy', $item->id) }}"
+                                              >
+                                                  <i class="fas fa-trash-alt"></i>
+                                              </button>
+                                          </div>
+                                      </td>
+                                 </tr>
                             @endforeach
                         </tbody>
                     </table>
@@ -814,173 +820,150 @@
         </div>
     </div>
 
-    {{-- MODAL EDIT DATA SISWA (Identical style to Modal Tambah Siswa) --}}
-    @foreach($siswa as $item)
-        <div class="modal fade" id="modalEditSiswa{{ $item->id }}" tabindex="-1" role="dialog" aria-labelledby="modalEditSiswaLabel{{ $item->id }}" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-                <div class="modal-content border-0 shadow" style="border-radius: 14px; overflow: hidden;">
-                    <div class="modal-header modal-header-clean">
-                        <h5 class="modal-title font-weight-bold text-white" id="modalEditSiswaLabel{{ $item->id }}" style="font-size: 16px;">
-                            <i class="fas fa-user-edit mr-2 text-white"></i>
-                            Edit Data Siswa
-                        </h5>
-                        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
+    {{-- MODAL EDIT DATA SISWA (Dynamic Reusable Instance) --}}
+    <div class="modal fade" id="modalEditSiswaDynamic" tabindex="-1" role="dialog" aria-labelledby="modalEditSiswaDynamicLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-content border-0 shadow" style="border-radius: 14px; overflow: hidden;">
+                <div class="modal-header modal-header-clean">
+                    <h5 class="modal-title font-weight-bold text-white" id="modalEditSiswaDynamicLabel" style="font-size: 16px;">
+                        <i class="fas fa-user-edit mr-2 text-white"></i>
+                        Edit Data Siswa
+                    </h5>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <form action="" method="POST" id="formModalEditSiswaDynamic">
+                    @csrf
+                    @method('PUT')
+
+                    <div class="modal-body p-4">
+
+                        {{-- Section 1: Input NIS --}}
+                        <div class="form-group row mb-3">
+                            <label for="modal_edit_nis" class="col-sm-3 col-form-label font-weight-bold">
+                                NIS <span class="text-danger">*</span>
+                            </label>
+                            <div class="col-sm-9">
+                                <input
+                                    type="text"
+                                    name="nis"
+                                    id="modal_edit_nis"
+                                    class="form-control"
+                                    placeholder="Masukkan Nomor Induk Siswa"
+                                    maxlength="30"
+                                    required
+                                    style="border-radius: 8px;"
+                                >
+                            </div>
+                        </div>
+
+                        {{-- Section 2: Input Nama Siswa --}}
+                        <div class="form-group row mb-3">
+                            <label for="modal_edit_nama" class="col-sm-3 col-form-label font-weight-bold">
+                                Nama Siswa <span class="text-danger">*</span>
+                            </label>
+                            <div class="col-sm-9">
+                                <input
+                                    type="text"
+                                    name="nama"
+                                    id="modal_edit_nama"
+                                    class="form-control"
+                                    placeholder="Masukkan nama lengkap siswa"
+                                    maxlength="255"
+                                    required
+                                    style="border-radius: 8px;"
+                                >
+                            </div>
+                        </div>
+
+                        {{-- Section 3: Pilih Kelas --}}
+                        <div class="form-group row mb-2">
+                            <label for="modal_edit_kelas" class="col-sm-3 col-form-label font-weight-bold">
+                                Kelas <span class="text-danger">*</span>
+                            </label>
+                            <div class="col-sm-9">
+                                <select
+                                    name="kelas"
+                                    id="modal_edit_kelas"
+                                    class="form-control"
+                                    required
+                                    style="border-radius: 8px;"
+                                >
+                                    <option value="" disabled>-- Pilih Kelas --</option>
+                                    <option value="X TKJ">X TKJ</option>
+                                    <option value="X TKR 1">X TKR 1</option>
+                                    <option value="X TKR 2">X TKR 2</option>
+                                    <option value="XI TKJ">XI TKJ</option>
+                                    <option value="XI TKR 1">XI TKR 1</option>
+                                    <option value="XI TKR 2">XI TKR 2</option>
+                                    <option value="XII TKJ">XII TKJ</option>
+                                    <option value="XII TKR 1">XII TKR 1</option>
+                                    <option value="XII TKR 2">XII TKR 2</option>
+                                    <option value="Lulus">Lulus</option>
+                                </select>
+                            </div>
+                        </div>
+
                     </div>
 
-                    <form action="{{ route('siswa.update', $item->id) }}" method="POST" id="formModalEditSiswa{{ $item->id }}">
+                    <div class="modal-footer bg-light py-2 px-4 justify-content-end">
+                        <button type="button" class="btn btn-batal-merah px-4 mr-2" data-dismiss="modal">
+                            Batal
+                        </button>
+                        <button type="submit" class="btn btn-success px-4 font-weight-bold" style="border-radius: 8px; height: 38px;">
+                            <i class="fas fa-save mr-1"></i>
+                            Simpan Perubahan
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    {{-- MODAL HAPUS SISWA (Dynamic Reusable Instance) --}}
+    <div class="modal fade" id="modalHapusSiswaDynamic" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content border-0 shadow" style="border-radius: 12px; overflow: hidden;">
+                <div class="modal-header modal-header-danger">
+                    <h5 class="modal-title">
+                        <i class="fas fa-trash-alt mr-2"></i>
+                        Konfirmasi Hapus Siswa
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <div class="modal-body p-4">
+                    <p class="mb-2 text-dark" style="font-size: 13.5px;">
+                        Apakah Anda yakin ingin menghapus data siswa berikut?
+                    </p>
+
+                    <div class="p-3 bg-light border rounded mb-3" style="border-radius: 8px;">
+                        <div class="font-weight-bold text-dark" id="modal_hapus_nama" style="font-size: 14px;">-</div>
+                        <div class="text-muted small mt-1" id="modal_hapus_detail">NIS: - | Kelas: -</div>
+                    </div>
+
+                    <div class="alert alert-danger mb-0 small py-2 px-3" style="border-radius: 8px;">
+                        <i class="fas fa-exclamation-triangle mr-1"></i>
+                        Data siswa beserta seluruh riwayat pembayarannya yang terhapus tidak dapat dikembalikan.
+                    </div>
+                </div>
+
+                <div class="modal-footer bg-light py-2 px-4 justify-content-end">
+                    <form action="" method="POST" id="formModalHapusSiswaDynamic" class="d-inline">
                         @csrf
-                        @method('PUT')
-
-                        <div class="modal-body p-4">
-
-                            {{-- Section 1: Input NIS --}}
-                            <div class="form-group row mb-3">
-                                <label for="modal_edit_nis_{{ $item->id }}" class="col-sm-3 col-form-label font-weight-bold">
-                                    NIS <span class="text-danger">*</span>
-                                </label>
-                                <div class="col-sm-9">
-                                    <input
-                                        type="text"
-                                        name="nis"
-                                        id="modal_edit_nis_{{ $item->id }}"
-                                        class="form-control @error('nis') is-invalid @enderror"
-                                        value="{{ old('nis', $item->nis) }}"
-                                        placeholder="Masukkan Nomor Induk Siswa"
-                                        maxlength="30"
-                                        required
-                                        style="border-radius: 8px;"
-                                    >
-                                    @error('nis')
-                                        <div class="invalid-feedback">
-                                            {{ $message }}
-                                        </div>
-                                    @enderror
-                                </div>
-                            </div>
-
-                            {{-- Section 2: Input Nama Siswa --}}
-                            <div class="form-group row mb-3">
-                                <label for="modal_edit_nama_{{ $item->id }}" class="col-sm-3 col-form-label font-weight-bold">
-                                    Nama Siswa <span class="text-danger">*</span>
-                                </label>
-                                <div class="col-sm-9">
-                                    <input
-                                        type="text"
-                                        name="nama"
-                                        id="modal_edit_nama_{{ $item->id }}"
-                                        class="form-control @error('nama') is-invalid @enderror"
-                                        value="{{ old('nama', $item->nama) }}"
-                                        placeholder="Masukkan nama lengkap siswa"
-                                        maxlength="255"
-                                        required
-                                        style="border-radius: 8px;"
-                                    >
-                                    @error('nama')
-                                        <div class="invalid-feedback">
-                                            {{ $message }}
-                                        </div>
-                                    @enderror
-                                </div>
-                            </div>
-
-                            {{-- Section 3: Pilih Kelas --}}
-                            <div class="form-group row mb-2">
-                                <label for="modal_edit_kelas_{{ $item->id }}" class="col-sm-3 col-form-label font-weight-bold">
-                                    Kelas <span class="text-danger">*</span>
-                                </label>
-                                <div class="col-sm-9">
-                                    <select
-                                        name="kelas"
-                                        id="modal_edit_kelas_{{ $item->id }}"
-                                        class="form-control @error('kelas') is-invalid @enderror"
-                                        required
-                                        style="border-radius: 8px;"
-                                    >
-                                        <option value="" disabled>-- Pilih Kelas --</option>
-                                        <option value="X TKJ" {{ old('kelas', $item->kelas) == 'X TKJ' ? 'selected' : '' }}>X TKJ</option>
-                                        <option value="X TKR 1" {{ old('kelas', $item->kelas) == 'X TKR 1' ? 'selected' : '' }}>X TKR 1</option>
-                                        <option value="X TKR 2" {{ old('kelas', $item->kelas) == 'X TKR 2' ? 'selected' : '' }}>X TKR 2</option>
-                                        <option value="XI TKJ" {{ old('kelas', $item->kelas) == 'XI TKJ' ? 'selected' : '' }}>XI TKJ</option>
-                                        <option value="XI TKR 1" {{ old('kelas', $item->kelas) == 'XI TKR 1' ? 'selected' : '' }}>XI TKR 1</option>
-                                        <option value="XI TKR 2" {{ old('kelas', $item->kelas) == 'XI TKR 2' ? 'selected' : '' }}>XI TKR 2</option>
-                                        <option value="XII TKJ" {{ old('kelas', $item->kelas) == 'XII TKJ' ? 'selected' : '' }}>XII TKJ</option>
-                                        <option value="XII TKR 1" {{ old('kelas', $item->kelas) == 'XII TKR 1' ? 'selected' : '' }}>XII TKR 1</option>
-                                        <option value="XII TKR 2" {{ old('kelas', $item->kelas) == 'XII TKR 2' ? 'selected' : '' }}>XII TKR 2</option>
-                                        @if($item->kelas == 'Lulus')
-                                            <option value="Lulus" selected>Lulus</option>
-                                        @endif
-                                    </select>
-                                    @error('kelas')
-                                        <div class="invalid-feedback">
-                                            {{ $message }}
-                                        </div>
-                                    @enderror
-                                </div>
-                            </div>
-
-                        </div>
-
-                        <div class="modal-footer bg-light py-2 px-4 justify-content-end">
-                            <button type="button" class="btn btn-batal-merah px-4 mr-2" data-dismiss="modal">
-                                Batal
-                            </button>
-                            <button type="submit" class="btn btn-success px-4 font-weight-bold" style="border-radius: 8px; height: 38px;">
-                                <i class="fas fa-save mr-1"></i>
-                                Simpan Perubahan
-                            </button>
-                        </div>
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-danger font-weight-bold px-3" style="height: 38px; border-radius: 8px;">
+                            <i class="fas fa-trash-alt mr-1"></i> Ya, Hapus
+                        </button>
                     </form>
                 </div>
             </div>
         </div>
-    @endforeach
-
-    {{-- MODAL HAPUS SISWA (Cleanly Separated Outside Table) --}}
-    @foreach($siswa as $item)
-        <div class="modal fade" id="modalHapusSiswa{{ $item->id }}" tabindex="-1" role="dialog" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered" role="document">
-                <div class="modal-content border-0 shadow" style="border-radius: 12px; overflow: hidden;">
-                    <div class="modal-header modal-header-danger">
-                        <h5 class="modal-title">
-                            <i class="fas fa-trash-alt mr-2"></i>
-                            Konfirmasi Hapus Siswa
-                        </h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-
-                    <div class="modal-body p-4">
-                        <p class="mb-2 text-dark" style="font-size: 13.5px;">
-                            Apakah Anda yakin ingin menghapus data siswa berikut?
-                        </p>
-
-                        <div class="p-3 bg-light border rounded mb-3" style="border-radius: 8px;">
-                            <div class="font-weight-bold text-dark" style="font-size: 14px;">{{ $item->nama ?? '-' }}</div>
-                            <div class="text-muted small mt-1">NIS: {{ $item->nis ?? '-' }} | Kelas: {{ $item->kelas ?? '-' }}</div>
-                        </div>
-
-                        <div class="alert alert-danger mb-0 small py-2 px-3" style="border-radius: 8px;">
-                            <i class="fas fa-exclamation-triangle mr-1"></i>
-                            Data siswa beserta seluruh riwayat pembayarannya yang terhapus tidak dapat dikembalikan.
-                        </div>
-                    </div>
-
-                    <div class="modal-footer bg-light py-2 px-4 justify-content-end">
-                        <form action="{{ route('siswa.destroy', $item->id) }}" method="POST" class="d-inline">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-danger font-weight-bold px-3" style="height: 38px; border-radius: 8px;">
-                                <i class="fas fa-trash-alt mr-1"></i> Ya, Hapus
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-    @endforeach
+    </div>
 
     {{-- MODAL TAMBAH DATA SISWA (Identical style to Modal Tambah Tagihan IPP) --}}
     <div class="modal fade" id="modalTambahSiswa" tabindex="-1" role="dialog" aria-labelledby="modalTambahSiswaLabel" aria-hidden="true">
@@ -1455,6 +1438,35 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     @endif
 
+    // Dynamic Edit & Hapus Siswa Modal Triggers
+    if (window.jQuery) {
+        $(document).on('click', '.btn-trigger-edit', function () {
+            const id = $(this).data('id');
+            const nis = $(this).data('nis');
+            const nama = $(this).data('nama');
+            const kelas = $(this).data('kelas');
+            const url = $(this).data('url');
+
+            $('#formModalEditSiswaDynamic').attr('action', url);
+            $('#modal_edit_nis').val(nis);
+            $('#modal_edit_nama').val(nama);
+            $('#modal_edit_kelas').val(kelas);
+            $('#modalEditSiswaDynamic').modal('show');
+        });
+
+        $(document).on('click', '.btn-trigger-hapus', function () {
+            const nama = $(this).data('nama');
+            const nis = $(this).data('nis');
+            const kelas = $(this).data('kelas');
+            const url = $(this).data('url');
+
+            $('#formModalHapusSiswaDynamic').attr('action', url);
+            $('#modal_hapus_nama').text(nama || '-');
+            $('#modal_hapus_detail').text('NIS: ' + (nis || '-') + ' | Kelas: ' + (kelas || '-'));
+            $('#modalHapusSiswaDynamic').modal('show');
+        });
+    }
+
     // Client-side live search
     const searchInput = document.getElementById('siswaSearchInput');
     if (searchInput) {
@@ -1802,10 +1814,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
 
-            if (!confirm(`Konfirmasi import: Anda akan mengimport/memproses ${finalCount} data siswa ke database. Lanjutkan?`)) {
-                return;
-            }
-
             btnConfirmExecuteImport.disabled = true;
             btnConfirmExecuteImport.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Menyimpan ke Database...';
 
@@ -1826,18 +1834,18 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(data => {
                 if (!data.success) {
                     btnConfirmExecuteImport.disabled = false;
-                    btnConfirmExecuteImport.innerHTML = '<i class="fas fa-check-circle mr-1"></i> Konfirmasi & Import';
+                    btnConfirmExecuteImport.innerHTML = '<i class="fas fa-check-circle mr-1"></i> Konfirmasi &amp; Import (<span id="countImportFinal">' + finalCount + '</span> Siswa)';
                     alert(data.message || 'Gagal mengimport data.');
                     return;
                 }
 
                 // Sukses -> tutup modal dan reload halaman agar data terbaru langsung tampil
                 modalImport.modal('hide');
-                window.location.reload();
+                window.location.href = '{{ route("siswa.index") }}';
             })
             .catch(err => {
                 btnConfirmExecuteImport.disabled = false;
-                btnConfirmExecuteImport.innerHTML = '<i class="fas fa-check-circle mr-1"></i> Konfirmasi & Import';
+                btnConfirmExecuteImport.innerHTML = '<i class="fas fa-check-circle mr-1"></i> Konfirmasi &amp; Import (<span id="countImportFinal">' + finalCount + '</span> Siswa)';
                 alert('Terjadi kesalahan saat menyimpan data: ' + err.message);
             });
         });

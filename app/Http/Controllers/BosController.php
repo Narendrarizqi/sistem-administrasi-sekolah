@@ -19,8 +19,10 @@ class BosController extends Controller
         
         $yearsFromDb = Bos::pluck('tahun_anggaran')->toArray();
         $yearsFromPengeluaran = Pengeluaran::where('sumber_dana', 'BOS')
-            ->get()
-            ->map(fn($p) => Carbon::parse($p->tanggal)->format('Y'))
+            ->whereNotNull('tanggal')
+            ->selectRaw('DISTINCT YEAR(tanggal) as yr')
+            ->pluck('yr')
+            ->map(fn($y) => (string)$y)
             ->toArray();
 
         $daftarTahunAnggaran = array_values(array_unique(array_filter(array_merge(

@@ -11,11 +11,27 @@ use Illuminate\Support\Facades\DB;
 
 class SiswaController extends Controller
 {
-    public function index()
+    public function index(?Request $request = null)
     {
+        $request = $request ?? request();
         $taAktif = $this->getTahunAjaranAktif();
         $tahunAjaranNama = $taAktif ? $taAktif->nama : $this->tahunAjaranSaatIni();
-        $siswa = Siswa::orderBy('nama')->get();
+
+        $query = Siswa::query();
+
+        if ($search = $request->input('search')) {
+            $query->where(function ($q) use ($search) {
+                $q->where('nis', 'like', "%{$search}%")
+                  ->orWhere('nama', 'like', "%{$search}%")
+                  ->orWhere('kelas', 'like', "%{$search}%");
+            });
+        }
+
+        if ($kelas = $request->input('kelas')) {
+            $query->where('kelas', $kelas);
+        }
+
+        $siswa = $query->orderBy('nama')->get();
 
         return view('siswa.index', compact('siswa', 'tahunAjaranNama'));
     }
@@ -146,6 +162,7 @@ class SiswaController extends Controller
                 : 'Tidak ada data baru yang diimport.';
 
             if ($request->wantsJson() || $request->ajax()) {
+                session()->flash('success', $successMsg);
                 return response()->json([
                     'success' => true,
                     'result'  => $result,
