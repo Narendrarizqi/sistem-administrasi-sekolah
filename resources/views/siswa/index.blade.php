@@ -1494,6 +1494,23 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
 
+        const classOrderMap = {
+            'X TKJ': 1,
+            'X TKR 1': 2,
+            'X TKR 2': 3,
+            'XI TKJ': 4,
+            'XI TKR 1': 5,
+            'XI TKR 2': 6,
+            'XII TKJ': 7,
+            'XII TKR 1': 8,
+            'XII TKR 2': 9,
+            'Lulus': 10
+        };
+
+        function getKelasRank(kelas) {
+            return classOrderMap[kelas] !== undefined ? classOrderMap[kelas] : 99;
+        }
+
         function sortSiswaTable(column) {
             if (sortColumn === column) {
                 sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
@@ -1515,12 +1532,24 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (column === 'nama') {
                     valueA = (a.dataset.nama || '').toLowerCase();
                     valueB = (b.dataset.nama || '').toLowerCase();
-                    return sortDirection === 'asc' ? valueA.localeCompare(valueB, 'id') : valueB.localeCompare(valueA, 'id');
+                    var cmpNama = sortDirection === 'asc' ? valueA.localeCompare(valueB, 'id') : valueB.localeCompare(valueA, 'id');
+                    if (cmpNama !== 0) return cmpNama;
+                    return getKelasRank(a.dataset.kelas) - getKelasRank(b.dataset.kelas);
                 }
                 if (column === 'kelas') {
-                    valueA = (a.dataset.kelas || '').toLowerCase();
-                    valueB = (b.dataset.kelas || '').toLowerCase();
-                    return sortDirection === 'asc' ? valueA.localeCompare(valueB, 'id') : valueB.localeCompare(valueA, 'id');
+                    var rankA = getKelasRank(a.dataset.kelas);
+                    var rankB = getKelasRank(b.dataset.kelas);
+                    var cmpKelas = rankA !== rankB 
+                        ? (rankA - rankB)
+                        : (a.dataset.kelas || '').localeCompare(b.dataset.kelas || '', 'id');
+                    
+                    if (cmpKelas !== 0) {
+                        return sortDirection === 'asc' ? cmpKelas : -cmpKelas;
+                    }
+                    // Tie-breaker: abjad nama siswa
+                    var namaA = (a.dataset.nama || '').toLowerCase();
+                    var namaB = (b.dataset.nama || '').toLowerCase();
+                    return namaA.localeCompare(namaB, 'id');
                 }
                 return 0;
             });
@@ -1550,8 +1579,8 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         }
 
-        // Default sort: Nama A-Z
-        sortSiswaTable('nama');
+        // Default sort: Kelas (urutan tingkat kelas) & Abjad Nama
+        sortSiswaTable('kelas');
     }
 
     /* =========================================================================

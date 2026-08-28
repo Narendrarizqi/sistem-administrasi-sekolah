@@ -31,7 +31,21 @@ class SiswaController extends Controller
             $query->where('kelas', $kelas);
         }
 
-        $siswa = $query->orderBy('nama')->get();
+        $siswa = $query->orderByRaw("CASE 
+            WHEN kelas = 'X TKJ' THEN 1
+            WHEN kelas = 'X TKR 1' THEN 2
+            WHEN kelas = 'X TKR 2' THEN 3
+            WHEN kelas = 'XI TKJ' THEN 4
+            WHEN kelas = 'XI TKR 1' THEN 5
+            WHEN kelas = 'XI TKR 2' THEN 6
+            WHEN kelas = 'XII TKJ' THEN 7
+            WHEN kelas = 'XII TKR 1' THEN 8
+            WHEN kelas = 'XII TKR 2' THEN 9
+            WHEN kelas = 'Lulus' THEN 10
+            ELSE 11
+        END ASC")
+        ->orderBy('nama', 'asc')
+        ->get();
 
         return view('siswa.index', compact('siswa', 'tahunAjaranNama'));
     }
