@@ -744,62 +744,15 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach($siswa as $item)
-                                <tr>
-                                    <td class="col-no-cell">
-                                        {{ $loop->iteration }}
-                                    </td>
-
-                                    <td class="col-nis-cell">
-                                        {{ $item->nis ?? '-' }}
-                                    </td>
-
-                                    <td class="col-nama-cell">
-                                        <div class="student-name-text">
-                                            <span class="student-icon">
-                                                <i class="fas fa-user"></i>
-                                            </span>
-                                            <span>{{ $item->nama ?? '-' }}</span>
-                                        </div>
-                                    </td>
-
-                                    <td class="col-kelas-cell">
-                                        <span class="badge-kelas-simple">
-                                            {{ $item->kelas ?? '-' }}
-                                        </span>
-                                    </td>
-
-                                     <td class="col-aksi-cell">
-                                          <div class="siswa-action-group">
-                                              <button
-                                                  type="button"
-                                                  class="btn-act-edit btn-trigger-edit"
-                                                  title="Edit Data Siswa"
-                                                  data-id="{{ $item->id }}"
-                                                  data-nis="{{ $item->nis }}"
-                                                  data-nama="{{ $item->nama }}"
-                                                  data-kelas="{{ $item->kelas }}"
-                                                  data-url="{{ route('siswa.update', $item->id) }}"
-                                              >
-                                                  <i class="fas fa-pen"></i>
-                                              </button>
-
-                                              <button
-                                                  type="button"
-                                                  class="btn-act-hapus btn-trigger-hapus"
-                                                  title="Hapus Data Siswa"
-                                                  data-id="{{ $item->id }}"
-                                                  data-nis="{{ $item->nis }}"
-                                                  data-nama="{{ $item->nama }}"
-                                                  data-kelas="{{ $item->kelas }}"
-                                                  data-url="{{ route('siswa.destroy', $item->id) }}"
-                                              >
-                                                  <i class="fas fa-trash-alt"></i>
-                                              </button>
-                                          </div>
-                                      </td>
-                                 </tr>
-                            @endforeach
+@foreach($siswa as $item)
+<tr>
+<td class="col-no-cell">{{ $loop->iteration }}</td>
+<td class="col-nis-cell">{{ $item->nis ?? '-' }}</td>
+<td class="col-nama-cell"><div class="student-name-text"><span class="student-icon"><i class="fas fa-user"></i></span> <span>{{ $item->nama ?? '-' }}</span></div></td>
+<td class="col-kelas-cell"><span class="badge-kelas-simple">{{ $item->kelas ?? '-' }}</span></td>
+<td class="col-aksi-cell"><div class="siswa-action-group"><button type="button" class="btn-act-edit btn-trigger-edit" title="Edit Data Siswa" data-id="{{ $item->id }}" data-nis="{{ $item->nis }}" data-nama="{{ $item->nama }}" data-kelas="{{ $item->kelas }}" data-url="{{ route('siswa.update', $item->id) }}"><i class="fas fa-pen"></i></button><button type="button" class="btn-act-hapus btn-trigger-hapus" title="Hapus Data Siswa" data-id="{{ $item->id }}" data-nis="{{ $item->nis }}" data-nama="{{ $item->nama }}" data-kelas="{{ $item->kelas }}" data-url="{{ route('siswa.destroy', $item->id) }}"><i class="fas fa-trash-alt"></i></button></div></td>
+</tr>
+@endforeach
                         </tbody>
                     </table>
                 </div>
