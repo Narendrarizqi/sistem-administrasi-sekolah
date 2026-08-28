@@ -146,10 +146,10 @@ h6 {
 
 /* Brand / logo area */
 .brand-link {
-    background: var(--color-card) !important;
-    border-bottom: 1px solid var(--color-border) !important;
+    background: #ffffff !important;
+    border-bottom: 1px solid #e2e8f0 !important;
     padding: 10px 14px !important;
-    height: 52px !important;
+    height: 54px !important;
     display: flex !important;
     align-items: center !important;
     transition: width 0.32s cubic-bezier(0.4, 0, 0.2, 1),
@@ -158,11 +158,14 @@ h6 {
 
 .brand-link .brand-image {
     margin-top: 0 !important;
-    max-height: 30px !important;
+    max-height: 32px !important;
+    width: 32px !important;
+    height: 32px !important;
+    object-fit: cover !important;
 }
 
 .brand-link .brand-text {
-    color: var(--color-text) !important;
+    color: #0f172a !important;
     font-size: 13.5px !important;
     font-weight: 700 !important;
     line-height: 1.25 !important;
@@ -206,7 +209,7 @@ h6 {
 
 /* Menu items */
 .nav-sidebar .nav-link {
-    color: var(--color-text-secondary) !important;
+    color: #334155 !important;
     border-radius: 7px !important;
     margin: 1px 6px !important;
     padding: 6px 10px !important;
@@ -221,7 +224,7 @@ h6 {
 }
 
 .nav-sidebar .nav-link .nav-icon {
-    color: var(--color-text-secondary);
+    color: #64748b !important;
     font-size: 13px !important;
     width: 18px !important;
     text-align: center !important;
@@ -232,29 +235,34 @@ h6 {
 
 .nav-sidebar .nav-link:hover {
     background: #F1F5F9 !important;
-    color: var(--color-text) !important;
+    color: #0f172a !important;
 }
 
 .nav-sidebar .nav-link:hover .nav-icon {
-    color: var(--color-text);
+    color: #0f172a !important;
 }
 
 /* Active menu: soft green background + green text/icon, NOT a solid fill */
 .nav-sidebar .nav-link.active {
-    background: rgba(22, 163, 74, 0.10) !important;
-    color: var(--color-primary) !important;
-    font-weight: 600;
+    background: rgba(22, 163, 74, 0.12) !important;
+    color: #16a34a !important;
+    font-weight: 600 !important;
     box-shadow: none !important;
 }
 
 .nav-sidebar .nav-link.active .nav-icon {
-    color: var(--color-primary) !important;
+    color: #16a34a !important;
+}
+
+.nav-sidebar .nav-link.active p {
+    color: #16a34a !important;
+    font-weight: 600 !important;
 }
 
 /* Nested/treeview submenu items follow the same soft-green rule */
 .nav-sidebar .nav-treeview .nav-link.active {
     background: rgba(22, 163, 74, 0.08) !important;
-    color: var(--color-primary-dark) !important;
+    color: #15803d !important;
 }
 
 /* ---------------------------------------------------------------
