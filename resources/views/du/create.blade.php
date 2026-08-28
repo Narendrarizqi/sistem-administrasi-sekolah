@@ -2,29 +2,6 @@
 
 @section('title', 'Tambah Tagihan Daftar Ulang (DU)')
 
-@section('css')
-    <link rel="stylesheet" href="{{ asset('css/custom.css') }}">
-    <style>
-        .card-header-payment {
-            background: linear-gradient(135deg, #15803D, #16A34A) !important;
-            color: #ffffff !important;
-            border-radius: 12px 12px 0 0 !important;
-        }
-
-        .card-header-payment h5,
-        .card-header-payment i {
-            color: #ffffff !important;
-        }
-
-        .fee-info-box {
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 10px;
-            padding: 14px 18px;
-        }
-    </style>
-@stop
-
 @section('content')
 
     @if($errors->any())
