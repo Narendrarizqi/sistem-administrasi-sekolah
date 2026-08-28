@@ -512,6 +512,33 @@
             white-space: nowrap;
         }
 
+        /* Sortable Column Headers */
+        #siswaTable th.sortable {
+            cursor: pointer;
+            user-select: none;
+            transition: background-color 0.15s ease, color 0.15s ease;
+        }
+
+        #siswaTable th.sortable:hover {
+            background-color: #e6f9ed !important;
+            color: #0f172a !important;
+        }
+
+        #siswaTable .sort-icon {
+            margin-left: 2px;
+            font-size: 9.5px;
+            opacity: 0.45;
+        }
+
+        #siswaTable th.sort-active {
+            color: #15803d !important;
+        }
+
+        #siswaTable th.sort-active .sort-icon {
+            opacity: 1;
+            color: #15803d;
+        }
+
         /* Table Row Action Buttons (Standar Seragam Sistem) */
         .siswa-action-group {
             display: inline-flex;
@@ -737,16 +764,22 @@
                         <thead>
                             <tr>
                                 <th class="col-no-cell">No</th>
-                                <th class="col-nis-cell">NIS</th>
-                                <th class="col-nama-cell">Nama Siswa</th>
-                                <th class="col-kelas-cell">Kelas</th>
+                                <th class="col-nis-cell sortable" data-sort="nis" title="Klik untuk mengurutkan berdasarkan NIS">
+                                    NIS <i class="fas fa-sort sort-icon"></i>
+                                </th>
+                                <th class="col-nama-cell sortable" data-sort="nama" title="Klik untuk mengurutkan berdasarkan Nama">
+                                    Nama Siswa <i class="fas fa-sort sort-icon"></i>
+                                </th>
+                                <th class="col-kelas-cell sortable" data-sort="kelas" title="Klik untuk mengurutkan berdasarkan Kelas">
+                                    Kelas <i class="fas fa-sort sort-icon"></i>
+                                </th>
                                 <th class="col-aksi-cell">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
 @foreach($siswa as $item)
-<tr>
-<td class="col-no-cell">{{ $loop->iteration }}</td>
+<tr data-nis="{{ $item->nis ?? '' }}" data-nama="{{ $item->nama ?? '' }}" data-kelas="{{ $item->kelas ?? '' }}">
+<td class="col-no-cell row-number">{{ $loop->iteration }}</td>
 <td class="col-nis-cell">{{ $item->nis ?? '-' }}</td>
 <td class="col-nama-cell"><div class="student-name-text"><span class="student-icon"><i class="fas fa-user"></i></span> <span>{{ $item->nama ?? '-' }}</span></div></td>
 <td class="col-kelas-cell"><span class="badge-kelas-simple">{{ $item->kelas ?? '-' }}</span></td>
@@ -1420,18 +1453,105 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Client-side live search
-    const searchInput = document.getElementById('siswaSearchInput');
-    if (searchInput) {
-        searchInput.addEventListener('input', function () {
-            const query = this.value.toLowerCase().trim();
-            const rows = document.querySelectorAll('#siswaTable tbody tr');
+    // =========================================================================
+    // CLIENT-SIDE SORT & SEARCH (matching IPP table pattern)
+    // =========================================================================
+    const siswaTable = document.getElementById('siswaTable');
+    if (siswaTable) {
+        const siswaTbody = siswaTable.querySelector('tbody');
+        const searchInput = document.getElementById('siswaSearchInput');
+        let sortColumn = '';
+        let sortDirection = 'asc';
+
+        function getSiswaRows() {
+            return Array.from(siswaTbody.querySelectorAll('tr[data-nis]'));
+        }
+
+        function updateSiswaNumber() {
+            let number = 1;
+            getSiswaRows().forEach(function (row) {
+                const numberCell = row.querySelector('.row-number');
+                if (numberCell && row.style.display !== 'none') {
+                    numberCell.textContent = number;
+                    number++;
+                }
+            });
+        }
+
+        function updateSiswaSortIcon() {
+            document.querySelectorAll('#siswaTable th.sortable').forEach(function (header) {
+                header.classList.remove('sort-active');
+                var icon = header.querySelector('.sort-icon');
+                if (icon) icon.className = 'fas fa-sort sort-icon';
+            });
+
+            var activeHeader = document.querySelector('#siswaTable th[data-sort="' + sortColumn + '"]');
+            if (!activeHeader) return;
+            activeHeader.classList.add('sort-active');
+            var icon = activeHeader.querySelector('.sort-icon');
+            if (icon) {
+                icon.className = (sortDirection === 'asc') ? 'fas fa-sort-up sort-icon' : 'fas fa-sort-down sort-icon';
+            }
+        }
+
+        function sortSiswaTable(column) {
+            if (sortColumn === column) {
+                sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+            } else {
+                sortColumn = column;
+                sortDirection = 'asc';
+            }
+
+            var rows = getSiswaRows();
+            rows.sort(function (a, b) {
+                var valueA, valueB;
+                if (column === 'nis') {
+                    valueA = a.dataset.nis || '';
+                    valueB = b.dataset.nis || '';
+                    return sortDirection === 'asc'
+                        ? valueA.localeCompare(valueB, undefined, { numeric: true, sensitivity: 'base' })
+                        : valueB.localeCompare(valueA, undefined, { numeric: true, sensitivity: 'base' });
+                }
+                if (column === 'nama') {
+                    valueA = (a.dataset.nama || '').toLowerCase();
+                    valueB = (b.dataset.nama || '').toLowerCase();
+                    return sortDirection === 'asc' ? valueA.localeCompare(valueB, 'id') : valueB.localeCompare(valueA, 'id');
+                }
+                if (column === 'kelas') {
+                    valueA = (a.dataset.kelas || '').toLowerCase();
+                    valueB = (b.dataset.kelas || '').toLowerCase();
+                    return sortDirection === 'asc' ? valueA.localeCompare(valueB, 'id') : valueB.localeCompare(valueA, 'id');
+                }
+                return 0;
+            });
 
             rows.forEach(function (row) {
-                const text = row.innerText.toLowerCase();
-                row.style.display = text.includes(query) ? '' : 'none';
+                siswaTbody.appendChild(row);
+            });
+
+            updateSiswaNumber();
+            updateSiswaSortIcon();
+        }
+
+        document.querySelectorAll('#siswaTable th.sortable').forEach(function (header) {
+            header.addEventListener('click', function () {
+                sortSiswaTable(this.dataset.sort);
             });
         });
+
+        if (searchInput) {
+            searchInput.addEventListener('input', function () {
+                var query = this.value.toLowerCase().trim();
+                getSiswaRows().forEach(function (row) {
+                    var text = row.innerText.toLowerCase();
+                    row.style.display = text.includes(query) ? '' : 'none';
+                });
+                updateSiswaNumber();
+            });
+        }
+
+        // Default sort: Nama A-Z
+        sortSiswaTable('nama');
     }
 
     /* =========================================================================
