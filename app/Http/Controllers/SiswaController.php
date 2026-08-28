@@ -302,39 +302,8 @@ class SiswaController extends Controller
                     $tahunBaruNama
                 );
 
-                // Naik kelas
-                switch ($siswa->kelas) {
-                    case 'X TKJ':
-                        $siswa->kelas = 'XI TKJ';
-                        break;
-
-                    case 'X TKR 1':
-                        $siswa->kelas = 'XI TKR 1';
-                        break;
-
-                    case 'X TKR 2':
-                        $siswa->kelas = 'XI TKR 2';
-                        break;
-
-                    case 'XI TKJ':
-                        $siswa->kelas = 'XII TKJ';
-                        break;
-
-                    case 'XI TKR 1':
-                        $siswa->kelas = 'XII TKR 1';
-                        break;
-
-                    case 'XI TKR 2':
-                        $siswa->kelas = 'XII TKR 2';
-                        break;
-
-                    case 'XII TKJ':
-                    case 'XII TKR 1':
-                    case 'XII TKR 2':
-                        $siswa->kelas = 'Lulus';
-                        break;
-                }
-
+                // Naik kelas dengan normalisasi dan matching fleksibel
+                $siswa->kelas = $this->getNextKelas((string)$siswa->kelas);
                 $siswa->save();
 
                 // Simpan kelas baru siswa pada tahun ajaran baru
@@ -435,5 +404,70 @@ class SiswaController extends Controller
                 $baru->save();
             }
         }
+    }
+
+    /**
+     * Hitung kenaikan tingkat kelas untuk siswa
+     */
+    private function getNextKelas(string $kelas): string
+    {
+        $k = trim(preg_replace('/\s+/', ' ', $kelas));
+        if ($k === '' || strcasecmp($k, 'Lulus') === 0) {
+            return 'Lulus';
+        }
+
+        $upper = strtoupper($k);
+
+        // 1. Cek pemetaan langsung standar
+        $exactMap = [
+            'X TKJ'     => 'XI TKJ',
+            'X TKR 1'   => 'XI TKR 1',
+            'X TKR 2'   => 'XI TKR 2',
+            'X TKR'     => 'XI TKR 1',
+            '10 TKJ'    => 'XI TKJ',
+            '10 TKR'    => 'XI TKR 1',
+            '10 TKR 1'  => 'XI TKR 1',
+            '10 TKR 2'  => 'XI TKR 2',
+            'XI TKJ'    => 'XII TKJ',
+            'XI TKR 1'  => 'XII TKR 1',
+            'XI TKR 2'  => 'XII TKR 2',
+            'XI TKR'    => 'XII TKR 1',
+            '11 TKJ'    => 'XII TKJ',
+            '11 TKR'    => 'XII TKR 1',
+            '11 TKR 1'  => 'XII TKR 1',
+            '11 TKR 2'  => 'XII TKR 2',
+            'XII TKJ'   => 'Lulus',
+            'XII TKR 1' => 'Lulus',
+            'XII TKR 2' => 'Lulus',
+            'XII TKR'   => 'Lulus',
+            '12 TKJ'    => 'Lulus',
+            '12 TKR'    => 'Lulus',
+            '12 TKR 1'  => 'Lulus',
+            '12 TKR 2'  => 'Lulus',
+        ];
+
+        if (isset($exactMap[$upper])) {
+            return $exactMap[$upper];
+        }
+
+        // 2. Kenaikan kelas berbasis pola Regex (mendukung jurusan lain atau variasi format)
+        // Tingkat 12 / XII -> Lulus
+        if (preg_match('/^(?:XII|12)[\s\-_.]*(.*)$/i', $upper)) {
+            return 'Lulus';
+        }
+
+        // Tingkat 11 / XI -> XII
+        if (preg_match('/^(?:XI|11)[\s\-_.]+(.*)$/i', $upper, $m)) {
+            $jurusan = trim($m[1]);
+            return $jurusan !== '' ? "XII {$jurusan}" : 'XII';
+        }
+
+        // Tingkat 10 / X -> XI (pastikan bukan XI atau XII yang diawali X)
+        if (preg_match('/^(?:X|10)[\s\-_.]+(.*)$/i', $upper, $m)) {
+            $jurusan = trim($m[1]);
+            return $jurusan !== '' ? "XI {$jurusan}" : 'XI';
+        }
+
+        return $kelas;
     }
 }
