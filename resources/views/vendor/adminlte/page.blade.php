@@ -163,7 +163,7 @@
 
         {{-- Left Main Sidebar --}}
         @if(!$layoutHelper->isLayoutTopnavEnabled())
-            @include('adminlte::partials.sidebar.left-sidebar')
+            @include('layouts.sidebar')
         @endif
 
         {{-- Content Wrapper --}}
