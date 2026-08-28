@@ -1,97 +1,98 @@
-<div class="sidebar">
+<aside class="main-sidebar sidebar-light-primary elevation-0">
 
-    <div class="logo-area">
-        <img src="{{ asset('images/logo.png') }}" alt="Logo">
-        <div>
-            <h5>SMK Muhammadiyah</h5>
-            <span>Margasari</span>
-        </div>
+    {{-- Brand Logo --}}
+    <a href="{{ route('dashboard') }}" class="brand-link">
+        <img src="{{ asset('images/logo.png') }}" alt="Logo" class="brand-image img-circle elevation-0">
+        <span class="brand-text">
+            <span class="d-block" style="font-size: 13.5px; font-weight: 700; line-height: 1.2;">SMK Muhammadiyah</span>
+            <span class="d-block text-muted" style="font-size: 11px; font-weight: 500;">Margasari</span>
+        </span>
+    </a>
+
+    {{-- Sidebar Content --}}
+    <div class="sidebar">
+        <nav class="pt-1">
+            <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+
+                {{-- DASHBOARD --}}
+                <li class="nav-item">
+                    <a href="{{ route('dashboard') }}" class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-home"></i>
+                        <p>Dashboard</p>
+                    </a>
+                </li>
+
+                {{-- MASTER DATA --}}
+                <li class="nav-header">MASTER DATA</li>
+                <li class="nav-item">
+                    <a href="{{ route('siswa.index') }}" class="nav-link {{ request()->routeIs('siswa.*') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-user-graduate"></i>
+                        <p>Data Siswa</p>
+                    </a>
+                </li>
+
+                {{-- PEMBAYARAN --}}
+                <li class="nav-header">PEMBAYARAN</li>
+                <li class="nav-item">
+                    <a href="{{ route('rekap.index') }}" class="nav-link {{ request()->routeIs('rekap.*') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-table"></i>
+                        <p>Rekap Pembayaran</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('ipp.index') }}" class="nav-link {{ request()->routeIs('ipp.*') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-calendar-alt"></i>
+                        <p>Pembayaran IPP</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('du.index') }}" class="nav-link {{ request()->routeIs('du.*') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-file-invoice"></i>
+                        <p>Daftar Ulang</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('sarpras.index') }}" class="nav-link {{ request()->routeIs('sarpras.*') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-school"></i>
+                        <p>Sarana & Prasarana</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('ki.index') }}" class="nav-link {{ request()->routeIs('ki.*') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-book-open"></i>
+                        <p>Kegiatan Intrakurikuler</p>
+                    </a>
+                </li>
+
+                {{-- DANA BOS --}}
+                <li class="nav-header">DANA BOS</li>
+                <li class="nav-item">
+                    <a href="{{ route('bos.index') }}" class="nav-link {{ request()->routeIs('bos.*') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-hand-holding-usd"></i>
+                        <p>Dana BOS</p>
+                    </a>
+                </li>
+
+                {{-- PENGELUARAN --}}
+                <li class="nav-header">PENGELUARAN</li>
+                <li class="nav-item">
+                    <a href="{{ route('pengeluaran.index') }}" class="nav-link {{ request()->routeIs('pengeluaran.*') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-money-bill-wave"></i>
+                        <p>Pengeluaran</p>
+                    </a>
+                </li>
+
+                {{-- LAPORAN --}}
+                <li class="nav-header">LAPORAN</li>
+                <li class="nav-item">
+                    <a href="{{ route('laporan.index') }}" class="nav-link {{ request()->routeIs('laporan.*') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-book"></i>
+                        <p>Laporan</p>
+                    </a>
+                </li>
+
+            </ul>
+        </nav>
     </div>
 
-    <div class="menu-title">
-        MENU
-    </div>
-
-    <a href="{{ route('dashboard') }}" class="menu {{ request()->routeIs('dashboard') ? 'active' : '' }}">
-        <i class="fas fa-home"></i>
-        Dashboard
-    </a>
-
-    <div class="menu-title">
-        MASTER DATA
-    </div>
-
-    <a href="{{ route('siswa.index') }}" class="menu {{ request()->routeIs('siswa.*') ? 'active' : '' }}">
-        <i class="fas fa-user-graduate"></i>
-        Data Siswa
-    </a>
-
-    <div class="menu-title">
-        PEMBAYARAN
-    </div>
-
-    <a href="{{ route('rekap.index') }}" class="menu {{ request()->routeIs('rekap.*') ? 'active' : '' }}">
-        <i class="fas fa-table"></i>
-        Rekap Pembayaran
-    </a>
-
-    <a href="{{ route('ipp.index') }}" class="menu {{ request()->routeIs('ipp.*') ? 'active' : '' }}">
-        <i class="fas fa-calendar-alt"></i>
-        Pembayaran IPP
-    </a>
-
-    <a href="{{ route('du.index') }}" class="menu {{ request()->routeIs('du.*') ? 'active' : '' }}">
-        <i class="fas fa-file-invoice"></i>
-        Daftar Ulang
-    </a>
-
-    <a href="{{ route('sarpras.index') }}" class="menu {{ request()->routeIs('sarpras.*') ? 'active' : '' }}">
-        <i class="fas fa-school"></i>
-        Sarana & Prasarana
-    </a>
-
-    <a href="{{ route('ki.index') }}" class="menu {{ request()->routeIs('ki.*') ? 'active' : '' }}">
-        <i class="fas fa-book-open"></i>
-        Kegiatan Intrakurikuler
-    </a>
-
-    <div class="menu-title">
-        DANA BOS
-    </div>
-
-    <a href="{{ route('bos.index') }}" class="menu {{ request()->routeIs('bos.*') ? 'active' : '' }}">
-        <i class="fas fa-hand-holding-usd"></i>
-        Dana BOS
-    </a>
-
-    <div class="menu-title">
-        PENGELUARAN
-    </div>
-
-    <a href="{{ route('pengeluaran.index') }}" class="menu {{ request()->routeIs('pengeluaran.*') ? 'active' : '' }}">
-        <i class="fas fa-money-bill-wave"></i>
-        Pengeluaran
-    </a>
-
-    <div class="menu-title">
-        LAPORAN
-    </div>
-
-    <a href="{{ route('laporan.index') }}" class="menu {{ request()->routeIs('laporan.*') ? 'active' : '' }}">
-        <i class="fas fa-book"></i>
-        Laporan
-    </a>
-
-    <div class="menu-title">
-        LAINNYA
-    </div>
-
-    <form action="{{ route('logout') }}" method="POST" style="margin:0;">
-        @csrf
-        <button type="submit" class="menu" style="width:100%;border:none;background:none;color:inherit;text-align:left;padding:0;margin:0;cursor:pointer;">
-            <i class="fas fa-sign-out-alt"></i>
-            Logout
-        </button>
-    </form>
-
-</div>
+</aside>
