@@ -2687,3 +2687,123 @@ a#btnCetakBuktiPage *,
 .modal-footer a.btn-success * {
     color: #ffffff !important;
 }
+
+/* =========================================================
+   PENGELUARAN FORM (CREATE & EDIT)
+   ========================================================= */
+.card-header-clean {
+    background: #ffffff;
+    border-bottom: 1px solid #f1f5f9;
+    padding: 16px 20px;
+}
+
+/* =========================================================
+   TARGET TAHUNAN PAGE
+   ========================================================= */
+.target-year-card {
+    border: 0;
+    border-radius: 14px;
+    box-shadow: 0 4px 18px rgba(15, 23, 42, .06);
+}
+
+.target-year-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.target-year-select {
+    min-width: 190px;
+    border-radius: 10px;
+}
+
+.btn-delete-year {
+    border-radius: 10px;
+}
+
+.target-table th,
+.target-table td {
+    vertical-align: middle;
+}
+
+.target-table-wrap {
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+}
+
+.target-table {
+    min-width: 1050px;
+}
+
+.target-table th.text-right,
+.target-table td.text-right {
+    white-space: nowrap;
+}
+
+@media (max-width: 767.98px) {
+    .target-year-select {
+        width: 100%;
+    }
+}
+
+/* =========================================================
+   PAYMENT & BILL CREATION SHARED STYLES (IPP, KI, DU, SARPRAS)
+   ========================================================= */
+.card-header-payment {
+    background: linear-gradient(135deg, #15803D, #16A34A) !important;
+    color: #ffffff !important;
+    border-radius: 12px 12px 0 0 !important;
+}
+
+.card-header-payment h5,
+.card-header-payment i,
+.card-header-payment .modal-title {
+    color: #ffffff !important;
+}
+
+.payment-mode-box label {
+    margin-bottom: 0;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.custom-file-upload {
+    position: relative;
+    width: 100%;
+}
+
+.file-input-hidden {
+    position: absolute;
+    left: 0;
+    top: 0;
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    z-index: 2;
+}
+
+.file-upload-label {
+    margin-bottom: 0;
+    cursor: pointer;
+    border: 1.5px dashed #cbd5e1 !important;
+    border-radius: 8px;
+    background: #ffffff;
+    transition: all 0.2s ease;
+    height: 40px;
+}
+
+.file-upload-label:hover {
+    border-color: #16a34a !important;
+    background: #f0fdf4;
+}
+
+.subtagihan-select-box {
+    background: #f0fdf4;
+    border: 1.5px solid #86efac;
+    border-radius: 8px;
+    padding: 10px 14px;
+}

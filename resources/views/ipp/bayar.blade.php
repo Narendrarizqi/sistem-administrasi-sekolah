@@ -2,64 +2,6 @@
 
 @section('title','Pembayaran IPP')
 
-@section('css')
-    <link rel="stylesheet" href="{{ asset('css/custom.css') }}">
-    <style>
-        .card-header-payment {
-            background: linear-gradient(135deg, #15803D, #16A34A);
-            color: #ffffff;
-        }
-        .payment-mode-box {
-            display: flex;
-            gap: 20px;
-            align-items: center;
-            flex-wrap: wrap;
-            padding: 8px 12px;
-            background: #f8f9fa;
-            border-radius: 8px;
-            border: 1px solid #e9ecef;
-        }
-        .payment-mode-box label {
-            margin-bottom: 0;
-            cursor: pointer;
-            font-weight: 500;
-        }
-        .fee-info-box {
-            background: #f8f9fa;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            padding: 12px 16px;
-        }
-        .custom-file-upload {
-            position: relative;
-            width: 100%;
-        }
-        .file-input-hidden {
-            position: absolute;
-            left: 0;
-            top: 0;
-            opacity: 0;
-            width: 100%;
-            height: 100%;
-            cursor: pointer;
-            z-index: 2;
-        }
-        .file-upload-label {
-            margin-bottom: 0;
-            cursor: pointer;
-            border: 1.5px dashed #cbd5e1 !important;
-            border-radius: 8px;
-            background: #ffffff;
-            transition: all 0.2s ease;
-            height: 40px;
-        }
-        .file-upload-label:hover {
-            border-color: #16A34A !important;
-            background: #f0fdf4;
-        }
-    </style>
-@stop
-
 @section('content')
 
 @if(session('success'))

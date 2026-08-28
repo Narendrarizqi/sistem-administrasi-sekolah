@@ -2,61 +2,6 @@
 
 @section('title', 'Target Tahunan')
 
-@section('css')
-    <link rel="stylesheet" href="{{ asset('css/custom.css') }}">
-
-    <style>
-        .target-year-card {
-            border: 0;
-            border-radius: 14px;
-            box-shadow: 0 4px 18px rgba(15, 23, 42, .06);
-        }
-
-        .target-year-actions {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .target-year-select {
-            min-width: 190px;
-            border-radius: 10px;
-        }
-
-        .btn-delete-year {
-            border-radius: 10px;
-        }
-
-        .target-table th,
-        .target-table td {
-            vertical-align: middle;
-        }
-
-        .target-table-wrap {
-            width: 100%;
-            overflow-x: auto;
-            overflow-y: hidden;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        .target-table {
-            min-width: 1050px;
-        }
-
-        .target-table th.text-right,
-        .target-table td.text-right {
-            white-space: nowrap;
-        }
-
-        @media (max-width: 767.98px) {
-            .target-year-select {
-                width: 100%;
-            }
-        }
-    </style>
-@stop
-
 @section('content')
 
     @if(session('success'))

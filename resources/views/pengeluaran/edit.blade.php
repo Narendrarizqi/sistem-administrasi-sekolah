@@ -2,17 +2,6 @@
 
 @section('title', 'Edit Pengeluaran')
 
-@section('css')
-    <link rel="stylesheet" href="{{ asset('css/custom.css') }}">
-    <style>
-        .card-header-clean {
-            background: #ffffff;
-            border-bottom: 1px solid #f1f5f9;
-            padding: 16px 20px;
-        }
-    </style>
-@stop
-
 @section('content')
 
     <div class="card shadow-sm border-0" style="border-radius: 12px; overflow: hidden;">

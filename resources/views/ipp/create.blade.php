@@ -2,52 +2,6 @@
 
 @section('title', 'Tambah Tagihan IPP')
 
-@section('css')
-    <link rel="stylesheet" href="{{ asset('css/custom.css') }}">
-    <style>
-        .card-header-payment {
-            background: linear-gradient(135deg, #15803D, #16A34A) !important;
-            color: #ffffff !important;
-            border-radius: 12px 12px 0 0 !important;
-        }
-
-        .card-header-payment h5,
-        .card-header-payment i {
-            color: #ffffff !important;
-        }
-
-        .fee-info-box {
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 10px;
-            padding: 14px 18px;
-        }
-
-        .month-chip {
-            display: inline-flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 6px 12px;
-            background: #ffffff;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            font-size: 12px;
-            color: #334155;
-            transition: all 0.15s ease;
-        }
-
-        .month-chip .month-name {
-            font-weight: 600;
-            margin-right: 8px;
-        }
-
-        .month-chip .month-amount {
-            color: #15803d;
-            font-weight: 700;
-        }
-    </style>
-@stop
-
 @section('content')
 
     @if($errors->any())
