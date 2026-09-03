@@ -1177,7 +1177,7 @@
                         <th class="text-right text-end" style="width: 74px;" title="Tagihan belum lunas dari tahun sebelumnya">
                             Terbawa (Rp)
                         </th>
-                        <th class="text-right text-end" style="width: 76px;" title="Total Kewajiban = Target + Terbawa">
+                        <th class="text-right text-end" style="width: 76px;" title="Total tagihan setelah diskon transaksi">
                             Total Tagihan (Rp)
                         </th>
                         <th class="text-right text-end" style="width: 74px;" title="Total pembayaran yang sudah diterima">
@@ -1197,7 +1197,7 @@
                             $terbayar = (float) $item->detailPembayaran->sum('nominal');
                             $terbawaAwal = (float) ($item->belum_lunas ?? 0);
                             $sisaTerbawa = max($terbawaAwal - $terbayar, 0);
-                            $totalTagihan = (float) $item->target + $terbawaAwal;
+                            $totalTagihan = $item->totalTagihan();
                             $sisa = max($totalTagihan - $terbayar, 0);
                             $isLunasPenuh = ($sisa <= 0 && $totalTagihan > 0);
                             $ippStatus = $item->statusIpp();
@@ -1504,7 +1504,8 @@
         @php
             $terbayarItem = (float) $item->detailPembayaran->sum('nominal');
             $terbawaItem = (float) ($item->belum_lunas ?? 0);
-            $totalTagihanItem = (float) $item->target + $terbawaItem;
+            $tagihanAwalItem = $item->totalTagihanAwal();
+            $totalTagihanItem = $item->totalTagihan();
             $sisaItem = max($totalTagihanItem - $terbayarItem, 0);
             $sisaTerbawaItem = max($terbawaItem - $terbayarItem, 0);
             $ippStatusItem = $item->statusIpp();
@@ -1555,8 +1556,8 @@
                                 <div class="row align-items-center">
                                     <div class="col-6 col-md-3 mb-2 mb-md-0">
                                         <div class="summary-col">
-                                            <span class="summary-label">Target Tahun Ini</span>
-                                            <span class="summary-value font-num">Rp {{ number_format($item->target, 0, ',', '.') }}</span>
+                                            <span class="summary-label">Tagihan Awal</span>
+                                            <span class="summary-value font-num">Rp {{ number_format($tagihanAwalItem, 0, ',', '.') }}</span>
                                         </div>
                                     </div>
                                     <div class="col-6 col-md-3 mb-2 mb-md-0">
@@ -1565,6 +1566,12 @@
                                             <span class="summary-value font-num {{ $sisaTerbawaItem > 0 ? 'text-danger' : '' }}">
                                                 Rp {{ number_format($sisaTerbawaItem, 0, ',', '.') }}
                                             </span>
+                                        </div>
+                                    </div>
+                                    <div class="col-6 col-md-3">
+                                        <div class="summary-col">
+                                            <span class="summary-label">Setelah Potongan</span>
+                                            <span class="summary-value font-num">Rp {{ number_format($totalTagihanItem, 0, ',', '.') }}</span>
                                         </div>
                                     </div>
                                     <div class="col-6 col-md-3">
@@ -1651,29 +1658,56 @@
                                 <div class="col-sm-9">
                                     <div class="input-group nominal-input-group">
                                         <div class="input-group-prepend">
-                                            <span class="input-group-text">Rp</span>
+                                            <span class="input-group-text font-weight-bold">Rp</span>
                                         </div>
                                         <input type="number"
                                                name="nominal"
                                                id="nominalInputModal{{ $item->id }}"
-                                               class="form-control form-control-custom font-num"
+                                               class="form-control form-control-custom font-num font-weight-bold text-success"
                                                max="{{ $sisaItem }}"
-                                               min="1"
+                                               min="0"
                                                value=""
-                                               placeholder="Masukkan nominal..."
-                                               required>
+                                               placeholder="Masukkan nominal tunai..."
+                                               oninput="updateKalkulasiPemenuhan({{ $item->id }}, {{ (float)$tagihanBulanIniItem }}, {{ (float)$sisaItem }})">
                                     </div>
                                     <div class="d-flex justify-content-between align-items-center mt-1 flex-wrap gap-1">
                                         <small class="text-muted" style="font-size: 11.5px;">
-                                            Maksimal pembayaran: <strong>Rp {{ number_format($sisaItem, 0, ',', '.') }}</strong>
+                                            Maksimal sisa tagihan: <strong>Rp {{ number_format($sisaItem, 0, ',', '.') }}</strong>
                                         </small>
                                         @if($tagihanBulanIniItem > 0)
                                             <button type="button"
                                                     class="quick-fill-btn"
-                                                    onclick="document.getElementById('nominalInputModal{{ $item->id }}').value = '{{ (int)$tagihanBulanIniItem }}';">
-                                                <i class="fas fa-coins"></i> Isi Tagihan Bulan Ini (Rp {{ number_format($tagihanBulanIniItem, 0, ',', '.') }})
+                                                    onclick="isiTagihanBulanIni({{ $item->id }}, {{ (float)$tagihanBulanIniItem }}, {{ (float)$sisaItem }})">
+                                                <i class="fas fa-coins"></i> Isi Sisa Tagihan Bulan Ini (Rp {{ number_format($tagihanBulanIniItem, 0, ',', '.') }})
                                             </button>
                                         @endif
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group row mb-3">
+                                <label class="col-sm-3 form-label-custom">Potongan IPP</label>
+                                <div class="col-sm-9">
+                                    <div class="input-group nominal-input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text font-weight-bold">Rp</span>
+                                        </div>
+                                        <input type="number"
+                                               name="potongan"
+                                               id="potonganInputModal{{ $item->id }}"
+                                               class="form-control form-control-custom font-num font-weight-bold text-dark"
+                                               max="{{ $sisaItem }}"
+                                               min="0"
+                                               step="1000"
+                                               value=""
+                                               placeholder="Masukkan potongan / diskon (opsional)..."
+                                               oninput="updateKalkulasiPemenuhan({{ $item->id }}, {{ (float)$tagihanBulanIniItem }}, {{ (float)$sisaItem }})">
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center mt-1 flex-wrap gap-1">
+                                        <small class="text-muted" style="font-size: 11.5px;">
+                                            Potongan mengurangi tagihan tanpa dicatat sebagai uang tunai.
+                                        </small>
+                                        <span id="badgePemenuhan{{ $item->id }}" class="small font-weight-bold" style="font-size: 11.5px;"></span>
                                     </div>
                                 </div>
                             </div>
@@ -1761,6 +1795,7 @@
                                                     <th>Tanggal</th>
                                                     <th class="text-center">Bulan Dibayar</th>
                                                     <th>Nominal (Rp)</th>
+                                                    <th>Potongan (Rp)</th>
                                                     <th>Metode</th>
                                                     <th>Bukti</th>
                                                     <th>Keterangan</th>
@@ -1779,6 +1814,9 @@
                                                             </span>
                                                         </td>
                                                         <td class="font-weight-bold text-success font-num">{{ number_format($detail->nominal, 0, ',', '.') }}</td>
+                                                        <td class="font-weight-bold font-num {{ $detail->potongan > 0 ? 'text-primary' : 'text-muted' }}">
+                                                            {{ $detail->potongan > 0 ? number_format($detail->potongan, 0, ',', '.') : '-' }}
+                                                        </td>
                                                         <td><span class="badge badge-light border">{{ $detail->metode }}</span></td>
                                                         <td class="text-center">
                                                             @if($detail->bukti)
@@ -1798,7 +1836,7 @@
                                                     </tr>
                                                 @empty
                                                     <tr>
-                                                        <td colspan="8" class="text-center py-3 text-muted">Belum ada riwayat pembayaran.</td>
+                                                        <td colspan="9" class="text-center py-3 text-muted">Belum ada riwayat pembayaran.</td>
                                                     </tr>
                                                 @endforelse
                                             </tbody>
@@ -2001,6 +2039,43 @@
 
 @section('js')
 <script>
+function updateKalkulasiPemenuhan(id, tagihanBulanIni, sisa) {
+    const nomInput = document.getElementById('nominalInputModal' + id);
+    const potInput = document.getElementById('potonganInputModal' + id);
+    const badge = document.getElementById('badgePemenuhan' + id);
+    if (!nomInput || !potInput || !badge) return;
+
+    const nom = parseFloat(nomInput.value) || 0;
+    const pot = parseFloat(potInput.value) || 0;
+    const total = nom + pot;
+
+    if (total <= 0) {
+        badge.innerHTML = '';
+        return;
+    }
+
+    if (tagihanBulanIni > 0) {
+        if (total >= (tagihanBulanIni - 1)) {
+            badge.innerHTML = '<span class="text-success font-weight-bold"><i class="fas fa-check-circle mr-1"></i> Bulan ini LUNAS! (Total Rp ' + total.toLocaleString('id-ID') + ')</span>';
+        } else {
+            const kurang = Math.max(tagihanBulanIni - total, 0);
+            badge.innerHTML = '<span class="text-warning font-weight-bold"><i class="fas fa-clock mr-1"></i> Kurang Rp ' + kurang.toLocaleString('id-ID') + ' lagi untuk melunasi bulan ini</span>';
+        }
+    } else {
+        badge.innerHTML = '<span class="text-success font-weight-bold"><i class="fas fa-check-circle mr-1"></i> Total pemenuhan: Rp ' + total.toLocaleString('id-ID') + '</span>';
+    }
+}
+
+function isiTagihanBulanIni(id, tagihanBulanIni, sisa) {
+    const pot = parseFloat(document.getElementById('potonganInputModal' + id)?.value) || 0;
+    const butuh = Math.max(tagihanBulanIni - pot, 0);
+    const nomInput = document.getElementById('nominalInputModal' + id);
+    if (nomInput) {
+        nomInput.value = butuh;
+        updateKalkulasiPemenuhan(id, tagihanBulanIni, sisa);
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function () {
     // Initialize tooltips
     if (window.jQuery && $.fn.tooltip) {

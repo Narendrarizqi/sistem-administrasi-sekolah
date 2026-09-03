@@ -16,6 +16,7 @@ class Pembayaran extends Model
         'tahun_ajaran_id',
         'tahun_ajaran',
         'target',
+        'potongan',
         'target_uts',
         'target_uas',
         'target_ujian',
@@ -57,7 +58,24 @@ class Pembayaran extends Model
      */
     public function totalTagihan(): float
     {
+        return max($this->totalTagihanAwal() - $this->totalPotongan(), 0);
+    }
+
+    public function totalTagihanAwal(): float
+    {
         return (float) $this->target + (float) ($this->belum_lunas ?? 0);
+    }
+
+    public function totalPotongan(): float
+    {
+        return (float) ($this->relationLoaded('detailPembayaran')
+            ? $this->detailPembayaran->sum('potongan')
+            : $this->detailPembayaran()->sum('potongan'));
+    }
+
+    public function totalTerpenuhi(): float
+    {
+        return min($this->totalTagihanAwal(), $this->totalPotongan() + $this->totalTerbayar());
     }
 
     /**
@@ -65,7 +83,9 @@ class Pembayaran extends Model
      */
     public function totalTerbayar(): float
     {
-        return (float) $this->detailPembayaran()->sum('nominal');
+        return (float) ($this->relationLoaded('detailPembayaran')
+            ? $this->detailPembayaran->sum('nominal')
+            : $this->detailPembayaran()->sum('nominal'));
     }
 
     /**
@@ -92,7 +112,7 @@ class Pembayaran extends Model
     {
         $terbayar = $this->totalTerbayar();
         $kelebihanTerbawa = max($terbayar - (float) ($this->belum_lunas ?? 0), 0);
-        return max((float) $this->target - $kelebihanTerbawa, 0);
+        return max((float) $this->target - $this->totalPotongan() - $kelebihanTerbawa, 0);
     }
 
     /**
@@ -107,11 +127,12 @@ class Pembayaran extends Model
         $now = $now ? \Carbon\Carbon::parse($now) : \Carbon\Carbon::now();
         $target = (float) $this->target;
         $terbawa = (float) ($this->belum_lunas ?? 0);
-        $totalTagihan = $target + $terbawa;
+        $totalTagihan = $this->totalTagihan();
         
         $terbayar = (float) ($this->relationLoaded('detailPembayaran')
             ? $this->detailPembayaran->sum('nominal')
             : $this->detailPembayaran()->sum('nominal'));
+        $terpenuhi = $terbayar + $this->totalPotongan();
             
         $sisa = max($totalTagihan - $terbayar, 0);
 
@@ -173,17 +194,22 @@ class Pembayaran extends Model
 
         // Tarif bulanan = target tahunan / 12
         $tarifBulanan = $target > 0 ? ($target / 12) : 0;
-        $terbayarUntukTahunIni = max(0, $terbayar - $terbawa);
+        $terbayarUntukTahunIni = max(0, $terpenuhi - $terbawa);
 
         if ($tarifBulanan > 0) {
-            $bulanTerbayar = (int) floor($terbayarUntukTahunIni / $tarifBulanan);
+            $bulanTerbayar = (int) floor(($terbayarUntukTahunIni + 0.01) / $tarifBulanan);
         } else {
             $bulanTerbayar = $bulanBerjalan;
         }
 
         $tunggakanBulan = max(0, $bulanBerjalan - $bulanTerbayar);
         $kewajibanSdSekarang = ($bulanBerjalan * $tarifBulanan) + $terbawa;
-        $tagihanBulanIni = max(0, min($sisa, $kewajibanSdSekarang - $terbayar));
+        $tagihanBulanIni = max(0, min($sisa, $kewajibanSdSekarang - $terpenuhi));
+
+        if ($terpenuhi >= ($kewajibanSdSekarang - 1)) {
+            $tunggakanBulan = 0;
+            $tagihanBulanIni = 0.0;
+        }
         
         $bulanIndoList = [
             1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
@@ -201,8 +227,8 @@ class Pembayaran extends Model
                 'tunggakan_bulan'      => 0,
                 'bulan_berjalan'       => $bulanBerjalan,
                 'bulan_terbayar'       => $bulanTerbayar,
-                'tarif_bulanan'        => $tarifBulanan,
-                'tagihan_bulan_ini'    => $tagihanBulanIni,
+                'tarif_bulanan'        => (float) $tarifBulanan,
+                'tagihan_bulan_ini'    => (float) $tagihanBulanIni,
                 'keterangan_bulan_ini' => "Bulan {$namaBulan} sudah Lunas",
             ];
         } elseif ($tunggakanBulan == 1) {
@@ -214,8 +240,8 @@ class Pembayaran extends Model
                 'tunggakan_bulan'      => 1,
                 'bulan_berjalan'       => $bulanBerjalan,
                 'bulan_terbayar'       => $bulanTerbayar,
-                'tarif_bulanan'        => $tarifBulanan,
-                'tagihan_bulan_ini'    => $tagihanBulanIni,
+                'tarif_bulanan'        => (float) $tarifBulanan,
+                'tagihan_bulan_ini'    => (float) $tagihanBulanIni,
                 'keterangan_bulan_ini' => 'Rp ' . number_format($tagihanBulanIni, 0, ',', '.') . " (Bulan {$namaBulan})",
             ];
         } else {
@@ -227,8 +253,8 @@ class Pembayaran extends Model
                 'tunggakan_bulan'      => $tunggakanBulan,
                 'bulan_berjalan'       => $bulanBerjalan,
                 'bulan_terbayar'       => $bulanTerbayar,
-                'tarif_bulanan'        => $tarifBulanan,
-                'tagihan_bulan_ini'    => $tagihanBulanIni,
+                'tarif_bulanan'        => (float) $tarifBulanan,
+                'tagihan_bulan_ini'    => (float) $tagihanBulanIni,
                 'keterangan_bulan_ini' => 'Rp ' . number_format($tagihanBulanIni, 0, ',', '.') . " ({$tunggakanBulan} bulan s/d {$namaBulan})",
             ];
         }

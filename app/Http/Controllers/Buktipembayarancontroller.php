@@ -19,17 +19,24 @@ class BuktiPembayaranController extends Controller
 
         $pembayaran = $detail->pembayaran;
 
-        $totalDibayar = $pembayaran->detailPembayaran()
+        $totalTagihanAwal = $pembayaran->totalTagihanAwal();
+        $totalPotongan = (float) $pembayaran->detailPembayaran()
+            ->where('id', '<=', $detail->id)
+            ->sum('potongan');
+
+        $totalDibayar = (float) $pembayaran->detailPembayaran()
             ->where('id', '<=', $detail->id)
             ->sum('nominal');
 
-        $sisa = max($pembayaran->target - $totalDibayar, 0);
+        $sisa = max($totalTagihanAwal - $totalDibayar - $totalPotongan, 0);
 
         $pdf = Pdf::loadView('bukti.pdf', [
-            'detail' => $detail,
-            'pembayaran' => $pembayaran,
-            'totalDibayar' => $totalDibayar,
-            'sisa' => $sisa,
+            'detail'           => $detail,
+            'pembayaran'       => $pembayaran,
+            'totalTagihanAwal' => $totalTagihanAwal,
+            'totalPotongan'    => $totalPotongan,
+            'totalDibayar'     => $totalDibayar,
+            'sisa'             => $sisa,
         ])->setPaper('a5', 'portrait');
 
         return $pdf->stream('Bukti-Pembayaran-' . $detail->id . '.pdf');

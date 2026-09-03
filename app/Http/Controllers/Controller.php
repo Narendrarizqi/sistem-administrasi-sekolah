@@ -57,11 +57,13 @@ abstract class Controller
         float $nominal,
         ?string $metode = null,
         ?string $keterangan = null,
-        ?string $bukti = null
+        ?string $bukti = null,
+        float $potongan = 0
     ) {
         $terbayar = (float) $dipilih->detailPembayaran()->sum('nominal');
-        $totalTagihan = (float) $dipilih->target + (float) ($dipilih->belum_lunas ?? 0);
-        $sisaTagihan = max($totalTagihan - $terbayar, 0);
+        $totalPotongan = (float) $dipilih->detailPembayaran()->sum('potongan');
+        $totalTagihanAwal = $dipilih->totalTagihanAwal();
+        $sisaTagihan = max($totalTagihanAwal - $terbayar - $totalPotongan, 0);
 
         if ($sisaTagihan <= 0) {
             throw ValidationException::withMessages([
@@ -69,9 +71,15 @@ abstract class Controller
             ]);
         }
 
-        if ($nominal > $sisaTagihan) {
+        if ($nominal + $potongan <= 0) {
             throw ValidationException::withMessages([
-                'nominal' => 'Nominal pembayaran (Rp ' . number_format($nominal, 0, ',', '.') . ') melebihi sisa tagihan (Rp ' . number_format($sisaTagihan, 0, ',', '.') . ').',
+                'nominal' => 'Nominal pembayaran atau potongan harus lebih besar dari 0.',
+            ]);
+        }
+
+        if ($nominal + $potongan > $sisaTagihan) {
+            throw ValidationException::withMessages([
+                'nominal' => 'Nominal pembayaran dan potongan (Rp ' . number_format($nominal + $potongan, 0, ',', '.') . ') melebihi sisa tagihan (Rp ' . number_format($sisaTagihan, 0, ',', '.') . ').',
             ]);
         }
 
@@ -79,13 +87,14 @@ abstract class Controller
             'pembayaran_id' => $dipilih->id,
             'tanggal'       => now(),
             'nominal'       => $nominal,
+            'potongan'      => $potongan,
             'metode'        => $metode ?? 'Cash',
             'keterangan'    => $keterangan,
             'bukti'         => $bukti,
         ]);
 
-        $totalTerbayarBaru = $terbayar + $nominal;
-        $dipilih->status = ($totalTerbayarBaru >= $totalTagihan)
+        $totalTerpenuhiBaru = $terbayar + $totalPotongan + $nominal + $potongan;
+        $dipilih->status = ($totalTerpenuhiBaru >= $totalTagihanAwal)
             ? 'Lunas'
             : 'Belum Lunas';
         $dipilih->save();

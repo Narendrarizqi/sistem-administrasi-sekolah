@@ -160,16 +160,29 @@
     <div class="box-nominal">
         <div class="label">Nominal Dibayar (Transaksi Ini)</div>
         <div class="value">Rp {{ number_format($detail->nominal, 0, ',', '.') }}</div>
+        @if(($detail->potongan ?? 0) > 0)
+            <div style="font-size: 10px; color: #15803D; margin-top: 4px; font-weight: bold;">
+                + Potongan IPP: Rp {{ number_format($detail->potongan, 0, ',', '.') }}
+                (Total Pemenuhan: Rp {{ number_format($detail->nominal + $detail->potongan, 0, ',', '.') }})
+            </div>
+        @endif
     </div>
 
     <table class="info">
         <tr>
-            <td class="label">Total Tagihan</td>
+            <td class="label">Tagihan Awal</td>
             <td class="sep">:</td>
-            <td>Rp {{ number_format($pembayaran->target, 0, ',', '.') }}</td>
+            <td>Rp {{ number_format($totalTagihanAwal ?? $pembayaran->totalTagihanAwal(), 0, ',', '.') }}</td>
         </tr>
+        @if(($totalPotongan ?? 0) > 0)
         <tr>
-            <td class="label">Total Sudah Dibayar</td>
+            <td class="label">Total Potongan (s/d Transaksi Ini)</td>
+            <td class="sep">:</td>
+            <td style="color: #15803D; font-weight: bold;">Rp {{ number_format($totalPotongan, 0, ',', '.') }}</td>
+        </tr>
+        @endif
+        <tr>
+            <td class="label">Total Sudah Dibayar Tunai</td>
             <td class="sep">:</td>
             <td>Rp {{ number_format($totalDibayar, 0, ',', '.') }}</td>
         </tr>
@@ -179,7 +192,7 @@
             <td>Rp {{ number_format($sisa, 0, ',', '.') }}</td>
         </tr>
         <tr>
-            <td class="label">Status</td>
+            <td class="label">Status Tagihan</td>
             <td class="sep">:</td>
             <td class="{{ $sisa <= 0 ? 'status-lunas' : 'status-belum' }}">
                 {{ $sisa <= 0 ? 'Lunas' : 'Belum Lunas' }}

@@ -12,7 +12,7 @@ class ReceiptController extends Controller
     {
         $pembayaran = $detailPembayaran->pembayaran()->with(['siswa', 'jenisPembayaran', 'detailPembayaran'])->first();
         $totalTerbayar = $pembayaran->detailPembayaran->sum('nominal');
-        $sisa = max($pembayaran->target - $totalTerbayar, 0);
+        $sisa = max($pembayaran->totalTagihan() - $totalTerbayar, 0);
 
         $pdf = Pdf::loadView('receipt.pdf', [
             'detail' => $detailPembayaran,

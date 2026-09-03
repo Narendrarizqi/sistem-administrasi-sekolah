@@ -69,13 +69,14 @@ class TargetTahunanController extends Controller
 
                 $target = (float) $pembayaranJenis->sum('target');
                 $tagihanTerbawa = (float) $pembayaranJenis->sum('belum_lunas');
+                $potonganJenis = (float) $pembayaranJenis->sum(fn ($p) => $p->totalPotongan());
 
                 $sudahMasuk = 0;
                 foreach ($pembayaranJenis as $pembayaran) {
                     $sudahMasuk += (float) $pembayaran->detailPembayaran->sum('nominal');
                 }
 
-                $totalKewajiban = $target + $tagihanTerbawa;
+                $totalKewajiban = max($target + $tagihanTerbawa - $potonganJenis, 0);
                 $belumMasuk = max($totalKewajiban - $sudahMasuk, 0);
 
                 $sumberDana = $this->sumberDanaUntukJenis($jenis->nama);

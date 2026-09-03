@@ -170,7 +170,7 @@ class IppController extends Controller
         // belum_lunas (terbawa) tetap terjaga utuh!
 
         $terbayar = (float) $pembayaran->detailPembayaran()->sum('nominal');
-        $totalTagihan = (float) $pembayaran->target + (float) ($pembayaran->belum_lunas ?? 0);
+        $totalTagihan = $pembayaran->totalTagihan();
         $pembayaran->status = ($totalTagihan > 0 && $terbayar >= $totalTagihan) ? 'Lunas' : 'Belum Lunas';
         $pembayaran->save();
 
@@ -181,15 +181,33 @@ class IppController extends Controller
 
     public function bayar(Request $request, $id)
     {
+        $pembayaran = Pembayaran::with(['detailPembayaran', 'tahunAjaran'])->findOrFail($id);
+        $sisaTagihan = $pembayaran->sisaTagihan();
+
         $request->validate([
-            'nominal'    => 'required|numeric|min:1',
+            'nominal'    => 'required|numeric|min:0',
+            'potongan'   => ['nullable', 'numeric', 'min:0', 'max:' . $sisaTagihan],
             'metode'     => 'required|string',
             'keterangan' => 'nullable|string',
             'bukti'      => 'nullable|file|mimes:jpeg,png,jpg,webp,pdf|max:3072',
         ]);
 
-        $pembayaran = Pembayaran::findOrFail($id);
-        $nominal    = (float) $request->nominal;
+        $nominal  = (float) $request->nominal;
+        $potongan = (float) ($request->input('potongan') ?: 0);
+
+        if ($nominal + $potongan <= 0) {
+            return redirect()
+                ->back()
+                ->withInput()
+                ->withErrors(['nominal' => 'Nominal pembayaran atau potongan harus lebih besar dari 0.']);
+        }
+
+        if ($nominal + $potongan > $sisaTagihan) {
+            return redirect()
+                ->back()
+                ->withInput()
+                ->withErrors(['nominal' => 'Total nominal pembayaran dan potongan (Rp ' . number_format($nominal + $potongan, 0, ',', '.') . ') melebihi sisa tagihan (Rp ' . number_format($sisaTagihan, 0, ',', '.') . ').']);
+        }
 
         $buktiPath = null;
         if ($request->hasFile('bukti')) {
@@ -208,7 +226,8 @@ class IppController extends Controller
             $nominal,
             $request->metode,
             $request->keterangan,
-            $buktiPath
+            $buktiPath,
+            $potongan
         );
 
         return redirect()

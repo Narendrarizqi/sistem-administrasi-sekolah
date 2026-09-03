@@ -832,9 +832,7 @@
                                 $taNama        = $pembayaranObj?->tahunAjaran?->nama ?? $pembayaranObj?->tahun_ajaran ?? $tahunAjaranNama;
 
                                 // Hitung status lunas berdasarkan tagihan asli siswa
-                                $targetTagihan = (float) ($pembayaranObj?->target ?? 0);
-                                $carryover     = (float) ($pembayaranObj?->belum_lunas ?? 0);
-                                $totalTagihan  = $targetTagihan > 0 ? $targetTagihan : $carryover;
+                                $totalTagihan  = $pembayaranObj?->totalTagihan() ?? 0;
 
                                 $totalTerbayar = (float) ($pembayaranObj?->detailPembayaran?->sum('nominal') ?? 0);
                                 $sisaTagihan   = max($totalTagihan - $totalTerbayar, 0);

@@ -31,7 +31,8 @@
 @php
 $terbayar = (float) $pembayaran->detailPembayaran->sum('nominal');
 $terbawa = (float) ($pembayaran->belum_lunas ?? 0);
-$totalTagihan = (float) $pembayaran->target + $terbawa;
+$tagihanAwal = $pembayaran->totalTagihanAwal();
+$totalTagihan = $pembayaran->totalTagihan();
 $sisa = max($totalTagihan - $terbayar, 0);
 $persen = $totalTagihan > 0 ? min(($terbayar / $totalTagihan) * 100, 100) : 0;
 $sisaTerbawa = max($terbawa - $terbayar, 0);
@@ -83,8 +84,12 @@ $namaBulanSekarang = ($bulanIndoList[(int)\Carbon\Carbon::now()->format('n')] ??
 
                 <div class="fee-info-box">
                     <div class="d-flex justify-content-between mb-1 small text-muted">
-                        <span>Target Tahun Ini</span>
-                        <span class="font-weight-bold">Rp {{ number_format($pembayaran->target, 0, ',', '.') }}</span>
+                        <span>Tagihan Awal</span>
+                        <span class="font-weight-bold">Rp {{ number_format($tagihanAwal, 0, ',', '.') }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-1 small text-muted">
+                        <span>Tagihan Setelah Potongan</span>
+                        <span class="font-weight-bold">Rp {{ number_format($totalTagihan, 0, ',', '.') }}</span>
                     </div>
 
                     @if($terbawa > 0)
@@ -185,10 +190,10 @@ $namaBulanSekarang = ($bulanIndoList[(int)\Carbon\Carbon::now()->format('n')] ??
                                        id="nominalInputPage"
                                        class="form-control font-weight-bold text-success font-num"
                                        max="{{ $sisa }}"
-                                       min="1"
+                                       min="0"
                                        value=""
                                        placeholder="Masukkan nominal pembayaran..."
-                                       required
+                                       oninput="updateKalkulasiPage()"
                                        {{ $sisa <= 0 ? 'disabled' : '' }}>
                             </div>
                             <div class="d-flex justify-content-between align-items-center mt-1 flex-wrap gap-1">
@@ -199,11 +204,39 @@ $namaBulanSekarang = ($bulanIndoList[(int)\Carbon\Carbon::now()->format('n')] ??
                                     <button type="button"
                                             class="btn btn-xs btn-outline-success font-weight-bold mt-1"
                                             style="border-radius: 6px; font-size: 11px;"
-                                            onclick="document.getElementById('nominalInputPage').value = '{{ (int)$tagihanBulanIni }}';">
-                                        <i class="fas fa-coins mr-1"></i> Isi Tagihan Bulan Ini (Rp {{ number_format($tagihanBulanIni, 0, ',', '.') }})
+                                            onclick="isiTagihanBulanIniPage()">
+                                        <i class="fas fa-coins mr-1"></i> Isi Sisa Tagihan Bulan Ini (Rp {{ number_format($tagihanBulanIni, 0, ',', '.') }})
                                     </button>
                                 @endif
                             </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group row mb-3">
+                        <label for="potonganBayar" class="col-sm-3 col-form-label font-weight-bold">Potongan IPP</label>
+                        <div class="col-sm-9">
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text font-weight-bold">Rp</span>
+                                </div>
+                                <input type="number"
+                                       name="potongan"
+                                       id="potonganBayar"
+                                       class="form-control font-weight-bold text-dark"
+                                       value="{{ old('potongan', '') }}"
+                                       min="0"
+                                       max="{{ (int) $sisa }}"
+                                       step="1000"
+                                       placeholder="Masukkan potongan / diskon..."
+                                       oninput="updateKalkulasiPage()">
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mt-1 flex-wrap gap-1">
+                                <small class="form-text text-muted mb-0">Potongan mengurangi tagihan, tetapi tidak dicatat sebagai kas masuk.</small>
+                                <span id="badgePemenuhanPage" class="small font-weight-bold" style="font-size: 12px;"></span>
+                            </div>
+                            @error('potongan')
+                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                            @enderror
                         </div>
                     </div>
 
@@ -291,6 +324,7 @@ $namaBulanSekarang = ($bulanIndoList[(int)\Carbon\Carbon::now()->format('n')] ??
                         <th width="50">No</th>
                         <th>Tanggal</th>
                         <th>Nominal (Rp)</th>
+                        <th>Potongan (Rp)</th>
                         <th>Metode</th>
                         <th>Bukti Transfer</th>
                         <th>Keterangan</th>
@@ -304,6 +338,9 @@ $namaBulanSekarang = ($bulanIndoList[(int)\Carbon\Carbon::now()->format('n')] ??
                             <td>{{ \Carbon\Carbon::parse($detail->tanggal)->format('d/m/Y') }}</td>
                             <td class="font-weight-bold text-success">
                                 {{ number_format($detail->nominal, 0, ',', '.') }}
+                            </td>
+                            <td class="font-weight-bold font-num {{ $detail->potongan > 0 ? 'text-primary' : 'text-muted' }}">
+                                {{ $detail->potongan > 0 ? number_format($detail->potongan, 0, ',', '.') : '-' }}
                             </td>
                             <td>
                                 <span class="badge badge-light border">{{ $detail->metode }}</span>
@@ -329,7 +366,7 @@ $namaBulanSekarang = ($bulanIndoList[(int)\Carbon\Carbon::now()->format('n')] ??
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="text-center py-3 text-muted">
+                            <td colspan="8" class="text-center py-3 text-muted">
                                 Belum ada riwayat pembayaran untuk tagihan ini.
                             </td>
                         </tr>
@@ -366,19 +403,62 @@ $namaBulanSekarang = ($bulanIndoList[(int)\Carbon\Carbon::now()->format('n')] ??
         </div>
     </div>
 </div>
+@endif
 
 @section('js')
 <script>
+    const tagihanBulanIniValue = {{ (float) $tagihanBulanIni }};
+    const sisaTotalValue = {{ (float) $sisa }};
+
+    function updateKalkulasiPage() {
+        const nomInput = document.getElementById('nominalInputPage');
+        const potInput = document.getElementById('potonganBayar');
+        const badge = document.getElementById('badgePemenuhanPage');
+        if (!nomInput || !potInput || !badge) return;
+
+        const nom = parseFloat(nomInput.value) || 0;
+        const pot = parseFloat(potInput.value) || 0;
+        const total = nom + pot;
+
+        if (total <= 0) {
+            badge.innerHTML = '';
+            return;
+        }
+
+        if (tagihanBulanIniValue > 0) {
+            if (total >= (tagihanBulanIniValue - 1)) {
+                badge.innerHTML = '<span class="text-success font-weight-bold"><i class="fas fa-check-circle mr-1"></i> Tagihan bulan ini akan LUNAS! (Total: Rp ' + total.toLocaleString('id-ID') + ')</span>';
+            } else {
+                const sisaBulan = Math.max(tagihanBulanIniValue - total, 0);
+                badge.innerHTML = '<span class="text-warning font-weight-bold"><i class="fas fa-clock mr-1"></i> Kurang Rp ' + sisaBulan.toLocaleString('id-ID') + ' lagi untuk melunasi bulan ini</span>';
+            }
+        } else {
+            badge.innerHTML = '<span class="text-success font-weight-bold"><i class="fas fa-check-circle mr-1"></i> Total pemenuhan: Rp ' + total.toLocaleString('id-ID') + '</span>';
+        }
+    }
+
+    function isiTagihanBulanIniPage() {
+        const potInput = document.getElementById('potonganBayar');
+        const nomInput = document.getElementById('nominalInputPage');
+        const pot = parseFloat(potInput ? potInput.value : 0) || 0;
+        const butuh = Math.max(tagihanBulanIniValue - pot, 0);
+        if (nomInput) {
+            nomInput.value = butuh;
+            updateKalkulasiPage();
+        }
+    }
+
     $(function () {
-        $('#modalCetakBukti').modal('show');
-        $('#btnCetakBukti').on('click', function () {
-            setTimeout(function () {
-                $('#modalCetakBukti').modal('hide');
-            }, 500);
-        });
+        @if(session('last_detail_id'))
+            $('#modalCetakBukti').modal('show');
+            $('#btnCetakBukti').on('click', function () {
+                setTimeout(function () {
+                    $('#modalCetakBukti').modal('hide');
+                }, 500);
+            });
+        @endif
     });
 </script>
 @stop
-@endif
 
 @stop
