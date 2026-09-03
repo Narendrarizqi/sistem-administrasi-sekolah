@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Pagination\Paginator;
 use Carbon\Carbon;
 
 class AppServiceProvider extends ServiceProvider
@@ -25,5 +26,8 @@ class AppServiceProvider extends ServiceProvider
         config(['app.fallback_locale' => 'id']);
         Carbon::setLocale('id');
         setlocale(LC_TIME, 'id_ID.utf8', 'id_ID', 'id', 'Indonesian', 'IND');
+
+        // Gunakan Bootstrap 4 untuk pagination agar serasi dengan AdminLTE 3
+        Paginator::useBootstrapFour();
     }
 }
