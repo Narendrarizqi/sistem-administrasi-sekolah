@@ -3,7 +3,7 @@
 @section('title', 'Data Siswa')
 
 @section('css')
-    <link rel="stylesheet" href="{{ asset('css/custom.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/custom.css') }}?v={{ file_exists(public_path('css/custom.css')) ? filemtime(public_path('css/custom.css')) : time() }}">
     <style>
         /* Scoped Data Siswa Page Styling */
         .siswa-page-header {
@@ -514,24 +514,44 @@
 
         /* Sortable Column Headers */
         #siswaTable th.sortable {
-            cursor: pointer;
+            padding: 0 !important;
             user-select: none;
             transition: background-color 0.15s ease, color 0.15s ease;
         }
 
-        #siswaTable th.sortable:hover {
-            background-color: #e6f9ed !important;
-            color: #0f172a !important;
+        #siswaTable th.sortable .sort-header-link {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+            padding: 10px 14px;
+            color: #334155 !important;
+            font-weight: 650 !important;
+            font-size: 12.5px;
+            text-decoration: none !important;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        #siswaTable th.col-kelas-cell.sortable .sort-header-link {
+            justify-content: center;
+        }
+
+        #siswaTable th.sortable:hover .sort-header-link {
+            background-color: #f0fdf4 !important;
+            color: #15803d !important;
         }
 
         #siswaTable .sort-icon {
-            margin-left: 2px;
-            font-size: 9.5px;
+            margin-left: 6px;
+            font-size: 11px;
             opacity: 0.45;
+            transition: opacity 0.15s ease, color 0.15s ease;
         }
 
-        #siswaTable th.sort-active {
+        #siswaTable th.sort-active .sort-header-link {
             color: #15803d !important;
+            background-color: #f0fdf4 !important;
         }
 
         #siswaTable th.sort-active .sort-icon {
@@ -628,6 +648,95 @@
             font-weight: 700;
         }
 
+        .btn-clear-search {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            font-size: 14px;
+            text-decoration: none !important;
+            cursor: pointer;
+            padding: 4px;
+            line-height: 1;
+            transition: color 0.15s ease;
+        }
+
+        .btn-clear-search:hover {
+            color: #ef4444;
+        }
+
+        /* Hilangkan delay animasi preloader pada halaman data siswa */
+        .preloader {
+            display: none !important;
+            height: 0 !important;
+            opacity: 0 !important;
+            visibility: hidden !important;
+            pointer-events: none !important;
+        }
+
+        /* Pagination Styling */
+        .siswa-pagination-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 16px;
+            padding-top: 14px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .siswa-pagination-info {
+            font-size: 13px;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .siswa-pagination-links nav {
+            display: flex;
+            align-items: center;
+        }
+
+        .siswa-pagination-links .pagination {
+            margin-bottom: 0;
+            gap: 4px;
+        }
+
+        .siswa-pagination-links .page-item .page-link {
+            color: #334155;
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px !important;
+            font-size: 13px;
+            font-weight: 600;
+            padding: 6px 13px;
+            line-height: 1.4;
+            transition: all 0.15s ease;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+        }
+
+        .siswa-pagination-links .page-item.active .page-link {
+            background-color: #16a34a !important;
+            border-color: #16a34a !important;
+            color: #ffffff !important;
+            box-shadow: 0 2px 5px rgba(22, 163, 74, 0.28);
+        }
+
+        .siswa-pagination-links .page-item .page-link:hover {
+            background-color: #f0fdf4;
+            border-color: #86efac;
+            color: #15803d;
+            transform: translateY(-1px);
+        }
+
+        .siswa-pagination-links .page-item.disabled .page-link {
+            color: #94a3b8;
+            background-color: #f8fafc;
+            border-color: #e2e8f0;
+            box-shadow: none;
+        }
+
         /* Responsive Breakpoints */
         @media (max-width: 768px) {
             .siswa-page-header {
@@ -645,6 +754,11 @@
             }
             .siswa-toolbar-actions {
                 justify-content: flex-end;
+            }
+            .siswa-pagination-container {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
             }
         }
     </style>
@@ -674,9 +788,7 @@
     @endif
 
     @php
-        $tahunAktif = \App\Models\TahunAjaran::where('is_active', true)->first()
-            ?? \App\Models\TahunAjaran::orderByDesc('nama')->first();
-        $tahunAjaranNama = $tahunAktif?->nama ?? date('Y') . '/' . (date('Y') + 1);
+        $tahunAjaranNama = $tahunAjaranNama ?? date('Y') . '/' . (date('Y') + 1);
     @endphp
 
     {{-- 1. PAGE HEADER (Compact, Natural, Informative) --}}
@@ -694,7 +806,7 @@
             <div class="siswa-header-badges">
                 <span class="badge-info-pill">
                     <i class="fas fa-users text-muted"></i>
-                    Total Siswa: {{ $siswa->count() }} Orang
+                    Total Siswa: {{ $totalSiswa ?? $siswa->total() }} Orang
                 </span>
                 <span class="badge-info-pill badge-ta">
                     <i class="far fa-calendar-alt"></i>
@@ -710,16 +822,25 @@
 
             {{-- Toolbar: Search on Left, Action Buttons on Right --}}
             <div class="siswa-toolbar">
-                <div class="siswa-search-box">
+                <form method="GET" action="{{ route('siswa.index') }}" class="siswa-search-box">
                     <i class="fas fa-search"></i>
+                    <input type="hidden" name="sort" value="{{ request('sort', 'nama') }}">
+                    <input type="hidden" name="direction" value="{{ request('direction', 'asc') }}">
                     <input
                         type="text"
+                        name="search"
                         id="siswaSearchInput"
                         class="siswa-search-input"
-                        placeholder="Cari NIS, nama, atau kelas..."
+                        placeholder="Cari NIS, nama, atau kelas... (Tekan Enter)"
+                        value="{{ request('search') }}"
                         autocomplete="off"
                     >
-                </div>
+                    @if(request('search'))
+                        <a href="{{ route('siswa.index', ['sort' => request('sort', 'nama'), 'direction' => request('direction', 'asc')]) }}" class="btn-clear-search" title="Hapus Pencarian">
+                            <i class="fas fa-times-circle"></i>
+                        </a>
+                    @endif
+                </form>
 
                 <div class="siswa-toolbar-actions">
                     <button
@@ -757,6 +878,28 @@
                 </div>
             </div>
 
+            {{-- Indikator Pencarian Aktif --}}
+            @if(request('search'))
+                <div class="mb-3 d-flex align-items-center justify-content-between p-2 px-3 bg-light border rounded" style="border-radius: 8px; font-size: 13px;">
+                    <span>
+                        <i class="fas fa-search text-success mr-1"></i>
+                        Hasil pencarian untuk: <strong>"{{ request('search') }}"</strong> &mdash; Ditemukan {{ $siswa->total() }} siswa
+                    </span>
+                    <a href="{{ route('siswa.index') }}" class="text-danger font-weight-bold" style="font-size: 12.5px; text-decoration: none;">
+                        <i class="fas fa-times mr-1"></i> Reset Pencarian
+                    </a>
+                </div>
+            @endif
+
+            @php
+                $currentSort = $sort ?? request('sort', 'nama');
+                $currentDir = $direction ?? request('direction', 'asc');
+                $sortUrl = function($column) use ($currentSort, $currentDir) {
+                    $nextDir = ($currentSort === $column && $currentDir === 'asc') ? 'desc' : 'asc';
+                    return request()->fullUrlWithQuery(['sort' => $column, 'direction' => $nextDir, 'page' => 1]);
+                };
+            @endphp
+
             {{-- Table Container --}}
             @if($siswa->count() > 0)
                 <div class="siswa-table-wrapper">
@@ -764,31 +907,105 @@
                         <thead>
                             <tr>
                                 <th class="col-no-cell">No</th>
-                                <th class="col-nis-cell sortable" data-sort="nis" title="Klik untuk mengurutkan berdasarkan NIS">
-                                    NIS <i class="fas fa-sort sort-icon"></i>
+                                <th class="col-nis-cell sortable {{ $currentSort === 'nis' ? 'sort-active' : '' }}">
+                                    <a href="{{ $sortUrl('nis') }}" class="sort-header-link" title="Klik untuk mengurutkan berdasarkan NIS ({{ $currentSort === 'nis' && $currentDir === 'asc' ? 'Terbesar ke Terkecil' : 'Terkecil ke Terbesar' }})">
+                                        <span>NIS</span>
+                                        @if($currentSort === 'nis')
+                                            <i class="fas fa-sort-{{ $currentDir === 'asc' ? 'up' : 'down' }} sort-icon"></i>
+                                        @else
+                                            <i class="fas fa-sort sort-icon"></i>
+                                        @endif
+                                    </a>
                                 </th>
-                                <th class="col-nama-cell sortable" data-sort="nama" title="Klik untuk mengurutkan berdasarkan Nama">
-                                    Nama Siswa <i class="fas fa-sort sort-icon"></i>
+                                <th class="col-nama-cell sortable {{ $currentSort === 'nama' ? 'sort-active' : '' }}">
+                                    <a href="{{ $sortUrl('nama') }}" class="sort-header-link" title="Klik untuk mengurutkan berdasarkan Nama Siswa ({{ $currentSort === 'nama' && $currentDir === 'asc' ? 'Z ke A' : 'A ke Z' }})">
+                                        <span>Nama Siswa</span>
+                                        @if($currentSort === 'nama')
+                                            <i class="fas fa-sort-{{ $currentDir === 'asc' ? 'up' : 'down' }} sort-icon"></i>
+                                        @else
+                                            <i class="fas fa-sort sort-icon"></i>
+                                        @endif
+                                    </a>
                                 </th>
-                                <th class="col-kelas-cell sortable" data-sort="kelas" title="Klik untuk mengurutkan berdasarkan Kelas">
-                                    Kelas <i class="fas fa-sort sort-icon"></i>
+                                <th class="col-kelas-cell sortable {{ $currentSort === 'kelas' ? 'sort-active' : '' }}">
+                                    <a href="{{ $sortUrl('kelas') }}" class="sort-header-link" title="Klik untuk mengurutkan berdasarkan Kelas ({{ $currentSort === 'kelas' && $currentDir === 'asc' ? 'Tingkat Tinggi ke Rendah' : 'Tingkat Rendah ke Tinggi' }})">
+                                        <span>Kelas</span>
+                                        @if($currentSort === 'kelas')
+                                            <i class="fas fa-sort-{{ $currentDir === 'asc' ? 'up' : 'down' }} sort-icon"></i>
+                                        @else
+                                            <i class="fas fa-sort sort-icon"></i>
+                                        @endif
+                                    </a>
                                 </th>
                                 <th class="col-aksi-cell">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
-@foreach($siswa as $item)
-<tr data-nis="{{ $item->nis ?? '' }}" data-nama="{{ $item->nama ?? '' }}" data-kelas="{{ $item->kelas ?? '' }}">
-<td class="col-no-cell row-number">{{ $loop->iteration }}</td>
-<td class="col-nis-cell">{{ $item->nis ?? '-' }}</td>
-<td class="col-nama-cell"><div class="student-name-text"><span class="student-icon"><i class="fas fa-user"></i></span> <span>{{ $item->nama ?? '-' }}</span></div></td>
-<td class="col-kelas-cell"><span class="badge-kelas-simple">{{ $item->kelas ?? '-' }}</span></td>
-<td class="col-aksi-cell"><div class="siswa-action-group"><button type="button" class="btn-act-edit btn-trigger-edit" title="Edit Data Siswa" data-id="{{ $item->id }}" data-nis="{{ $item->nis }}" data-nama="{{ $item->nama }}" data-kelas="{{ $item->kelas }}" data-url="{{ route('siswa.update', $item->id) }}"><i class="fas fa-pen"></i></button><button type="button" class="btn-act-hapus btn-trigger-hapus" title="Hapus Data Siswa" data-id="{{ $item->id }}" data-nis="{{ $item->nis }}" data-nama="{{ $item->nama }}" data-kelas="{{ $item->kelas }}" data-url="{{ route('siswa.destroy', $item->id) }}"><i class="fas fa-trash-alt"></i></button></div></td>
-</tr>
-@endforeach
+                            @foreach($siswa as $item)
+                                <tr data-nis="{{ $item->nis ?? '' }}" data-nama="{{ $item->nama ?? '' }}" data-kelas="{{ $item->kelas ?? '' }}">
+                                    <td class="col-no-cell">
+                                        {{ $siswa->firstItem() ? ($siswa->firstItem() + $loop->index) : $loop->iteration }}
+                                    </td>
+
+                                    <td class="col-nis-cell">
+                                        {{ $item->nis ?? '-' }}
+                                    </td>
+
+                                    <td class="col-nama-cell">
+                                        <div class="student-name-text">
+                                            <span class="student-icon">
+                                                <i class="fas fa-user"></i>
+                                            </span>
+                                            <span>{{ $item->nama ?? '-' }}</span>
+                                        </div>
+                                    </td>
+
+                                    <td class="col-kelas-cell">
+                                        <span class="badge-kelas-simple">
+                                            {{ $item->kelas ?? '-' }}
+                                        </span>
+                                    </td>
+
+                                    <td class="col-aksi-cell">
+                                         <div class="siswa-action-group">
+                                             <button
+                                                 type="button"
+                                                 class="btn-act-edit"
+                                                 title="Edit Data Siswa"
+                                                 data-toggle="modal"
+                                                 data-target="#modalEditSiswa{{ $item->id }}"
+                                             >
+                                                 <i class="fas fa-pen"></i>
+                                             </button>
+
+                                             <button
+                                                 type="button"
+                                                 class="btn-act-hapus"
+                                                 title="Hapus Data Siswa"
+                                                 data-toggle="modal"
+                                                 data-target="#modalHapusSiswa{{ $item->id }}"
+                                             >
+                                                 <i class="fas fa-trash-alt"></i>
+                                             </button>
+                                         </div>
+                                     </td>
+                                </tr>
+                            @endforeach
                         </tbody>
                     </table>
                 </div>
+
+                {{-- Pagination Links (50 per halaman) --}}
+                @if($siswa->hasPages() || $siswa->total() > 0)
+                    <div class="siswa-pagination-container">
+                        <div class="siswa-pagination-info">
+                            Menampilkan <strong>{{ $siswa->firstItem() ?? 0 }}</strong> &ndash; <strong>{{ $siswa->lastItem() ?? 0 }}</strong> dari <strong>{{ $siswa->total() }}</strong> siswa
+                        </div>
+                        <div class="siswa-pagination-links">
+                            {{ $siswa->links('pagination::bootstrap-4') }}
+                        </div>
+                    </div>
+                @endif
             @else
                 <div class="text-center py-5 border rounded" style="background: #f8fafc; border-color: #e2e8f0 !important; border-radius: 10px;">
                     <i class="fas fa-user-graduate fa-3x text-muted mb-3 opacity-50"></i>
@@ -806,150 +1023,171 @@
         </div>
     </div>
 
-    {{-- MODAL EDIT DATA SISWA (Dynamic Reusable Instance) --}}
-    <div class="modal fade" id="modalEditSiswaDynamic" tabindex="-1" role="dialog" aria-labelledby="modalEditSiswaDynamicLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-            <div class="modal-content border-0 shadow" style="border-radius: 14px; overflow: hidden;">
-                <div class="modal-header modal-header-clean">
-                    <h5 class="modal-title font-weight-bold text-white" id="modalEditSiswaDynamicLabel" style="font-size: 16px;">
-                        <i class="fas fa-user-edit mr-2 text-white"></i>
-                        Edit Data Siswa
-                    </h5>
-                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-
-                <form action="" method="POST" id="formModalEditSiswaDynamic">
-                    @csrf
-                    @method('PUT')
-
-                    <div class="modal-body p-4">
-
-                        {{-- Section 1: Input NIS --}}
-                        <div class="form-group row mb-3">
-                            <label for="modal_edit_nis" class="col-sm-3 col-form-label font-weight-bold">
-                                NIS <span class="text-danger">*</span>
-                            </label>
-                            <div class="col-sm-9">
-                                <input
-                                    type="text"
-                                    name="nis"
-                                    id="modal_edit_nis"
-                                    class="form-control"
-                                    placeholder="Masukkan Nomor Induk Siswa"
-                                    maxlength="30"
-                                    required
-                                    style="border-radius: 8px;"
-                                >
-                            </div>
-                        </div>
-
-                        {{-- Section 2: Input Nama Siswa --}}
-                        <div class="form-group row mb-3">
-                            <label for="modal_edit_nama" class="col-sm-3 col-form-label font-weight-bold">
-                                Nama Siswa <span class="text-danger">*</span>
-                            </label>
-                            <div class="col-sm-9">
-                                <input
-                                    type="text"
-                                    name="nama"
-                                    id="modal_edit_nama"
-                                    class="form-control"
-                                    placeholder="Masukkan nama lengkap siswa"
-                                    maxlength="255"
-                                    required
-                                    style="border-radius: 8px;"
-                                >
-                            </div>
-                        </div>
-
-                        {{-- Section 3: Pilih Kelas --}}
-                        <div class="form-group row mb-2">
-                            <label for="modal_edit_kelas" class="col-sm-3 col-form-label font-weight-bold">
-                                Kelas <span class="text-danger">*</span>
-                            </label>
-                            <div class="col-sm-9">
-                                <select
-                                    name="kelas"
-                                    id="modal_edit_kelas"
-                                    class="form-control"
-                                    required
-                                    style="border-radius: 8px;"
-                                >
-                                    <option value="" disabled>-- Pilih Kelas --</option>
-                                    <option value="X TKJ">X TKJ</option>
-                                    <option value="X TKR 1">X TKR 1</option>
-                                    <option value="X TKR 2">X TKR 2</option>
-                                    <option value="XI TKJ">XI TKJ</option>
-                                    <option value="XI TKR 1">XI TKR 1</option>
-                                    <option value="XI TKR 2">XI TKR 2</option>
-                                    <option value="XII TKJ">XII TKJ</option>
-                                    <option value="XII TKR 1">XII TKR 1</option>
-                                    <option value="XII TKR 2">XII TKR 2</option>
-                                    <option value="Lulus">Lulus</option>
-                                </select>
-                            </div>
-                        </div>
-
-                    </div>
-
-                    <div class="modal-footer bg-light py-2 px-4 justify-content-end">
-                        <button type="button" class="btn btn-batal-merah px-4 mr-2" data-dismiss="modal">
-                            Batal
-                        </button>
-                        <button type="submit" class="btn btn-success px-4 font-weight-bold" style="border-radius: 8px; height: 38px;">
-                            <i class="fas fa-save mr-1"></i>
-                            Simpan Perubahan
+    {{-- MODAL EDIT DATA SISWA (Identical style to Modal Tambah Siswa) --}}
+    @foreach($siswa as $item)
+        <div class="modal fade" id="modalEditSiswa{{ $item->id }}" tabindex="-1" role="dialog" aria-labelledby="modalEditSiswaLabel{{ $item->id }}" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                <div class="modal-content border-0 shadow" style="border-radius: 14px; overflow: hidden;">
+                    <div class="modal-header modal-header-clean">
+                        <h5 class="modal-title font-weight-bold text-white" id="modalEditSiswaLabel{{ $item->id }}" style="font-size: 16px;">
+                            <i class="fas fa-user-edit mr-2 text-white"></i>
+                            Edit Data Siswa
+                        </h5>
+                        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
-                </form>
-            </div>
-        </div>
-    </div>
 
-    {{-- MODAL HAPUS SISWA (Dynamic Reusable Instance) --}}
-    <div class="modal fade" id="modalHapusSiswaDynamic" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content border-0 shadow" style="border-radius: 12px; overflow: hidden;">
-                <div class="modal-header modal-header-danger">
-                    <h5 class="modal-title">
-                        <i class="fas fa-trash-alt mr-2"></i>
-                        Konfirmasi Hapus Siswa
-                    </h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-
-                <div class="modal-body p-4">
-                    <p class="mb-2 text-dark" style="font-size: 13.5px;">
-                        Apakah Anda yakin ingin menghapus data siswa berikut?
-                    </p>
-
-                    <div class="p-3 bg-light border rounded mb-3" style="border-radius: 8px;">
-                        <div class="font-weight-bold text-dark" id="modal_hapus_nama" style="font-size: 14px;">-</div>
-                        <div class="text-muted small mt-1" id="modal_hapus_detail">NIS: - | Kelas: -</div>
-                    </div>
-
-                    <div class="alert alert-danger mb-0 small py-2 px-3" style="border-radius: 8px;">
-                        <i class="fas fa-exclamation-triangle mr-1"></i>
-                        Data siswa beserta seluruh riwayat pembayarannya yang terhapus tidak dapat dikembalikan.
-                    </div>
-                </div>
-
-                <div class="modal-footer bg-light py-2 px-4 justify-content-end">
-                    <form action="" method="POST" id="formModalHapusSiswaDynamic" class="d-inline">
+                    <form action="{{ route('siswa.update', $item->id) }}" method="POST" id="formModalEditSiswa{{ $item->id }}">
                         @csrf
-                        @method('DELETE')
-                        <button type="submit" class="btn btn-danger font-weight-bold px-3" style="height: 38px; border-radius: 8px;">
-                            <i class="fas fa-trash-alt mr-1"></i> Ya, Hapus
-                        </button>
+                        @method('PUT')
+
+                        <div class="modal-body p-4">
+
+                            {{-- Section 1: Input NIS --}}
+                            <div class="form-group row mb-3">
+                                <label for="modal_edit_nis_{{ $item->id }}" class="col-sm-3 col-form-label font-weight-bold">
+                                    NIS <span class="text-danger">*</span>
+                                </label>
+                                <div class="col-sm-9">
+                                    <input
+                                        type="text"
+                                        name="nis"
+                                        id="modal_edit_nis_{{ $item->id }}"
+                                        class="form-control @error('nis') is-invalid @enderror"
+                                        value="{{ old('nis', $item->nis) }}"
+                                        placeholder="Masukkan Nomor Induk Siswa"
+                                        maxlength="30"
+                                        required
+                                        style="border-radius: 8px;"
+                                    >
+                                    @error('nis')
+                                        <div class="invalid-feedback">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            {{-- Section 2: Input Nama Siswa --}}
+                            <div class="form-group row mb-3">
+                                <label for="modal_edit_nama_{{ $item->id }}" class="col-sm-3 col-form-label font-weight-bold">
+                                    Nama Siswa <span class="text-danger">*</span>
+                                </label>
+                                <div class="col-sm-9">
+                                    <input
+                                        type="text"
+                                        name="nama"
+                                        id="modal_edit_nama_{{ $item->id }}"
+                                        class="form-control @error('nama') is-invalid @enderror"
+                                        value="{{ old('nama', $item->nama) }}"
+                                        placeholder="Masukkan nama lengkap siswa"
+                                        maxlength="255"
+                                        required
+                                        style="border-radius: 8px;"
+                                    >
+                                    @error('nama')
+                                        <div class="invalid-feedback">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            {{-- Section 3: Pilih Kelas --}}
+                            <div class="form-group row mb-2">
+                                <label for="modal_edit_kelas_{{ $item->id }}" class="col-sm-3 col-form-label font-weight-bold">
+                                    Kelas <span class="text-danger">*</span>
+                                </label>
+                                <div class="col-sm-9">
+                                    <select
+                                        name="kelas"
+                                        id="modal_edit_kelas_{{ $item->id }}"
+                                        class="form-control @error('kelas') is-invalid @enderror"
+                                        required
+                                        style="border-radius: 8px;"
+                                    >
+                                        <option value="" disabled>-- Pilih Kelas --</option>
+                                        <option value="X TKJ" {{ old('kelas', $item->kelas) == 'X TKJ' ? 'selected' : '' }}>X TKJ</option>
+                                        <option value="X TKR 1" {{ old('kelas', $item->kelas) == 'X TKR 1' ? 'selected' : '' }}>X TKR 1</option>
+                                        <option value="X TKR 2" {{ old('kelas', $item->kelas) == 'X TKR 2' ? 'selected' : '' }}>X TKR 2</option>
+                                        <option value="XI TKJ" {{ old('kelas', $item->kelas) == 'XI TKJ' ? 'selected' : '' }}>XI TKJ</option>
+                                        <option value="XI TKR 1" {{ old('kelas', $item->kelas) == 'XI TKR 1' ? 'selected' : '' }}>XI TKR 1</option>
+                                        <option value="XI TKR 2" {{ old('kelas', $item->kelas) == 'XI TKR 2' ? 'selected' : '' }}>XI TKR 2</option>
+                                        <option value="XII TKJ" {{ old('kelas', $item->kelas) == 'XII TKJ' ? 'selected' : '' }}>XII TKJ</option>
+                                        <option value="XII TKR 1" {{ old('kelas', $item->kelas) == 'XII TKR 1' ? 'selected' : '' }}>XII TKR 1</option>
+                                        <option value="XII TKR 2" {{ old('kelas', $item->kelas) == 'XII TKR 2' ? 'selected' : '' }}>XII TKR 2</option>
+                                        <option value="Lulus" {{ old('kelas', $item->kelas) == 'Lulus' ? 'selected' : '' }}>Lulus</option>
+                                    </select>
+                                    @error('kelas')
+                                        <div class="invalid-feedback">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="modal-footer bg-light py-2 px-4 justify-content-end">
+                            <button type="button" class="btn btn-batal-merah px-4 mr-2" data-dismiss="modal">
+                                Batal
+                            </button>
+                            <button type="submit" class="btn btn-success px-4 font-weight-bold" style="border-radius: 8px; height: 38px;">
+                                <i class="fas fa-save mr-1"></i>
+                                Simpan Perubahan
+                            </button>
+                        </div>
                     </form>
                 </div>
             </div>
         </div>
-    </div>
+    @endforeach
+
+    {{-- MODAL HAPUS SISWA (Cleanly Separated Outside Table) --}}
+    @foreach($siswa as $item)
+        <div class="modal fade" id="modalHapusSiswa{{ $item->id }}" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content border-0 shadow" style="border-radius: 12px; overflow: hidden;">
+                    <div class="modal-header modal-header-danger">
+                        <h5 class="modal-title">
+                            <i class="fas fa-trash-alt mr-2"></i>
+                            Konfirmasi Hapus Siswa
+                        </h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+
+                    <div class="modal-body p-4">
+                        <p class="mb-2 text-dark" style="font-size: 13.5px;">
+                            Apakah Anda yakin ingin menghapus data siswa berikut?
+                        </p>
+
+                        <div class="p-3 bg-light border rounded mb-3" style="border-radius: 8px;">
+                            <div class="font-weight-bold text-dark" style="font-size: 14px;">{{ $item->nama ?? '-' }}</div>
+                            <div class="text-muted small mt-1">NIS: {{ $item->nis ?? '-' }} | Kelas: {{ $item->kelas ?? '-' }}</div>
+                        </div>
+
+                        <div class="alert alert-danger mb-0 small py-2 px-3" style="border-radius: 8px;">
+                            <i class="fas fa-exclamation-triangle mr-1"></i>
+                            Data siswa beserta seluruh riwayat pembayarannya yang terhapus tidak dapat dikembalikan.
+                        </div>
+                    </div>
+
+                    <div class="modal-footer bg-light py-2 px-4 justify-content-end">
+                        <form action="{{ route('siswa.destroy', $item->id) }}" method="POST" class="d-inline">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-danger font-weight-bold px-3" style="height: 38px; border-radius: 8px;">
+                                <i class="fas fa-trash-alt mr-1"></i> Ya, Hapus
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endforeach
 
     {{-- MODAL TAMBAH DATA SISWA (Identical style to Modal Tambah Tagihan IPP) --}}
     <div class="modal fade" id="modalTambahSiswa" tabindex="-1" role="dialog" aria-labelledby="modalTambahSiswaLabel" aria-hidden="true">
@@ -1411,7 +1649,23 @@
 
 @section('js')
 <script>
+// Hilangkan delay animasi preloader secepat mungkin saat halaman dibuka
+(function() {
+    var pl = document.querySelector('.preloader');
+    if (pl) {
+        pl.style.display = 'none';
+        pl.style.height = '0';
+        try { pl.remove(); } catch(e) {}
+    }
+})();
+
 document.addEventListener('DOMContentLoaded', function () {
+    // Pastikan preloader benar-benar bersih
+    var pl = document.querySelector('.preloader');
+    if (pl) {
+        try { pl.remove(); } catch(e) {}
+    }
+
     // Tooltip init
     if (window.jQuery && $.fn.tooltip) {
         $('[data-toggle="tooltip"]').tooltip();
@@ -1424,163 +1678,18 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     @endif
 
-    // Dynamic Edit & Hapus Siswa Modal Triggers
-    if (window.jQuery) {
-        $(document).on('click', '.btn-trigger-edit', function () {
-            const id = $(this).data('id');
-            const nis = $(this).data('nis');
-            const nama = $(this).data('nama');
-            const kelas = $(this).data('kelas');
-            const url = $(this).data('url');
-
-            $('#formModalEditSiswaDynamic').attr('action', url);
-            $('#modal_edit_nis').val(nis);
-            $('#modal_edit_nama').val(nama);
-            $('#modal_edit_kelas').val(kelas);
-            $('#modalEditSiswaDynamic').modal('show');
-        });
-
-        $(document).on('click', '.btn-trigger-hapus', function () {
-            const nama = $(this).data('nama');
-            const nis = $(this).data('nis');
-            const kelas = $(this).data('kelas');
-            const url = $(this).data('url');
-
-            $('#formModalHapusSiswaDynamic').attr('action', url);
-            $('#modal_hapus_nama').text(nama || '-');
-            $('#modal_hapus_detail').text('NIS: ' + (nis || '-') + ' | Kelas: ' + (kelas || '-'));
-            $('#modalHapusSiswaDynamic').modal('show');
-        });
-    }
-
-    // =========================================================================
-    // CLIENT-SIDE SORT & SEARCH (matching IPP table pattern)
-    // =========================================================================
-    const siswaTable = document.getElementById('siswaTable');
-    if (siswaTable) {
-        const siswaTbody = siswaTable.querySelector('tbody');
-        const searchInput = document.getElementById('siswaSearchInput');
-        let sortColumn = '';
-        let sortDirection = 'asc';
-
-        function getSiswaRows() {
-            return Array.from(siswaTbody.querySelectorAll('tr[data-nis]'));
-        }
-
-        function updateSiswaNumber() {
-            let number = 1;
-            getSiswaRows().forEach(function (row) {
-                const numberCell = row.querySelector('.row-number');
-                if (numberCell && row.style.display !== 'none') {
-                    numberCell.textContent = number;
-                    number++;
-                }
-            });
-        }
-
-        function updateSiswaSortIcon() {
-            document.querySelectorAll('#siswaTable th.sortable').forEach(function (header) {
-                header.classList.remove('sort-active');
-                var icon = header.querySelector('.sort-icon');
-                if (icon) icon.className = 'fas fa-sort sort-icon';
-            });
-
-            var activeHeader = document.querySelector('#siswaTable th[data-sort="' + sortColumn + '"]');
-            if (!activeHeader) return;
-            activeHeader.classList.add('sort-active');
-            var icon = activeHeader.querySelector('.sort-icon');
-            if (icon) {
-                icon.className = (sortDirection === 'asc') ? 'fas fa-sort-up sort-icon' : 'fas fa-sort-down sort-icon';
-            }
-        }
-
-        const classOrderMap = {
-            'X TKJ': 1,
-            'X TKR 1': 2,
-            'X TKR 2': 3,
-            'XI TKJ': 4,
-            'XI TKR 1': 5,
-            'XI TKR 2': 6,
-            'XII TKJ': 7,
-            'XII TKR 1': 8,
-            'XII TKR 2': 9,
-            'Lulus': 10
-        };
-
-        function getKelasRank(kelas) {
-            return classOrderMap[kelas] !== undefined ? classOrderMap[kelas] : 99;
-        }
-
-        function sortSiswaTable(column) {
-            if (sortColumn === column) {
-                sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
-            } else {
-                sortColumn = column;
-                sortDirection = 'asc';
-            }
-
-            var rows = getSiswaRows();
-            rows.sort(function (a, b) {
-                var valueA, valueB;
-                if (column === 'nis') {
-                    valueA = a.dataset.nis || '';
-                    valueB = b.dataset.nis || '';
-                    return sortDirection === 'asc'
-                        ? valueA.localeCompare(valueB, undefined, { numeric: true, sensitivity: 'base' })
-                        : valueB.localeCompare(valueA, undefined, { numeric: true, sensitivity: 'base' });
-                }
-                if (column === 'nama') {
-                    valueA = (a.dataset.nama || '').toLowerCase();
-                    valueB = (b.dataset.nama || '').toLowerCase();
-                    var cmpNama = sortDirection === 'asc' ? valueA.localeCompare(valueB, 'id') : valueB.localeCompare(valueA, 'id');
-                    if (cmpNama !== 0) return cmpNama;
-                    return getKelasRank(a.dataset.kelas) - getKelasRank(b.dataset.kelas);
-                }
-                if (column === 'kelas') {
-                    var rankA = getKelasRank(a.dataset.kelas);
-                    var rankB = getKelasRank(b.dataset.kelas);
-                    var cmpKelas = rankA !== rankB 
-                        ? (rankA - rankB)
-                        : (a.dataset.kelas || '').localeCompare(b.dataset.kelas || '', 'id');
-                    
-                    if (cmpKelas !== 0) {
-                        return sortDirection === 'asc' ? cmpKelas : -cmpKelas;
-                    }
-                    // Tie-breaker: abjad nama siswa
-                    var namaA = (a.dataset.nama || '').toLowerCase();
-                    var namaB = (b.dataset.nama || '').toLowerCase();
-                    return namaA.localeCompare(namaB, 'id');
-                }
-                return 0;
-            });
+    // Client-side live search
+    const searchInput = document.getElementById('siswaSearchInput');
+    if (searchInput) {
+        searchInput.addEventListener('input', function () {
+            const query = this.value.toLowerCase().trim();
+            const rows = document.querySelectorAll('#siswaTable tbody tr');
 
             rows.forEach(function (row) {
-                siswaTbody.appendChild(row);
-            });
-
-            updateSiswaNumber();
-            updateSiswaSortIcon();
-        }
-
-        document.querySelectorAll('#siswaTable th.sortable').forEach(function (header) {
-            header.addEventListener('click', function () {
-                sortSiswaTable(this.dataset.sort);
+                const text = row.innerText.toLowerCase();
+                row.style.display = text.includes(query) ? '' : 'none';
             });
         });
-
-        if (searchInput) {
-            searchInput.addEventListener('input', function () {
-                var query = this.value.toLowerCase().trim();
-                getSiswaRows().forEach(function (row) {
-                    var text = row.innerText.toLowerCase();
-                    row.style.display = text.includes(query) ? '' : 'none';
-                });
-                updateSiswaNumber();
-            });
-        }
-
-        // Default sort: Kelas (urutan tingkat kelas) & Abjad Nama
-        sortSiswaTable('kelas');
     }
 
     /* =========================================================================
@@ -1916,6 +2025,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
 
+            if (!confirm(`Konfirmasi import: Anda akan mengimport/memproses ${finalCount} data siswa ke database. Lanjutkan?`)) {
+                return;
+            }
+
             btnConfirmExecuteImport.disabled = true;
             btnConfirmExecuteImport.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Menyimpan ke Database...';
 
@@ -1936,18 +2049,18 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(data => {
                 if (!data.success) {
                     btnConfirmExecuteImport.disabled = false;
-                    btnConfirmExecuteImport.innerHTML = '<i class="fas fa-check-circle mr-1"></i> Konfirmasi &amp; Import (<span id="countImportFinal">' + finalCount + '</span> Siswa)';
+                    btnConfirmExecuteImport.innerHTML = '<i class="fas fa-check-circle mr-1"></i> Konfirmasi & Import';
                     alert(data.message || 'Gagal mengimport data.');
                     return;
                 }
 
                 // Sukses -> tutup modal dan reload halaman agar data terbaru langsung tampil
                 modalImport.modal('hide');
-                window.location.href = '{{ route("siswa.index") }}';
+                window.location.reload();
             })
             .catch(err => {
                 btnConfirmExecuteImport.disabled = false;
-                btnConfirmExecuteImport.innerHTML = '<i class="fas fa-check-circle mr-1"></i> Konfirmasi &amp; Import (<span id="countImportFinal">' + finalCount + '</span> Siswa)';
+                btnConfirmExecuteImport.innerHTML = '<i class="fas fa-check-circle mr-1"></i> Konfirmasi & Import';
                 alert('Terjadi kesalahan saat menyimpan data: ' + err.message);
             });
         });

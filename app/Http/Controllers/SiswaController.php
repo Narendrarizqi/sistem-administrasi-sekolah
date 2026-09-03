@@ -11,43 +11,49 @@ use Illuminate\Support\Facades\DB;
 
 class SiswaController extends Controller
 {
-    public function index(?Request $request = null)
+    public function index(Request $request)
     {
-        $request = $request ?? request();
         $taAktif = $this->getTahunAjaranAktif();
         $tahunAjaranNama = $taAktif ? $taAktif->nama : $this->tahunAjaranSaatIni();
 
+        $search = trim($request->input('search', ''));
         $query = Siswa::query();
 
-        if ($search = $request->input('search')) {
+        if ($search !== '') {
             $query->where(function ($q) use ($search) {
-                $q->where('nis', 'like', "%{$search}%")
-                  ->orWhere('nama', 'like', "%{$search}%")
+                $q->where('nama', 'like', "%{$search}%")
+                  ->orWhere('nis', 'like', "%{$search}%")
                   ->orWhere('kelas', 'like', "%{$search}%");
             });
         }
 
-        if ($kelas = $request->input('kelas')) {
-            $query->where('kelas', $kelas);
+        $sort = $request->query('sort', 'nama');
+        $direction = strtolower($request->query('direction', 'asc')) === 'desc' ? 'desc' : 'asc';
+        if (!in_array($sort, ['nis', 'nama', 'kelas'])) {
+            $sort = 'nama';
+            $direction = 'asc';
         }
 
-        $siswa = $query->orderByRaw("CASE 
-            WHEN kelas = 'X TKJ' THEN 1
-            WHEN kelas = 'X TKR 1' THEN 2
-            WHEN kelas = 'X TKR 2' THEN 3
-            WHEN kelas = 'XI TKJ' THEN 4
-            WHEN kelas = 'XI TKR 1' THEN 5
-            WHEN kelas = 'XI TKR 2' THEN 6
-            WHEN kelas = 'XII TKJ' THEN 7
-            WHEN kelas = 'XII TKR 1' THEN 8
-            WHEN kelas = 'XII TKR 2' THEN 9
-            WHEN kelas = 'Lulus' THEN 10
-            ELSE 11
-        END ASC")
-        ->orderBy('nama', 'asc')
-        ->get();
+        if ($sort === 'kelas') {
+            $query->orderByRaw("
+                CASE 
+                    WHEN kelas LIKE 'X %' THEN 1
+                    WHEN kelas LIKE 'XI %' THEN 2
+                    WHEN kelas LIKE 'XII %' THEN 3
+                    WHEN kelas = 'Lulus' THEN 4
+                    ELSE 5
+                END {$direction}, kelas {$direction}, nama ASC
+            ");
+        } elseif ($sort === 'nis') {
+            $query->orderBy('nis', $direction)->orderBy('nama', 'asc');
+        } else {
+            $query->orderBy('nama', $direction);
+        }
 
-        return view('siswa.index', compact('siswa', 'tahunAjaranNama'));
+        $totalSiswa = Siswa::count();
+        $siswa = $query->paginate(50)->withQueryString();
+
+        return view('siswa.index', compact('siswa', 'tahunAjaranNama', 'totalSiswa', 'search', 'sort', 'direction'));
     }
 
     /**
@@ -176,7 +182,6 @@ class SiswaController extends Controller
                 : 'Tidak ada data baru yang diimport.';
 
             if ($request->wantsJson() || $request->ajax()) {
-                session()->flash('success', $successMsg);
                 return response()->json([
                     'success' => true,
                     'result'  => $result,
