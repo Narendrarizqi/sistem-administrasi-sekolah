@@ -8,6 +8,227 @@
     @stack('css')
     @yield('css')
     <style>
+        /* ===============================================================
+           GLOBAL COMPACT SIDEBAR DESIGN (215px) - UNIFORM ACROSS ALL PAGES
+           =============================================================== */
+        :root {
+            --sidebar-width: 215px;
+        }
+
+        /* Sidebar Container (Compact, Modern SaaS, Pure White) */
+        .main-sidebar,
+        .main-sidebar::before,
+        aside.main-sidebar {
+            background: #ffffff !important;
+            border-right: 1px solid #e2e8f0 !important;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+            overflow-x: hidden !important;
+        }
+
+        .main-sidebar .sidebar {
+            overflow-x: hidden !important;
+            padding-left: 6px !important;
+            padding-right: 6px !important;
+        }
+
+        @media (min-width: 768px) {
+            body:not(.sidebar-collapse) .main-sidebar,
+            body:not(.sidebar-collapse) .main-sidebar::before,
+            body:not(.sidebar-collapse).layout-fixed .main-sidebar,
+            body:not(.sidebar-collapse).layout-fixed .main-sidebar::before,
+            body:not(.sidebar-collapse) aside.main-sidebar {
+                width: var(--sidebar-width) !important;
+                min-width: var(--sidebar-width) !important;
+                max-width: var(--sidebar-width) !important;
+            }
+
+            body:not(.sidebar-collapse) .content-wrapper,
+            body:not(.sidebar-collapse) .main-header,
+            body:not(.sidebar-collapse) .main-footer,
+            body:not(.sidebar-collapse).layout-fixed .content-wrapper,
+            body:not(.sidebar-collapse).layout-fixed .main-header,
+            body:not(.sidebar-collapse).layout-fixed .main-footer {
+                margin-left: var(--sidebar-width) !important;
+            }
+
+            .sidebar-mini.sidebar-collapse .main-sidebar:hover,
+            .sidebar-mini.sidebar-collapse .main-sidebar:hover::before,
+            .sidebar-mini-lg.sidebar-collapse .main-sidebar:hover,
+            .sidebar-mini-lg.sidebar-collapse .main-sidebar:hover::before {
+                width: var(--sidebar-width) !important;
+            }
+
+            .sidebar-mini.sidebar-collapse .main-sidebar:hover .brand-link,
+            .sidebar-mini-lg.sidebar-collapse .main-sidebar:hover .brand-link {
+                width: var(--sidebar-width) !important;
+            }
+        }
+
+        @media (max-width: 767.98px) {
+            .main-sidebar,
+            .main-sidebar::before,
+            aside.main-sidebar {
+                width: var(--sidebar-width) !important;
+            }
+        }
+
+        .content-wrapper,
+        .main-header,
+        .main-footer {
+            transition: margin-left 0.32s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        }
+
+        /* Brand / Logo Area in Sidebar (57px height, fits 215px) */
+        .brand-link {
+            background: #ffffff !important;
+            border-bottom: 1px solid #e2e8f0 !important;
+            border-right: 1px solid #e2e8f0 !important;
+            padding: 0 12px !important;
+            height: 57px !important;
+            min-height: 57px !important;
+            display: flex !important;
+            align-items: center !important;
+            gap: 9px !important;
+            box-sizing: border-box !important;
+            overflow: hidden !important;
+            transition: width 0.32s cubic-bezier(0.4, 0, 0.2, 1),
+                padding 0.32s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        }
+
+        body:not(.sidebar-collapse) .brand-link,
+        body:not(.sidebar-collapse).layout-fixed .brand-link {
+            width: var(--sidebar-width) !important;
+            max-width: var(--sidebar-width) !important;
+        }
+
+        .brand-link .brand-image {
+            width: 32px !important;
+            height: 32px !important;
+            max-height: 32px !important;
+            margin: 0 !important;
+            flex-shrink: 0 !important;
+            border-radius: 50% !important;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+            border: 1px solid #e2e8f0 !important;
+        }
+
+        .brand-link .brand-text {
+            color: #64748b !important;
+            font-size: 11px !important;
+            line-height: 1.15 !important;
+            font-weight: 500 !important;
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: center !important;
+            transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+                visibility 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        }
+
+        .brand-link .brand-text b,
+        .brand-link .brand-text strong {
+            color: #0f172a !important;
+            font-size: 12.5px !important;
+            font-weight: 700 !important;
+            line-height: 1.15 !important;
+            letter-spacing: -0.01em !important;
+            white-space: nowrap !important;
+            margin-bottom: 1px !important;
+        }
+
+        .brand-link .brand-text br {
+            display: none !important;
+        }
+
+        /* Sidebar Section Headers (MASTER DATA, PEMBAYARAN, etc.) */
+        .nav-sidebar .nav-header {
+            color: #94a3b8 !important;
+            font-size: 10px !important;
+            font-weight: 700 !important;
+            letter-spacing: .08em !important;
+            text-transform: uppercase !important;
+            padding: 10px 10px 3px !important;
+            white-space: nowrap !important;
+        }
+
+        /* Sidebar Menu Links */
+        .nav-sidebar .nav-link {
+            color: #64748b !important;
+            border-radius: 7px !important;
+            margin: 1.5px 4px !important;
+            padding: 6.5px 10px !important;
+            font-size: 12.5px !important;
+            font-weight: 550 !important;
+            line-height: 1.35 !important;
+            display: flex !important;
+            align-items: center !important;
+            transition: background-color .15s ease, color .15s ease !important;
+        }
+
+        .nav-sidebar .nav-link p {
+            margin-bottom: 0 !important;
+            font-size: 12.5px !important;
+            white-space: nowrap !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+        }
+
+        .nav-sidebar .nav-link .nav-icon {
+            color: #64748b !important;
+            font-size: 13.5px !important;
+            width: 18px !important;
+            text-align: center !important;
+            margin-right: 8px !important;
+            opacity: 0.85 !important;
+            flex-shrink: 0 !important;
+            transition: color .15s ease !important;
+        }
+
+        .nav-sidebar .nav-link:hover {
+            background: #F1F5F9 !important;
+            color: #1E293B !important;
+        }
+
+        .nav-sidebar .nav-link:hover .nav-icon {
+            color: #1E293B !important;
+        }
+
+        /* Active Menu Item: Soft Green Pill */
+        .nav-sidebar .nav-link.active {
+            background: rgba(22, 163, 74, 0.10) !important;
+            color: #16A34A !important;
+            font-weight: 600 !important;
+            box-shadow: none !important;
+        }
+
+        .nav-sidebar .nav-link.active .nav-icon {
+            color: #16A34A !important;
+        }
+
+        .nav-sidebar .nav-treeview .nav-link.active {
+            background: rgba(22, 163, 74, 0.08) !important;
+            color: #15803D !important;
+        }
+
+        /* Collapsed Sidebar State */
+        body.sidebar-collapse .brand-link {
+            width: 4.6rem !important;
+            padding: 0 !important;
+            justify-content: center !important;
+        }
+
+        body.sidebar-collapse .brand-link .brand-text {
+            display: none !important;
+        }
+
+        body.sidebar-collapse .brand-link .brand-image {
+            margin: 0 auto !important;
+        }
+
+        .sidebar-collapse .brand-link .brand-text,
+        .sidebar-collapse .nav-sidebar .nav-link p,
+        .sidebar-collapse .nav-sidebar .nav-header {
+            transition: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        }
         /* Global Perfect Centering for Alert Close Button */
         .alert.alert-dismissible,
         .alert-dismissible {

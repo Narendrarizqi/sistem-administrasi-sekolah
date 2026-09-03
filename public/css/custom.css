@@ -123,19 +123,72 @@ h6 {
 }
 
 /* ---------------------------------------------------------------
-   SIDEBAR (Step 2)
-   Konsep: putih, ramping, active state hijau lembut (bukan hijau
-   solid penuh), hover halus, spacing nyaman antar menu.
+   SIDEBAR (Step 2 - Compact, Slim & Modern 215px)
+   Konsep: putih, ramping (215px bukan 250px), font & icon proporsional,
+   active state hijau lembut, spacing nyaman antar menu.
 --------------------------------------------------------------- */
+:root {
+    --sidebar-width: 215px;
+}
+
+@media (min-width: 768px) {
+    body:not(.sidebar-collapse) .main-sidebar,
+    body:not(.sidebar-collapse) .main-sidebar::before,
+    body:not(.sidebar-collapse).layout-fixed .main-sidebar,
+    body:not(.sidebar-collapse).layout-fixed .main-sidebar::before,
+    body:not(.sidebar-collapse) aside.main-sidebar {
+        width: var(--sidebar-width) !important;
+        min-width: var(--sidebar-width) !important;
+        max-width: var(--sidebar-width) !important;
+    }
+
+    body:not(.sidebar-collapse) .content-wrapper,
+    body:not(.sidebar-collapse) .main-header,
+    body:not(.sidebar-collapse) .main-footer,
+    body:not(.sidebar-collapse).layout-fixed .content-wrapper,
+    body:not(.sidebar-collapse).layout-fixed .main-header,
+    body:not(.sidebar-collapse).layout-fixed .main-footer {
+        margin-left: var(--sidebar-width) !important;
+    }
+
+    .sidebar-mini.sidebar-collapse .main-sidebar:hover,
+    .sidebar-mini.sidebar-collapse .main-sidebar:hover::before,
+    .sidebar-mini-lg.sidebar-collapse .main-sidebar:hover,
+    .sidebar-mini-lg.sidebar-collapse .main-sidebar:hover::before {
+        width: var(--sidebar-width) !important;
+    }
+
+    .sidebar-mini.sidebar-collapse .main-sidebar:hover .brand-link,
+    .sidebar-mini-lg.sidebar-collapse .main-sidebar:hover .brand-link {
+        width: var(--sidebar-width) !important;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .main-sidebar,
+    .main-sidebar::before,
+    aside.main-sidebar {
+        width: var(--sidebar-width) !important;
+    }
+}
+
 .main-sidebar,
-.main-sidebar::before {
-    background: var(--color-card) !important;
-    border-right: 1px solid var(--color-border);
-    box-shadow: none !important;
+.main-sidebar::before,
+aside.main-sidebar {
+    background: #ffffff !important;
+    border-right: 1px solid #e2e8f0 !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+    overflow-x: hidden !important;
     transition: margin-left 0.32s cubic-bezier(0.4, 0, 0.2, 1),
         width 0.32s cubic-bezier(0.4, 0, 0.2, 1),
         transform 0.32s cubic-bezier(0.4, 0, 0.2, 1),
         left 0.32s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.main-sidebar .sidebar {
+    overflow-x: hidden !important;
+    padding-left: 6px !important;
+    padding-right: 6px !important;
 }
 
 .content-wrapper,
@@ -144,33 +197,65 @@ h6 {
     transition: margin-left 0.32s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
-/* Brand / logo area */
+/* Brand / logo area (Pas dengan lebar sidebar 215px, tidak tembus ke navbar) */
 .brand-link {
     background: #ffffff !important;
     border-bottom: 1px solid #e2e8f0 !important;
-    padding: 10px 14px !important;
-    height: 54px !important;
+    border-right: 1px solid #e2e8f0 !important;
+    padding: 0 12px !important;
+    height: 57px !important;
+    min-height: 57px !important;
     display: flex !important;
     align-items: center !important;
+    gap: 9px !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
     transition: width 0.32s cubic-bezier(0.4, 0, 0.2, 1),
         padding 0.32s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
+body:not(.sidebar-collapse) .brand-link,
+body:not(.sidebar-collapse).layout-fixed .brand-link {
+    width: var(--sidebar-width) !important;
+    max-width: var(--sidebar-width) !important;
+}
+
 .brand-link .brand-image {
-    margin-top: 0 !important;
-    max-height: 32px !important;
     width: 32px !important;
     height: 32px !important;
-    object-fit: cover !important;
+    max-height: 32px !important;
+    margin: 0 !important;
+    flex-shrink: 0 !important;
+    border-radius: 50% !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+    border: 1px solid #e2e8f0 !important;
 }
 
 .brand-link .brand-text {
-    color: #0f172a !important;
-    font-size: 13.5px !important;
-    font-weight: 700 !important;
-    line-height: 1.25 !important;
+    color: #64748b !important;
+    font-size: 11px !important;
+    line-height: 1.15 !important;
+    font-weight: 500 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
     transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1),
         visibility 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.brand-link .brand-text b,
+.brand-link .brand-text strong {
+    color: #0f172a !important;
+    font-size: 12.5px !important;
+    font-weight: 700 !important;
+    line-height: 1.15 !important;
+    letter-spacing: -0.01em !important;
+    white-space: nowrap !important;
+    margin-bottom: 1px !important;
+}
+
+.brand-link .brand-text br {
+    display: none !important;
 }
 
 .sidebar-collapse .brand-link .brand-text,
@@ -184,78 +269,73 @@ h6 {
     transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
-.sidebar {
-    padding-top: 6px !important;
-    padding-bottom: 10px !important;
-    padding-left: 4px !important;
-    padding-right: 4px !important;
-}
-
 /* Section headers inside the menu, e.g. "MAIN", "MASTER DATA" */
 .nav-sidebar .nav-header {
     color: #94a3b8 !important;
-    font-size: 9.5px !important;
+    font-size: 10px !important;
     font-weight: 700 !important;
-    letter-spacing: .08em;
-    text-transform: uppercase;
-    padding: 6px 10px 2px !important;
-    margin-top: 2px !important;
-    margin-bottom: 0 !important;
-}
-
-.nav-sidebar .nav-item {
-    margin-bottom: 0 !important;
+    letter-spacing: .08em !important;
+    text-transform: uppercase !important;
+    padding: 10px 10px 3px !important;
+    white-space: nowrap !important;
 }
 
 /* Menu items */
 .nav-sidebar .nav-link {
-    color: #334155 !important;
+    color: #64748b !important;
     border-radius: 7px !important;
-    margin: 1px 6px !important;
-    padding: 6px 10px !important;
+    margin: 1.5px 4px !important;
+    padding: 6.5px 10px !important;
     font-size: 12.5px !important;
-    font-weight: 500;
+    font-weight: 550 !important;
     line-height: 1.35 !important;
-    transition: background-color .15s ease, color .15s ease;
+    display: flex !important;
+    align-items: center !important;
+    transition: background-color .15s ease, color .15s ease !important;
 }
 
 .nav-sidebar .nav-link p {
     margin-bottom: 0 !important;
+    font-size: 12.5px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
 }
 
 .nav-sidebar .nav-link .nav-icon {
     color: #64748b !important;
-    font-size: 13px !important;
+    font-size: 13.5px !important;
     width: 18px !important;
     text-align: center !important;
     margin-right: 8px !important;
-    opacity: 1;
-    transition: color .15s ease;
+    opacity: 0.85 !important;
+    flex-shrink: 0 !important;
+    transition: color .15s ease !important;
 }
 
 .nav-sidebar .nav-link:hover {
     background: #F1F5F9 !important;
-    color: #0f172a !important;
+    color: #1E293B !important;
 }
 
 .nav-sidebar .nav-link:hover .nav-icon {
-    color: #0f172a !important;
+    color: #1E293B !important;
 }
 
 /* Active menu: soft green background + green text/icon, NOT a solid fill */
 .nav-sidebar .nav-link.active {
-    background: rgba(22, 163, 74, 0.12) !important;
-    color: #16a34a !important;
+    background: rgba(22, 163, 74, 0.10) !important;
+    color: #16A34A !important;
     font-weight: 600 !important;
     box-shadow: none !important;
 }
 
 .nav-sidebar .nav-link.active .nav-icon {
-    color: #16a34a !important;
+    color: #16A34A !important;
 }
 
 .nav-sidebar .nav-link.active p {
-    color: #16a34a !important;
+    color: #16A34A !important;
     font-weight: 600 !important;
 }
 
@@ -263,6 +343,21 @@ h6 {
 .nav-sidebar .nav-treeview .nav-link.active {
     background: rgba(22, 163, 74, 0.08) !important;
     color: #15803d !important;
+}
+
+/* Collapsed Sidebar State */
+body.sidebar-collapse .brand-link {
+    width: 4.6rem !important;
+    padding: 0 !important;
+    justify-content: center !important;
+}
+
+body.sidebar-collapse .brand-link .brand-text {
+    display: none !important;
+}
+
+body.sidebar-collapse .brand-link .brand-image {
+    margin: 0 auto !important;
 }
 
 /* ---------------------------------------------------------------
