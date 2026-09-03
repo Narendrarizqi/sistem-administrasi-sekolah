@@ -891,7 +891,7 @@
                         >
                             {{-- 1. No --}}
                             <td class="text-center row-number font-num">
-                                {{ $loop->iteration }}
+                                {{ method_exists($pengeluaran, 'firstItem') && $pengeluaran->firstItem() ? ($pengeluaran->firstItem() + $loop->index) : $loop->iteration }}
                             </td>
 
                             {{-- 2. Tanggal --}}
@@ -958,6 +958,18 @@
                 <p class="text-muted small mb-0">Tidak ada transaksi pengeluaran yang cocok dengan filter pencarian.</p>
             </div>
         </div>
+
+        {{-- Pagination Links (50 per halaman) --}}
+        @if(method_exists($pengeluaran, 'hasPages') && ($pengeluaran->hasPages() || $pengeluaran->total() > 0))
+            <div class="table-pagination-container px-3 pb-3">
+                <div class="table-pagination-info">
+                    Menampilkan <strong>{{ $pengeluaran->firstItem() ?? 0 }}</strong> &ndash; <strong>{{ $pengeluaran->lastItem() ?? 0 }}</strong> dari <strong>{{ $pengeluaran->total() }}</strong> transaksi
+                </div>
+                <div class="table-pagination-links">
+                    {{ $pengeluaran->links('pagination::bootstrap-4') }}
+                </div>
+            </div>
+        @endif
     </div>
 
     {{-- 4. BOTTOM ANALYTICS (Ringkasan Sumber Dana & Tren 6 Bulan Terakhir) --}}

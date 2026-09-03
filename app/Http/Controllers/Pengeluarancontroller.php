@@ -9,15 +9,15 @@ class PengeluaranController extends Controller
 {
     public function index(Request $request)
     {
-        $pengeluaran = Pengeluaran::orderByDesc('tanggal')
+        $allPengeluaran = Pengeluaran::orderByDesc('tanggal')
             ->orderByDesc('id')
             ->get();
 
-        $totalPengeluaran = (float) $pengeluaran->sum('nominal');
+        $totalPengeluaran = (float) $allPengeluaran->sum('nominal');
 
         // 1. Pengeluaran Bulan Ini
         $currentYm = now()->format('Y-m');
-        $pengeluaranBulanIni = $pengeluaran->filter(function ($item) use ($currentYm) {
+        $pengeluaranBulanIni = $allPengeluaran->filter(function ($item) use ($currentYm) {
             return \Carbon\Carbon::parse($item->tanggal)->format('Y-m') === $currentYm;
         });
         $totalBulanIni = (float) $pengeluaranBulanIni->sum('nominal');
@@ -25,10 +25,10 @@ class PengeluaranController extends Controller
         $namaBulanIni = now()->translatedFormat('F Y');
 
         // 2. Jumlah Transaksi
-        $jumlahTransaksi = $pengeluaran->count();
+        $jumlahTransaksi = $allPengeluaran->count();
 
         // 3. Pengeluaran Terbesar
-        $pengeluaranTerbesar = $pengeluaran->sortByDesc('nominal')->first();
+        $pengeluaranTerbesar = $allPengeluaran->sortByDesc('nominal')->first();
         $nominalTerbesar = (float) ($pengeluaranTerbesar?->nominal ?? 0);
         $tanggalTerbesar = $pengeluaranTerbesar ? \Carbon\Carbon::parse($pengeluaranTerbesar->tanggal)->translatedFormat('d M Y') : '-';
         $keteranganTerbesar = $pengeluaranTerbesar?->keterangan ?? '-';
@@ -44,7 +44,7 @@ class PengeluaranController extends Controller
 
         $ringkasanSumber = [];
         foreach ($sumberList as $key => $label) {
-            $nominal = (float) $pengeluaran->where('sumber_dana', $key)->sum('nominal');
+            $nominal = (float) $allPengeluaran->where('sumber_dana', $key)->sum('nominal');
             $persen = $totalPengeluaran > 0 ? round(($nominal / $totalPengeluaran) * 100, 1) : 0;
             $ringkasanSumber[$key] = [
                 'label'   => $label,
@@ -59,7 +59,7 @@ class PengeluaranController extends Controller
             $date = now()->copy()->subMonths($i);
             $ym = $date->format('Y-m');
             $label = $date->translatedFormat('M');
-            $nominal = (float) $pengeluaran->filter(fn($p) => \Carbon\Carbon::parse($p->tanggal)->format('Y-m') === $ym)->sum('nominal');
+            $nominal = (float) $allPengeluaran->filter(fn($p) => \Carbon\Carbon::parse($p->tanggal)->format('Y-m') === $ym)->sum('nominal');
             $tren6Bulan[] = [
                 'bulan'   => $label,
                 'ym'      => $ym,
@@ -73,7 +73,7 @@ class PengeluaranController extends Controller
             $date = now()->copy()->subMonths($i);
             $ym = $date->format('Y-m');
             $label = $date->translatedFormat('M y');
-            $nominal = (float) $pengeluaran->filter(fn($p) => \Carbon\Carbon::parse($p->tanggal)->format('Y-m') === $ym)->sum('nominal');
+            $nominal = (float) $allPengeluaran->filter(fn($p) => \Carbon\Carbon::parse($p->tanggal)->format('Y-m') === $ym)->sum('nominal');
             $tren12Bulan[] = [
                 'bulan'   => $label,
                 'ym'      => $ym,
@@ -82,10 +82,16 @@ class PengeluaranController extends Controller
         }
 
         // Daftar Tahun untuk filter
-        $daftarTahun = $pengeluaran->map(fn($p) => \Carbon\Carbon::parse($p->tanggal)->format('Y'))->unique()->sortDesc()->values()->toArray();
+        $daftarTahun = $allPengeluaran->map(fn($p) => \Carbon\Carbon::parse($p->tanggal)->format('Y'))->unique()->sortDesc()->values()->toArray();
         if (empty($daftarTahun)) {
             $daftarTahun = [date('Y')];
         }
+
+        // Data Tabel Paginated (50 data per halaman)
+        $pengeluaran = Pengeluaran::orderByDesc('tanggal')
+            ->orderByDesc('id')
+            ->paginate(50)
+            ->withQueryString();
 
         return view('pengeluaran.index', compact(
             'pengeluaran',

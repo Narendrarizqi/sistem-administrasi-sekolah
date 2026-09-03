@@ -731,7 +731,7 @@
                                     data-kelas="{{ strtolower($siswa->kelas) }}"
                                 >
                                     <td class="text-center nomor-cell col-no">
-                                        {{ $loop->iteration }}
+                                        {{ method_exists($students, 'firstItem') && $students->firstItem() ? ($students->firstItem() + $loop->index) : $loop->iteration }}
                                     </td>
 
                                     <td class="col-nis">
@@ -812,6 +812,18 @@
                         </tbody>
                     </table>
                 </div>
+
+                {{-- Pagination Links (50 per halaman) --}}
+                @if(method_exists($students, 'hasPages') && ($students->hasPages() || $students->total() > 0))
+                    <div class="table-pagination-container px-3 pb-3">
+                        <div class="table-pagination-info">
+                            Menampilkan <strong>{{ $students->firstItem() ?? 0 }}</strong> &ndash; <strong>{{ $students->lastItem() ?? 0 }}</strong> dari <strong>{{ $students->total() }}</strong> siswa
+                        </div>
+                        <div class="table-pagination-links">
+                            {{ $students->links('pagination::bootstrap-4') }}
+                        </div>
+                    </div>
+                @endif
 
                 {{-- MODALS RIWAYAT & BUKTI PEMBAYARAN PER SISWA --}}
                 @foreach($students as $student)

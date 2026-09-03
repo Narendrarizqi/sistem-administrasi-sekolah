@@ -2938,3 +2938,82 @@ a#btnCetakBuktiPage *,
     border-radius: 8px;
     padding: 10px 14px;
 }
+
+/* ===============================================================
+   UNIVERSAL TABLE PAGINATION DESIGN SYSTEM (50 Per Halaman)
+   =============================================================== */
+.table-pagination-container,
+.siswa-pagination-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 1px solid #e2e8f0;
+}
+
+.table-pagination-info,
+.siswa-pagination-info {
+    font-size: 13px;
+    color: #64748b;
+    font-weight: 500;
+}
+
+.table-pagination-links,
+.siswa-pagination-links {
+    display: flex;
+    align-items: center;
+}
+
+.table-pagination-links nav,
+.siswa-pagination-links nav {
+    display: flex;
+    align-items: center;
+}
+
+.table-pagination-links .pagination,
+.siswa-pagination-links .pagination {
+    margin-bottom: 0;
+    gap: 4px;
+}
+
+.table-pagination-links .page-item .page-link,
+.siswa-pagination-links .page-item .page-link {
+    color: #334155;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px !important;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 6px 13px;
+    line-height: 1.4;
+    transition: all 0.15s ease;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+}
+
+.table-pagination-links .page-item.active .page-link,
+.siswa-pagination-links .page-item.active .page-link {
+    background-color: #16a34a !important;
+    border-color: #16a34a !important;
+    color: #ffffff !important;
+    box-shadow: 0 2px 5px rgba(22, 163, 74, 0.28);
+}
+
+.table-pagination-links .page-item .page-link:hover,
+.siswa-pagination-links .page-item .page-link:hover {
+    background-color: #f0fdf4;
+    border-color: #86efac;
+    color: #15803d;
+    transform: translateY(-1px);
+}
+
+.table-pagination-links .page-item.disabled .page-link,
+.siswa-pagination-links .page-item.disabled .page-link {
+    color: #94a3b8;
+    background: #f8fafc;
+    border-color: #e2e8f0;
+    cursor: not-allowed;
+    transform: none;
+}

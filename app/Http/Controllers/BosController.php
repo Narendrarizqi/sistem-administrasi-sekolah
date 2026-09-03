@@ -20,9 +20,9 @@ class BosController extends Controller
         $yearsFromDb = Bos::pluck('tahun_anggaran')->toArray();
         $yearsFromPengeluaran = Pengeluaran::where('sumber_dana', 'BOS')
             ->whereNotNull('tanggal')
-            ->selectRaw('DISTINCT YEAR(tanggal) as yr')
-            ->pluck('yr')
-            ->map(fn($y) => (string)$y)
+            ->pluck('tanggal')
+            ->map(fn($t) => substr((string)$t, 0, 4))
+            ->unique()
             ->toArray();
 
         $daftarTahunAnggaran = array_values(array_unique(array_filter(array_merge(
@@ -57,12 +57,14 @@ class BosController extends Controller
             $pengeluaranQuery->whereYear('tanggal', $tahunAnggaran);
         }
 
+        $allPengeluaranBos = (clone $pengeluaranQuery)->orderByDesc('tanggal')->orderByDesc('id')->get();
+        $totalPengeluaranBos = (float) $allPengeluaranBos->sum('nominal');
+        $sisaSaldoBos = $totalPemasukanBos - $totalPengeluaranBos;
+
         $pengeluaranBos = $pengeluaranQuery->orderByDesc('tanggal')
             ->orderByDesc('id')
-            ->get();
-
-        $totalPengeluaranBos = (float) $pengeluaranBos->sum('nominal');
-        $sisaSaldoBos = $totalPemasukanBos - $totalPengeluaranBos;
+            ->paginate(50)
+            ->withQueryString();
 
         return view('bos.index', compact(
             'daftarTahunAnggaran',

@@ -44,7 +44,8 @@ class IppController extends Controller
                 });
             })
             ->latest('id')
-            ->get();
+            ->paginate(50)
+            ->withQueryString();
 
         return view('ipp.index', compact(
             'data',

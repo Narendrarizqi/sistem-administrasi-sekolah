@@ -773,7 +773,7 @@
                 <tbody>
                     @forelse($pengeluaranBos as $item)
                         <tr>
-                            <td class="text-center font-num text-muted">{{ $loop->iteration }}</td>
+                            <td class="text-center font-num text-muted">{{ method_exists($pengeluaranBos, 'firstItem') && $pengeluaranBos->firstItem() ? ($pengeluaranBos->firstItem() + $loop->index) : $loop->iteration }}</td>
                             <td class="font-num">
                                 {{ \Carbon\Carbon::parse($item->tanggal)->format('d-m-Y') }}
                             </td>
@@ -826,6 +826,18 @@
                 @endif
             </table>
         </div>
+
+        {{-- Pagination Links (50 per halaman) --}}
+        @if(method_exists($pengeluaranBos, 'hasPages') && ($pengeluaranBos->hasPages() || $pengeluaranBos->total() > 0))
+            <div class="table-pagination-container px-3 pb-3">
+                <div class="table-pagination-info">
+                    Menampilkan <strong>{{ $pengeluaranBos->firstItem() ?? 0 }}</strong> &ndash; <strong>{{ $pengeluaranBos->lastItem() ?? 0 }}</strong> dari <strong>{{ $pengeluaranBos->total() }}</strong> transaksi
+                </div>
+                <div class="table-pagination-links">
+                    {{ $pengeluaranBos->links('pagination::bootstrap-4') }}
+                </div>
+            </div>
+        @endif
     </div>
 
 

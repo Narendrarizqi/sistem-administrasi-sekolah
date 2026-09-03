@@ -1299,7 +1299,7 @@
                 </span>
                 <span class="ki-badge-total">
                     <i class="fas fa-users text-muted"></i>
-                    Total: {{ $data->count() }} Siswa
+                    Total: {{ method_exists($data, 'total') ? $data->total() : $data->count() }} Siswa
                 </span>
             </div>
         </div>
@@ -1414,7 +1414,7 @@
                         >
                             {{-- 1. No --}}
                             <td class="text-center text-muted row-number font-num font-weight-500">
-                                {{ $loop->iteration }}
+                                {{ method_exists($data, 'firstItem') && $data->firstItem() ? ($data->firstItem() + $loop->index) : $loop->iteration }}
                             </td>
 
                             {{-- 2. NIS --}}
@@ -1538,6 +1538,18 @@
                 </tbody>
             </table>
         </div>
+
+        {{-- Pagination Links (50 per halaman) --}}
+        @if(method_exists($data, 'hasPages') && ($data->hasPages() || $data->total() > 0))
+            <div class="table-pagination-container px-3 pb-3">
+                <div class="table-pagination-info">
+                    Menampilkan <strong>{{ $data->firstItem() ?? 0 }}</strong> &ndash; <strong>{{ $data->lastItem() ?? 0 }}</strong> dari <strong>{{ $data->total() }}</strong> siswa
+                </div>
+                <div class="table-pagination-links">
+                    {{ $data->links('pagination::bootstrap-4') }}
+                </div>
+            </div>
+        @endif
     </div>
 
     {{-- =========================================================

@@ -42,7 +42,8 @@ class KiController extends Controller
                 });
             })
             ->latest('id')
-            ->get();
+            ->paginate(50)
+            ->withQueryString();
 
         // Master jenis iuran untuk modal manajemen & form tambah
         $daftarJenisIuran = JenisIuranKi::withCount('items')->orderBy('id')->get();
