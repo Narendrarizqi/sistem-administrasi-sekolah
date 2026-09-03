@@ -1177,8 +1177,14 @@
                         <th class="text-right text-end" style="width: 74px;" title="Tagihan belum lunas dari tahun sebelumnya">
                             Terbawa (Rp)
                         </th>
-                        <th class="text-right text-end" style="width: 76px;" title="Total Kewajiban = Target + Terbawa">
-                            Total Tagihan (Rp)
+                        <th class="text-right text-end" style="width: 76px;" title="Tagihan awal sebelum potongan">
+                            Tagihan Awal (Rp)
+                        </th>
+                        <th class="text-right text-end" style="width: 76px;" title="Potongan IPP">
+                            Potongan (Rp)
+                        </th>
+                        <th class="text-right text-end" style="width: 76px;" title="Tagihan setelah potongan">
+                            Tagihan Bersih (Rp)
                         </th>
                         <th class="text-right text-end" style="width: 74px;" title="Total pembayaran yang sudah diterima">
                             Terbayar (Rp)
@@ -1196,9 +1202,11 @@
                         @php
                             $terbayar = (float) $item->detailPembayaran->sum('nominal');
                             $terbawaAwal = (float) ($item->belum_lunas ?? 0);
-                            $sisaTerbawa = max($terbawaAwal - $terbayar, 0);
+                            $sisaTerbawa = $item->sisaTerbawa();
                             $totalTagihan = (float) $item->target + $terbawaAwal;
-                            $sisa = max($totalTagihan - $terbayar, 0);
+                            $potongan = (float) ($item->potongan ?? 0);
+                            $totalTagihanSetelahPotongan = $item->totalTagihan();
+                            $sisa = max($totalTagihanSetelahPotongan - $terbayar, 0);
                             $isLunasPenuh = ($sisa <= 0 && $totalTagihan > 0);
                             $ippStatus = $item->statusIpp();
                         @endphp
@@ -1249,8 +1257,14 @@
                             </td>
 
                             {{-- 6. Total Tagihan (Prominent Bold Dark) --}}
-                            <td class="text-right text-end font-num val-total-tagihan">
+                            <td class="text-right text-end font-num">
                                 {{ number_format($totalTagihan, 0, ',', '.') }}
+                            </td>
+                            <td class="text-right text-end font-num text-warning">
+                                {{ number_format($potongan, 0, ',', '.') }}
+                            </td>
+                            <td class="text-right text-end font-num val-total-tagihan">
+                                {{ number_format($totalTagihanSetelahPotongan, 0, ',', '.') }}
                             </td>
 
                             {{-- 7. Terbayar (Hijau) --}}
@@ -1312,7 +1326,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="10" class="text-center py-5 text-muted">
+                            <td colspan="12" class="text-center py-5 text-muted">
                                 <i class="fas fa-folder-open fa-2x mb-2 d-block opacity-25"></i>
                                 Belum ada data tagihan IPP pada tahun ajaran ini.
                             </td>
@@ -1458,6 +1472,20 @@
 
                         {{-- Hidden Target Input to be sent to backend --}}
                         <input type="hidden" name="target" id="modalFinalTarget" value="0">
+
+                        <div class="form-group row mb-3">
+                            <label for="modal_potongan" class="col-sm-3 col-form-label font-weight-bold">Potongan IPP (Rp)</label>
+                            <div class="col-sm-9">
+                                <div class="input-group">
+                                    <div class="input-group-prepend"><span class="input-group-text font-weight-bold bg-light">Rp</span></div>
+                                    <input type="number" name="potongan" id="modal_potongan"
+                                           class="form-control font-weight-bold text-warning @error('potongan') is-invalid @enderror"
+                                           value="{{ old('potongan', 0) }}" min="0" step="1000" placeholder="0">
+                                </div>
+                                <small class="form-text text-muted">Potongan bukan pembayaran tunai dan tidak boleh melebihi tagihan.</small>
+                                @error('potongan')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                            </div>
+                        </div>
 
                         {{-- Summary Fee Box --}}
                         <div class="fee-info-box my-3">
@@ -1889,6 +1917,21 @@
                                     <div class="input-group">
                                         <div class="input-group-prepend">
                                             <span class="input-group-text font-weight-bold bg-light">Rp</span>
+                                        </div>
+
+                                        <div class="form-group row mb-3">
+                                            <label for="modal_edit_potongan_{{ $item->id }}" class="col-sm-3 col-form-label font-weight-bold">Potongan IPP (Rp)</label>
+                                            <div class="col-sm-9">
+                                                <div class="input-group">
+                                                    <div class="input-group-prepend"><span class="input-group-text font-weight-bold bg-light">Rp</span></div>
+                                                    <input type="number" name="potongan" id="modal_edit_potongan_{{ $item->id }}"
+                                                           class="form-control font-weight-bold text-warning @error('potongan') is-invalid @enderror"
+                                                           value="{{ old('potongan', (int) ($item->potongan ?? 0)) }}"
+                                                           min="0" max="{{ (int) $item->totalTagihanAwal() }}" step="1000">
+                                                </div>
+                                                <small class="form-text text-muted">Potongan bukan pembayaran tunai dan mengurangi tagihan awal.</small>
+                                                @error('potongan')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                                            </div>
                                         </div>
                                         <input type="number"
                                                name="target"

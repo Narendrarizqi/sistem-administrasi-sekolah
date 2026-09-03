@@ -145,6 +145,20 @@
                         {{-- Hidden Target Input to be sent to backend --}}
                         <input type="hidden" name="target" id="finalTarget" value="{{ old('target', 0) }}">
 
+                        <div class="form-group row mb-4">
+                            <label for="potongan" class="col-sm-3 col-form-label font-weight-bold">Potongan IPP (Rp)</label>
+                            <div class="col-sm-9">
+                                <div class="input-group">
+                                    <div class="input-group-prepend"><span class="input-group-text font-weight-bold bg-light">Rp</span></div>
+                                    <input type="number" name="potongan" id="potongan"
+                                           class="form-control font-weight-bold text-warning @error('potongan') is-invalid @enderror"
+                                           value="{{ old('potongan', 0) }}" min="0" step="1000" placeholder="0">
+                                </div>
+                                <small class="form-text text-muted">Potongan bukan pembayaran tunai dan tidak boleh melebihi tagihan.</small>
+                                @error('potongan')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                            </div>
+                        </div>
+
                         {{-- Section 3: Summary Fee Box --}}
                         <div class="fee-info-box my-4">
                             <div class="row align-items-center">

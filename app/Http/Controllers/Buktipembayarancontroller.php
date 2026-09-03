@@ -23,7 +23,7 @@ class BuktiPembayaranController extends Controller
             ->where('id', '<=', $detail->id)
             ->sum('nominal');
 
-        $sisa = max($pembayaran->target - $totalDibayar, 0);
+        $sisa = max($pembayaran->totalTagihan() - $totalDibayar, 0);
 
         $pdf = Pdf::loadView('bukti.pdf', [
             'detail' => $detail,

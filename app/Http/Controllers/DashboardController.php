@@ -59,8 +59,9 @@ class DashboardController extends Controller
               ->orWhere('tahun_ajaran', $tahunAjaranNama);
         });
 
-        $targetDitetapkan = (float) (clone $pembayaranQuery)->sum('target');
-        $totalTerbawaAwal = (float) (clone $pembayaranQuery)->sum('belum_lunas');
+        $pembayaranRows = (clone $pembayaranQuery)->get();
+        $targetDitetapkan = (float) $pembayaranRows->sum(fn ($p) => $p->totalTagihan());
+        $totalTerbawaAwal = (float) $pembayaranRows->sum(fn ($p) => $p->sisaTerbawa());
 
         // Breakdown per Jenis Pembayaran untuk tahun berjalan
         $breakdownJenis = [];
@@ -70,7 +71,7 @@ class DashboardController extends Controller
                   ->orWhere('tahun_ajaran', $tahunAjaranNama);
             })->where('jenis_id', $jenis->id)->get();
 
-            $targetPerJenis = (float) $pembayaranJenis->sum(fn ($p) => (float) $p->target + (float) ($p->belum_lunas ?? 0));
+            $targetPerJenis = (float) $pembayaranJenis->sum(fn ($p) => $p->totalTagihan());
             $dibayarPerJenis = (float) DetailPembayaran::whereIn('pembayaran_id', $pembayaranJenis->pluck('id'))->sum('nominal');
 
             $breakdownJenis[] = [
@@ -96,7 +97,7 @@ class DashboardController extends Controller
         foreach ($carryoverRows as $row) {
             $dibayarRow = (float) $row->detailPembayaran->sum('nominal');
             // Pembayaran melunasi terbawa terlebih dahulu
-            $sisaTerbawaRow = max((float) $row->belum_lunas - $dibayarRow, 0);
+            $sisaTerbawaRow = $row->sisaTerbawa();
 
             if ($sisaTerbawaRow > 0) {
                 $totalTerbawaSisa += $sisaTerbawaRow;
@@ -146,7 +147,7 @@ class DashboardController extends Controller
         }
 
         // 7. Target Efektif (Total Kewajiban) = Target Ditetapkan + Total Terbawa
-        $targetEfektif = $targetDitetapkan + $totalTerbawaAwal;
+        $targetEfektif = $targetDitetapkan;
 
         // 8. Sudah Dibayar pada Tahun Ajaran Ini
         $sudahDibayar = (float) DetailPembayaran::whereHas('pembayaran', function ($q) use ($tahunAjaranId, $tahunAjaranNama) {

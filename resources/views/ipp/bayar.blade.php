@@ -31,10 +31,12 @@
 @php
 $terbayar = (float) $pembayaran->detailPembayaran->sum('nominal');
 $terbawa = (float) ($pembayaran->belum_lunas ?? 0);
-$totalTagihan = (float) $pembayaran->target + $terbawa;
+$tagihanAwal = $pembayaran->totalTagihanAwal();
+$potongan = $pembayaran->potonganValue();
+$totalTagihan = $pembayaran->totalTagihan();
 $sisa = max($totalTagihan - $terbayar, 0);
 $persen = $totalTagihan > 0 ? min(($terbayar / $totalTagihan) * 100, 100) : 0;
-$sisaTerbawa = max($terbawa - $terbayar, 0);
+$sisaTerbawa = $pembayaran->sisaTerbawa();
 $ippStatus = $pembayaran->statusIpp();
 $tagihanBulanIni = $ippStatus['tagihan_bulan_ini'] ?? 0;
 $tunggakanBulan = $ippStatus['tunggakan_bulan'] ?? 0;
@@ -93,6 +95,16 @@ $namaBulanSekarang = ($bulanIndoList[(int)\Carbon\Carbon::now()->format('n')] ??
                             <span class="font-weight-bold text-warning">Rp {{ number_format($terbawa, 0, ',', '.') }}</span>
                         </div>
                     @endif
+                    @if($potongan > 0)
+                        <div class="d-flex justify-content-between mb-1 small text-muted">
+                            <span>Potongan IPP</span>
+                            <span class="font-weight-bold text-warning">- Rp {{ number_format($potongan, 0, ',', '.') }}</span>
+                        </div>
+                    @endif
+                    <div class="d-flex justify-content-between mb-1 small text-muted">
+                        <span>Tagihan Setelah Potongan</span>
+                        <span class="font-weight-bold">Rp {{ number_format($totalTagihan, 0, ',', '.') }}</span>
+                    </div>
 
                     <div class="d-flex justify-content-between mb-1 small text-muted">
                         <span>Total Kewajiban</span>

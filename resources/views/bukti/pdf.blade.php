@@ -166,7 +166,17 @@
         <tr>
             <td class="label">Total Tagihan</td>
             <td class="sep">:</td>
-            <td>Rp {{ number_format($pembayaran->target, 0, ',', '.') }}</td>
+            <td>Rp {{ number_format($pembayaran->totalTagihanAwal(), 0, ',', '.') }}</td>
+        </tr>
+        <tr>
+            <td class="label">Potongan IPP</td>
+            <td class="sep">:</td>
+            <td>Rp {{ number_format($pembayaran->potonganValue(), 0, ',', '.') }}</td>
+        </tr>
+        <tr>
+            <td class="label">Tagihan Setelah Potongan</td>
+            <td class="sep">:</td>
+            <td>Rp {{ number_format($pembayaran->totalTagihan(), 0, ',', '.') }}</td>
         </tr>
         <tr>
             <td class="label">Total Sudah Dibayar</td>

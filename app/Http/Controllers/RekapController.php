@@ -106,7 +106,8 @@ class RekapController extends Controller
 
                     $target = (float) $matching->sum(fn ($item) => (float) $item->target);
                     $terbawa = (float) $matching->sum(fn ($item) => (float) ($item->belum_lunas ?? 0));
-                    $totalTagihan = $target + $terbawa;
+                    $potongan = (float) $matching->sum(fn ($item) => $item->potonganValue());
+                    $totalTagihan = (float) $matching->sum(fn ($item) => $item->totalTagihan());
                     $terbayar = (float) $matching->sum(fn ($item) => (float) $item->detailPembayaran->sum('nominal'));
                     $sisa = max($totalTagihan - $terbayar, 0);
 
@@ -126,9 +127,9 @@ class RekapController extends Controller
                         ->first();
                     $lastPaidMonthText = $lastPaidDetail ? \Carbon\Carbon::parse($lastPaidDetail->tanggal)->translatedFormat('M Y') : null;
 
-                    $status = ($sisa <= 0 && $totalTagihan > 0)
+                    $status = ($sisa <= 0 && ($target + $terbawa) > 0)
                         ? 'Lunas'
-                        : ($totalTagihan > 0 ? ($terbayar > 0 ? 'Sebagian' : 'Belum Lunas') : 'Belum Ada Tagihan');
+                        : (($target + $terbawa) > 0 ? ($terbayar > 0 ? 'Sebagian' : 'Belum Lunas') : 'Belum Ada Tagihan');
 
                     if ($totalTagihan <= 0) {
                         $notifStatus = 'none';
@@ -151,6 +152,7 @@ class RekapController extends Controller
                     $jenisData[$jenis] = [
                         'target'        => $target,
                         'terbawa'       => $terbawa,
+                        'potongan'      => $potongan,
                         'total_tagihan' => $totalTagihan,
                         'terbayar'      => $terbayar,
                         'sisa'          => $sisa,
@@ -163,6 +165,7 @@ class RekapController extends Controller
 
                     $overall['target']        += $target;
                     $overall['terbawa']       += $terbawa;
+                    $overall['potongan']      += $potongan;
                     $overall['total_tagihan'] += $totalTagihan;
                     $overall['terbayar']      += $terbayar;
                     $overall['sisa']          += $sisa;
@@ -276,12 +279,13 @@ class RekapController extends Controller
                 $siswa = $items->first()->siswa;
                 $target = (float) $items->sum(fn ($i) => (float) $i->target);
                 $terbawa = (float) $items->sum(fn ($i) => (float) ($i->belum_lunas ?? 0));
-                $totalTagihan = $target + $terbawa;
+                $potongan = (float) $items->sum(fn ($i) => $i->potonganValue());
+                $totalTagihan = (float) $items->sum(fn ($i) => $i->totalTagihan());
                 $terbayar = (float) $items->sum(fn ($i) => (float) $i->detailPembayaran->sum('nominal'));
                 $sisa = max($totalTagihan - $terbayar, 0);
 
                 $status = 'Belum Ada Tagihan';
-                if ($totalTagihan > 0) {
+                if (($target + $terbawa) > 0) {
                     if ($sisa <= 0) {
                         $status = 'Lunas';
                     } elseif ($terbayar > 0) {
@@ -295,6 +299,7 @@ class RekapController extends Controller
                     'siswa'         => $siswa,
                     'target'        => $target,
                     'terbawa'       => $terbawa,
+                    'potongan'      => $potongan,
                     'total_tagihan' => $totalTagihan,
                     'terbayar'      => $terbayar,
                     'sisa'          => $sisa,
@@ -306,6 +311,7 @@ class RekapController extends Controller
         $grandTotal = [
             'target'        => $students->sum('target'),
             'terbawa'       => $students->sum('terbawa'),
+            'potongan'      => $students->sum('potongan'),
             'total_tagihan' => $students->sum('total_tagihan'),
             'terbayar'      => $students->sum('terbayar'),
             'sisa'          => $students->sum('sisa'),
@@ -394,7 +400,8 @@ class RekapController extends Controller
         if ($ippModel) {
             $ippTarget = (float) $ippModel->target;
             $ippTerbawa = (float) ($ippModel->belum_lunas ?? 0);
-            $ippTotalTagihan = $ippTarget + $ippTerbawa;
+            $ippPotongan = $ippModel->potonganValue();
+            $ippTotalTagihan = $ippModel->totalTagihan();
             $ippTerbayar = (float) $ippModel->detailPembayaran->sum('nominal');
             $ippSisa = max($ippTotalTagihan - $ippTerbayar, 0);
 
@@ -472,6 +479,7 @@ class RekapController extends Controller
                 'has_data'      => true,
                 'target'        => $ippTarget,
                 'terbawa'       => $ippTerbawa,
+                'potongan'      => $ippPotongan,
                 'total_tagihan' => $ippTotalTagihan,
                 'terbayar'      => $ippTerbayar,
                 'sisa'          => $ippSisa,
@@ -694,6 +702,7 @@ class RekapController extends Controller
                 'jenis'         => 'IPP (Iuran Pengembangan Pendidikan)',
                 'target'        => $ippData['target'],
                 'terbawa'       => $ippData['terbawa'],
+                'potongan'      => $ippData['potongan'] ?? 0,
                 'total_tagihan' => $ippData['total_tagihan'],
                 'terbayar'      => $ippData['terbayar'],
                 'sisa'          => $ippData['sisa'],
@@ -704,6 +713,7 @@ class RekapController extends Controller
                 'jenis'         => 'Daftar Ulang (DU)',
                 'target'        => $duData['target'],
                 'terbawa'       => $duData['terbawa'],
+                'potongan'      => 0,
                 'total_tagihan' => $duData['total_tagihan'],
                 'terbayar'      => $duData['terbayar'],
                 'sisa'          => $duData['sisa'],
@@ -714,6 +724,7 @@ class RekapController extends Controller
                 'jenis'         => 'Sarana & Prasarana',
                 'target'        => $sarprasData['target'],
                 'terbawa'       => $sarprasData['terbawa'],
+                'potongan'      => 0,
                 'total_tagihan' => $sarprasData['total_tagihan'],
                 'terbayar'      => $sarprasData['terbayar'],
                 'sisa'          => $sarprasData['sisa'],
@@ -724,6 +735,7 @@ class RekapController extends Controller
                 'jenis'         => 'Kegiatan Intrakurikuler (KI)',
                 'target'        => $kiData['target'],
                 'terbawa'       => $kiData['terbawa'],
+                'potongan'      => 0,
                 'total_tagihan' => $kiData['total_tagihan'],
                 'terbayar'      => $kiData['terbayar'],
                 'sisa'          => $kiData['sisa'],
@@ -734,6 +746,7 @@ class RekapController extends Controller
         $grandTotal = [
             'target'        => array_sum(array_column($ringkasanSiswa, 'target')),
             'terbawa'       => array_sum(array_column($ringkasanSiswa, 'terbawa')),
+            'potongan'      => array_sum(array_column($ringkasanSiswa, 'potongan')),
             'total_tagihan' => array_sum(array_column($ringkasanSiswa, 'total_tagihan')),
             'terbayar'      => array_sum(array_column($ringkasanSiswa, 'terbayar')),
             'sisa'          => array_sum(array_column($ringkasanSiswa, 'sisa')),

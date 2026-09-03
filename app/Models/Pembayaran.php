@@ -16,6 +16,7 @@ class Pembayaran extends Model
         'tahun_ajaran_id',
         'tahun_ajaran',
         'target',
+        'potongan',
         'target_uts',
         'target_uas',
         'target_ujian',
@@ -53,11 +54,26 @@ class Pembayaran extends Model
     }
 
     /**
-     * Total tagihan = target baru (tahun ini) + tagihan terbawa tahun lalu
+     * Total tagihan bersih setelah potongan.
      */
     public function totalTagihan(): float
     {
+        return max($this->totalTagihanAwal() - $this->potonganValue(), 0);
+    }
+
+    public function totalTagihanAwal(): float
+    {
         return (float) $this->target + (float) ($this->belum_lunas ?? 0);
+    }
+
+    public function potonganValue(): float
+    {
+        return (float) ($this->potongan ?? 0);
+    }
+
+    public function totalTagihanBersih(): float
+    {
+        return $this->totalTagihan();
     }
 
     /**
@@ -65,6 +81,10 @@ class Pembayaran extends Model
      */
     public function totalTerbayar(): float
     {
+        if ($this->relationLoaded('detailPembayaran')) {
+            return (float) $this->detailPembayaran->sum('nominal');
+        }
+
         return (float) $this->detailPembayaran()->sum('nominal');
     }
 
@@ -82,7 +102,8 @@ class Pembayaran extends Model
     public function sisaTerbawa(): float
     {
         $terbayar = $this->totalTerbayar();
-        return max((float) ($this->belum_lunas ?? 0) - $terbayar, 0);
+        $potonganTerbawa = min((float) ($this->belum_lunas ?? 0), $this->potonganValue());
+        return max((float) ($this->belum_lunas ?? 0) - $potonganTerbawa - $terbayar, 0);
     }
 
     /**
@@ -91,8 +112,11 @@ class Pembayaran extends Model
     public function sisaTarget(): float
     {
         $terbayar = $this->totalTerbayar();
-        $kelebihanTerbawa = max($terbayar - (float) ($this->belum_lunas ?? 0), 0);
-        return max((float) $this->target - $kelebihanTerbawa, 0);
+        $potonganTerbawa = min((float) ($this->belum_lunas ?? 0), $this->potonganValue());
+        $terbawaBersih = (float) ($this->belum_lunas ?? 0) - $potonganTerbawa;
+        $targetBersih = max((float) $this->target - ($this->potonganValue() - $potonganTerbawa), 0);
+        $kelebihanTerbawa = max($terbayar - $terbawaBersih, 0);
+        return max($targetBersih - $kelebihanTerbawa, 0);
     }
 
     /**
@@ -105,8 +129,9 @@ class Pembayaran extends Model
     public function statusIpp($now = null): array
     {
         $now = $now ? \Carbon\Carbon::parse($now) : \Carbon\Carbon::now();
-        $target = (float) $this->target;
-        $terbawa = (float) ($this->belum_lunas ?? 0);
+        $potonganTerbawa = min((float) ($this->belum_lunas ?? 0), $this->potonganValue());
+        $terbawa = (float) ($this->belum_lunas ?? 0) - $potonganTerbawa;
+        $target = max((float) $this->target - ($this->potonganValue() - $potonganTerbawa), 0);
         $totalTagihan = $target + $terbawa;
         
         $terbayar = (float) ($this->relationLoaded('detailPembayaran')
@@ -116,6 +141,21 @@ class Pembayaran extends Model
         $sisa = max($totalTagihan - $terbayar, 0);
 
         if ($totalTagihan <= 0) {
+            if ($this->totalTagihanAwal() > 0) {
+                return [
+                    'status_text'          => 'Lunas',
+                    'badge_class'          => 'badge-status-lunas',
+                    'icon'                 => 'fas fa-check-circle',
+                    'is_lunas'             => true,
+                    'tunggakan_bulan'      => 0,
+                    'bulan_berjalan'       => 12,
+                    'bulan_terbayar'       => 12,
+                    'tarif_bulanan'        => 0,
+                    'tagihan_bulan_ini'    => 0,
+                    'keterangan_bulan_ini' => 'Lunas karena potongan penuh',
+                ];
+            }
+
             return [
                 'status_text'          => 'Belum Ada Tagihan',
                 'badge_class'          => 'badge-status-neutral',

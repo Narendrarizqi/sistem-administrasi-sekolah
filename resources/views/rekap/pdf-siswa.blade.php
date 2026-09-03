@@ -323,7 +323,8 @@
                 <th>Jenis Pembayaran</th>
                 <th style="width: 14%;" class="text-right">Target Baru (Rp)</th>
                 <th style="width: 15%;" class="text-right">Terbawa Thn Lalu (Rp)</th>
-                <th style="width: 16%;" class="text-right">Total Kewajiban (Rp)</th>
+                <th style="width: 12%;" class="text-right">Potongan (Rp)</th>
+                <th style="width: 14%;" class="text-right">Tagihan Bersih (Rp)</th>
                 <th style="width: 15%;" class="text-right">Terbayar (Rp)</th>
                 <th style="width: 15%;" class="text-right">Sisa Tagihan (Rp)</th>
                 <th style="width: 12%;" class="text-center">Status</th>
@@ -342,6 +343,7 @@
                             <span class="status-none">-</span>
                         @endif
                     </td>
+                    <td class="text-right text-warning">{{ number_format($row['potongan'] ?? 0, 0, ',', '.') }}</td>
                     <td class="text-right"><strong>{{ number_format($row['total_tagihan'], 0, ',', '.') }}</strong></td>
                     <td class="text-right text-success" style="color:#15803d;">
                         @if($row['terbayar'] > 0)
@@ -384,6 +386,7 @@
                         0
                     @endif
                 </td>
+                <td class="text-right text-warning">{{ number_format($grandTotal['potongan'] ?? 0, 0, ',', '.') }}</td>
                 <td class="text-right">{{ number_format($grandTotal['total_tagihan'], 0, ',', '.') }}</td>
                 <td class="text-right" style="color:#15803d;">{{ number_format($grandTotal['terbayar'], 0, ',', '.') }}</td>
                 <td class="text-right" style="color:#dc2626;">{{ number_format($grandTotal['sisa'], 0, ',', '.') }}</td>

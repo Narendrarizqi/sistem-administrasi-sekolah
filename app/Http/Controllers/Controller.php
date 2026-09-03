@@ -60,7 +60,7 @@ abstract class Controller
         ?string $bukti = null
     ) {
         $terbayar = (float) $dipilih->detailPembayaran()->sum('nominal');
-        $totalTagihan = (float) $dipilih->target + (float) ($dipilih->belum_lunas ?? 0);
+        $totalTagihan = $dipilih->totalTagihan();
         $sisaTagihan = max($totalTagihan - $terbayar, 0);
 
         if ($sisaTagihan <= 0) {

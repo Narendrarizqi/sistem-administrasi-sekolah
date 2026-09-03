@@ -109,6 +109,24 @@
                     @enderror
                 </div>
 
+                <div class="mb-4">
+                    <label for="potongan" class="form-label fw-semibold">Potongan IPP (Rp)</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text font-weight-bold bg-light">Rp</span>
+                        </div>
+                        <input type="number" name="potongan" id="potongan"
+                               class="form-control font-weight-bold text-warning @error('potongan') is-invalid @enderror"
+                               value="{{ old('potongan', (int) ($pembayaran->potongan ?? 0)) }}"
+                               min="0" max="{{ (int) $pembayaran->totalTagihanAwal() }}" step="1000"
+                               placeholder="0">
+                    </div>
+                    <small class="form-text text-muted">Potongan bukan pembayaran tunai dan mengurangi tagihan awal.</small>
+                    @error('potongan')
+                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                    @enderror
+                </div>
+
                 {{-- Tombol Aksi --}}
                 <div class="d-flex justify-content-between align-items-center mt-4">
 

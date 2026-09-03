@@ -272,7 +272,7 @@
                 <th style="width: 10%;">NIS</th>
                 <th style="width: 22%;">Nama Lengkap Siswa</th>
                 <th style="width: 10%;" class="text-center">Kelas</th>
-                <th style="width: 14%;" class="text-right">Total Tagihan (Rp)</th>
+                <th style="width: 12%;" class="text-right">Tagihan Bersih (Rp)</th>
                 <th style="width: 14%;" class="text-right">Total Terbayar (Rp)</th>
                 <th style="width: 14%;" class="text-right">Sisa Tagihan (Rp)</th>
                 <th style="width: 12%;" class="text-center">Status</th>

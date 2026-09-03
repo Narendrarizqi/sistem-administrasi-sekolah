@@ -84,12 +84,19 @@ class IppController extends Controller
         $request->validate([
             'siswa_id' => 'required|exists:siswa,id',
             'target'   => 'required|numeric|min:0',
+            'potongan' => 'nullable|numeric|min:0',
         ]);
 
         $jenis = JenisPembayaran::where('nama', 'IPP')->firstOrFail();
         $tahunAktif = $this->getTahunAjaranAktif();
         $tahunAjaranId = $tahunAktif?->id;
         $tahunAjaranNama = $tahunAktif?->nama;
+        $potongan = (float) $request->input('potongan', 0);
+        if ($potongan > (float) $request->target) {
+            return redirect()->back()->withInput()->withErrors([
+                'potongan' => 'Nominal potongan tidak boleh lebih besar dari nominal tagihan awal.',
+            ])->with('open_modal_tambah', 'ipp');
+        }
 
         // Cek apakah siswa sudah memiliki record tagihan di tahun ajaran aktif (misal dari carryover saat naik kelas)
         $pembayaran = Pembayaran::where('siswa_id', $request->siswa_id)
@@ -120,8 +127,9 @@ class IppController extends Controller
             'tahun_ajaran_id' => $tahunAjaranId,
             'tahun_ajaran'    => $tahunAjaranNama,
             'target'          => $request->target,
+            'potongan'        => $potongan,
             'belum_lunas'     => 0,
-            'status'          => 'Belum Lunas',
+            'status'          => $potongan >= (float) $request->target ? 'Lunas' : 'Belum Lunas',
         ]);
 
         return redirect()
@@ -158,6 +166,7 @@ class IppController extends Controller
     {
         $request->validate([
             'target' => 'required|numeric|min:0',
+            'potongan' => 'nullable|numeric|min:0',
         ]);
 
         $pembayaran = Pembayaran::findOrFail($id);
@@ -166,12 +175,21 @@ class IppController extends Controller
             $pembayaran->siswa_id = $request->siswa_id;
         }
 
+        $potongan = (float) $request->input('potongan', 0);
+        $tagihanAwal = (float) $request->target + (float) ($pembayaran->belum_lunas ?? 0);
+        if ($potongan > $tagihanAwal) {
+            return redirect()->back()->withInput()->withErrors([
+                'potongan' => 'Nominal potongan tidak boleh lebih besar dari nominal tagihan awal.',
+            ]);
+        }
+
         $pembayaran->target = $request->target;
+        $pembayaran->potongan = $potongan;
         // belum_lunas (terbawa) tetap terjaga utuh!
 
         $terbayar = (float) $pembayaran->detailPembayaran()->sum('nominal');
-        $totalTagihan = (float) $pembayaran->target + (float) ($pembayaran->belum_lunas ?? 0);
-        $pembayaran->status = ($totalTagihan > 0 && $terbayar >= $totalTagihan) ? 'Lunas' : 'Belum Lunas';
+        $totalTagihan = $pembayaran->totalTagihan();
+        $pembayaran->status = ($totalTagihan <= 0 || $terbayar >= $totalTagihan) ? 'Lunas' : 'Belum Lunas';
         $pembayaran->save();
 
         return redirect()

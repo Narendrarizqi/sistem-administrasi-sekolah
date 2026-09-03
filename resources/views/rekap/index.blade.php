@@ -691,6 +691,7 @@
                                 <th class="sortable col-uang" data-sort="terbawa" onclick="sortTable('terbawa')" title="Klik untuk mengurutkan berdasarkan Terbawa">
                                     Terbawa (Rp) <i class="fas fa-sort sort-icon"></i>
                                 </th>
+                                <th class="col-uang">Potongan (Rp)</th>
                                 <th class="sortable col-uang" data-sort="total_tagihan" onclick="sortTable('total_tagihan')" title="Klik untuk mengurutkan berdasarkan Total Tagihan">
                                     Total Tagihan (Rp) <i class="fas fa-sort sort-icon"></i>
                                 </th>
@@ -766,6 +767,8 @@
 
                                     <td class="terbawa-cell col-uang">
                                     </td>
+
+                                    <td class="potongan-cell col-uang"></td>
 
                                     <td class="total-tagihan-cell col-uang val-num-total">
                                     </td>
@@ -931,6 +934,7 @@
 
         const targetCell = row.querySelector('.target-cell');
         const terbawaCell = row.querySelector('.terbawa-cell');
+        const potonganCell = row.querySelector('.potongan-cell');
         const totalTagihanCell = row.querySelector('.total-tagihan-cell');
         const terbayarCell = row.querySelector('.terbayar-cell');
         const sisaCell = row.querySelector('.sisa-cell');
@@ -943,6 +947,8 @@
 
             terbawaCell.textContent = '0';
             terbawaCell.className = 'terbawa-cell col-uang val-num-zero';
+            potonganCell.textContent = '0';
+            potonganCell.className = 'potongan-cell col-uang val-num-zero';
 
             totalTagihanCell.textContent = '0';
             totalTagihanCell.className = 'total-tagihan-cell col-uang val-num-zero';
@@ -975,6 +981,11 @@
         }
 
         // Total Tagihan
+        potonganCell.textContent = formatRupiah(data.potongan);
+        potonganCell.className = Number(data.potongan) > 0
+            ? 'potongan-cell col-uang text-warning'
+            : 'potongan-cell col-uang val-num-zero';
+
         totalTagihanCell.textContent = formatRupiah(data.total_tagihan);
         totalTagihanCell.className = 'total-tagihan-cell col-uang val-num-total';
 
