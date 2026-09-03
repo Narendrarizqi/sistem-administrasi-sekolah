@@ -262,6 +262,16 @@
             <td class="info-sep">:</td>
             <td class="info-val">{{ $tanggalCetak }}</td>
         </tr>
+        @if(($grandTotal['potongan'] ?? 0) > 0)
+        <tr>
+            <td class="info-label">Total Potongan/Keringanan</td>
+            <td class="info-sep">:</td>
+            <td class="info-val" style="color: #15803d; font-weight: bold;">Rp {{ number_format($grandTotal['potongan'], 0, ',', '.') }}</td>
+            <td class="info-label">Keterangan Tagihan</td>
+            <td class="info-sep">:</td>
+            <td class="info-val">Total tagihan sudah disesuaikan dengan potongan</td>
+        </tr>
+        @endif
     </table>
 
     {{-- 4. TABEL REKAPITULASI SELURUH SISWA --}}
@@ -285,7 +295,12 @@
                     <td>{{ $st['siswa']->nis ?? '-' }}</td>
                     <td><strong>{{ $st['siswa']->nama ?? '-' }}</strong></td>
                     <td class="text-center">{{ $st['siswa']->kelas ?? '-' }}</td>
-                    <td class="text-right"><strong>{{ number_format($st['total_tagihan'], 0, ',', '.') }}</strong></td>
+                    <td class="text-right">
+                        <strong>{{ number_format($st['total_tagihan'], 0, ',', '.') }}</strong>
+                        @if(($st['potongan'] ?? 0) > 0)
+                            <div style="font-size: 7.5px; color: #15803d; font-weight: bold;">(Potongan: Rp {{ number_format($st['potongan'], 0, ',', '.') }})</div>
+                        @endif
+                    </td>
                     <td class="text-right" style="color:#15803d;">
                         @if($st['terbayar'] > 0)
                             {{ number_format($st['terbayar'], 0, ',', '.') }}
@@ -326,7 +341,12 @@
             <tfoot>
                 <tr>
                     <td colspan="4" class="text-center" style="font-weight: bold; background:#f1f5f9;">TOTAL KESELURUHAN</td>
-                    <td class="text-right">{{ number_format($grandTotal['total_tagihan'], 0, ',', '.') }}</td>
+                    <td class="text-right">
+                        <strong>{{ number_format($grandTotal['total_tagihan'], 0, ',', '.') }}</strong>
+                        @if(($grandTotal['potongan'] ?? 0) > 0)
+                            <div style="font-size: 7.5px; color: #15803d; font-weight: bold;">(Total Potongan: Rp {{ number_format($grandTotal['potongan'], 0, ',', '.') }})</div>
+                        @endif
+                    </td>
                     <td class="text-right" style="color:#15803d;">{{ number_format($grandTotal['terbayar'], 0, ',', '.') }}</td>
                     <td class="text-right" style="color:#dc2626;">{{ number_format($grandTotal['sisa'], 0, ',', '.') }}</td>
                     <td class="text-center">

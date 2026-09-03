@@ -150,20 +150,34 @@
             <td class="sep">:</td>
             <td>{{ $detail->metode ?? '-' }}</td>
         </tr>
+        @if(($detail->potongan ?? 0) > 0)
+        <tr>
+            <td class="label">Potongan IPP</td>
+            <td class="sep">:</td>
+            <td style="color: #15803D; font-weight: bold;">
+                Rp {{ number_format($detail->potongan, 0, ',', '.') }}
+            </td>
+        </tr>
+        @endif
         <tr>
             <td class="label">Keterangan</td>
             <td class="sep">:</td>
-            <td>{{ $detail->keterangan ?: '-' }}</td>
+            <td>
+                {{ $detail->keterangan ?: '-' }}
+                @if(($detail->potongan ?? 0) > 0 && !$detail->keterangan)
+                    <span style="color: #15803D; font-style: italic;">(Mendapatkan potongan sebesar Rp {{ number_format($detail->potongan, 0, ',', '.') }})</span>
+                @endif
+            </td>
         </tr>
     </table>
 
     <div class="box-nominal">
-        <div class="label">Nominal Dibayar (Transaksi Ini)</div>
+        <div class="label">Nominal Dibayar Tunai (Transaksi Ini)</div>
         <div class="value">Rp {{ number_format($detail->nominal, 0, ',', '.') }}</div>
         @if(($detail->potongan ?? 0) > 0)
             <div style="font-size: 10px; color: #15803D; margin-top: 4px; font-weight: bold;">
                 + Potongan IPP: Rp {{ number_format($detail->potongan, 0, ',', '.') }}
-                (Total Pemenuhan: Rp {{ number_format($detail->nominal + $detail->potongan, 0, ',', '.') }})
+                (Total Pemenuhan Kewajiban: Rp {{ number_format($detail->nominal + $detail->potongan, 0, ',', '.') }})
             </div>
         @endif
     </div>
@@ -174,6 +188,13 @@
             <td class="sep">:</td>
             <td>Rp {{ number_format($totalTagihanAwal ?? $pembayaran->totalTagihanAwal(), 0, ',', '.') }}</td>
         </tr>
+        @if(($detail->potongan ?? 0) > 0)
+        <tr>
+            <td class="label">Potongan Transaksi Ini</td>
+            <td class="sep">:</td>
+            <td style="color: #15803D; font-weight: bold;">Rp {{ number_format($detail->potongan, 0, ',', '.') }}</td>
+        </tr>
+        @endif
         @if(($totalPotongan ?? 0) > 0)
         <tr>
             <td class="label">Total Potongan (s/d Transaksi Ini)</td>

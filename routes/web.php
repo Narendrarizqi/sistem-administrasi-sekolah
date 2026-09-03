@@ -69,6 +69,11 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('ki', KiController::class);
     Route::post('/ki/{id}/bayar', [KiController::class,'bayar'])->name('ki.bayar');
+    Route::post('/ki/jenis-iuran', [KiController::class, 'storeJenisIuran'])->name('ki.jenis-iuran.store');
+    Route::put('/ki/jenis-iuran/{id}', [KiController::class, 'updateJenisIuran'])->name('ki.jenis-iuran.update');
+    Route::delete('/ki/jenis-iuran/{id}', [KiController::class, 'destroyJenisIuran'])->name('ki.jenis-iuran.destroy');
+    Route::post('/ki/jenis-iuran/{id}/toggle', [KiController::class, 'toggleJenisIuran'])->name('ki.jenis-iuran.toggle');
+    Route::post('/ki/terapkan-massal', [KiController::class, 'terapkanMassal'])->name('ki.terapkan-massal');
 
     Route::get('/pengaturan', function () {
         return view('dashboard.index');

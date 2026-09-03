@@ -45,6 +45,11 @@ class Pembayaran extends Model
         return $this->hasMany(DetailPembayaran::class);
     }
 
+    public function itemsKi(): HasMany
+    {
+        return $this->hasMany(ItemPembayaranKi::class, 'pembayaran_id');
+    }
+
     /**
      * Relasi ke pembayaran asal (untuk tracking histori carryover)
      */
@@ -303,53 +308,85 @@ class Pembayaran extends Model
     }
 
     /**
-     * Sisa tagihan per sub-kategori KI (UTS, UAS, Ujian)
+     * Sisa tagihan per sub-kategori KI / Asesmen
      */
     public function sisaKiKategori(string $kategori): float
     {
         $target = 0;
-        if ($kategori === 'UTS') {
-            $target = (float) $this->target_uts;
-        } elseif ($kategori === 'UAS') {
-            $target = (float) $this->target_uas;
-        } elseif ($kategori === 'Ujian') {
-            $target = (float) $this->target_ujian;
+        $item = $this->relationLoaded('itemsKi')
+            ? $this->itemsKi->firstWhere('nama_iuran', $kategori)
+            : $this->itemsKi()->where('nama_iuran', $kategori)->first();
+
+        if ($item) {
+            $target = (float) $item->nominal;
+        } else {
+            // Fallback jika membaca kolom legacy UTS, UAS, Ujian
+            if ($kategori === 'UTS') {
+                $target = (float) $this->target_uts;
+            } elseif ($kategori === 'UAS') {
+                $target = (float) $this->target_uas;
+            } elseif ($kategori === 'Ujian') {
+                $target = (float) $this->target_ujian;
+            }
         }
+
         $terbayar = $this->terbayarKiKategori($kategori);
         return max($target - $terbayar, 0);
     }
 
     /**
-     * Status 3 sub-tagihan KI (UTS, UAS, Ujian)
+     * Status sub-tagihan KI / Asesmen dinamis
      */
     public function statusKiSubtagihan(): array
     {
-        $kategoriList = ['UTS', 'UAS', 'Ujian'];
         $results = [];
+        $items = $this->relationLoaded('itemsKi') ? $this->itemsKi : $this->itemsKi()->get();
 
-        foreach ($kategoriList as $kat) {
-            $target = 0;
-            if ($kat === 'UTS') {
-                $target = (float) $this->target_uts;
-            } elseif ($kat === 'UAS') {
-                $target = (float) $this->target_uas;
-            } elseif ($kat === 'Ujian') {
-                $target = (float) $this->target_ujian;
+        if ($items->isNotEmpty()) {
+            foreach ($items as $item) {
+                $kat = $item->nama_iuran;
+                $target = (float) $item->nominal;
+                $terbayar = $this->terbayarKiKategori($kat);
+                $sisa = max($target - $terbayar, 0);
+                $isLunas = ($target > 0 && $sisa <= 0);
+
+                $results[$kat] = [
+                    'kategori'    => $kat,
+                    'target'      => $target,
+                    'terbayar'    => $terbayar,
+                    'sisa'        => $sisa,
+                    'is_lunas'    => $isLunas,
+                    'status_text' => $isLunas ? 'Lunas' : ($terbayar > 0 ? 'Sebagian' : 'Belum Lunas'),
+                    'badge_class' => $isLunas ? 'badge-status-lunas' : 'badge-status-belum',
+                ];
             }
+        } else {
+            // Fallback data legacy jika belum ada relasi itemsKi
+            $kategoriList = ['UTS', 'UAS', 'Ujian'];
+            foreach ($kategoriList as $kat) {
+                $target = 0;
+                if ($kat === 'UTS') {
+                    $target = (float) $this->target_uts;
+                } elseif ($kat === 'UAS') {
+                    $target = (float) $this->target_uas;
+                } elseif ($kat === 'Ujian') {
+                    $target = (float) $this->target_ujian;
+                }
 
-            $terbayar = $this->terbayarKiKategori($kat);
-            $sisa = max($target - $terbayar, 0);
-            $isLunas = ($target > 0 && $sisa <= 0);
+                $terbayar = $this->terbayarKiKategori($kat);
+                $sisa = max($target - $terbayar, 0);
+                $isLunas = ($target > 0 && $sisa <= 0);
 
-            $results[$kat] = [
-                'kategori'    => $kat,
-                'target'      => $target,
-                'terbayar'    => $terbayar,
-                'sisa'        => $sisa,
-                'is_lunas'    => $isLunas,
-                'status_text' => $isLunas ? 'Lunas' : 'Belum Lunas',
-                'badge_class' => $isLunas ? 'badge-status-lunas' : 'badge-status-belum',
-            ];
+                $results[$kat] = [
+                    'kategori'    => $kat,
+                    'target'      => $target,
+                    'terbayar'    => $terbayar,
+                    'sisa'        => $sisa,
+                    'is_lunas'    => $isLunas,
+                    'status_text' => $isLunas ? 'Lunas' : ($terbayar > 0 ? 'Sebagian' : 'Belum Lunas'),
+                    'badge_class' => $isLunas ? 'badge-status-lunas' : 'badge-status-belum',
+                ];
+            }
         }
 
         return $results;

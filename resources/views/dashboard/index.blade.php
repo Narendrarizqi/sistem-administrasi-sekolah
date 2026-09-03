@@ -191,8 +191,10 @@
             letter-spacing: -0.02em !important;
         }
 
-        .value-sisa { color: #d97706 !important; }
-        .value-siswa { color: #7c3aed !important; }
+        .value-sisa,
+        .value-siswa {
+            color: #0f172a !important;
+        }
 
         .stat-card-footer {
             margin-top: auto !important;
@@ -634,7 +636,7 @@
                 </div>
                 <div class="stat-info-wrapper">
                     <span class="stat-title-label">Belum Lunas</span>
-                    <h3 class="stat-main-value value-sisa">Rp {{ number_format($sisaTarget, 0, ',', '.') }}</h3>
+                    <h3 class="stat-main-value">Rp {{ number_format($sisaTarget, 0, ',', '.') }}</h3>
                 </div>
             </div>
             <div class="stat-card-footer">
@@ -653,7 +655,7 @@
                 </div>
                 <div class="stat-info-wrapper">
                     <span class="stat-title-label">Jumlah Siswa</span>
-                    <h3 class="stat-main-value value-siswa">{{ number_format($totalSiswa, 0, ',', '.') }}</h3>
+                    <h3 class="stat-main-value">{{ number_format($totalSiswa, 0, ',', '.') }}</h3>
                 </div>
             </div>
             <div class="stat-card-footer">
@@ -980,17 +982,6 @@
 </div>
 
 @endsection
-
-@section('footer')
-    <div class="d-flex align-items-center justify-content-between w-100 flex-wrap gap-2 text-muted" style="font-size: 12px;">
-        <div>
-            © {{ date('Y') }} Bagus Narendra Rizqi Ananto. All rights reserved.
-        </div>
-        <div>
-            Aplikasi Pembayaran Sekolah
-        </div>
-    </div>
-@stop
 
 @section('js')
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

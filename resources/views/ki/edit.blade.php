@@ -1,6 +1,6 @@
 @extends('adminlte::page')
 
-@section('title', 'Edit Tagihan Kegiatan Intrakurikuler')
+@section('title', 'Edit Tagihan Asesmen')
 
 @section('css')
     <link rel="stylesheet" href="{{ asset('css/custom.css') }}">
@@ -13,7 +13,7 @@
         <div class="card-header bg-white border-0 py-3">
             <h5 class="mb-0 fw-bold">
                 <i class="fas fa-pen text-success me-2"></i>
-                Form Edit Data Tagihan Kegiatan Intrakurikuler (KI)
+                Form Edit Data Tagihan Asesmen
             </h5>
         </div>
 
@@ -37,32 +37,10 @@
 
                 {{-- Siswa --}}
                 <div class="mb-3">
-                    <label for="siswa_id" class="form-label fw-semibold">
-                        Siswa <span class="text-danger">*</span>
+                    <label class="form-label fw-semibold">
+                        Siswa
                     </label>
-
-                    <select name="siswa_id"
-                            id="siswa_id"
-                            class="form-control @error('siswa_id') is-invalid @enderror"
-                            style="border-radius: 8px;"
-                            required>
-
-                        <option value="" disabled>-- Pilih Siswa --</option>
-
-                        @foreach($siswa as $item)
-                            <option value="{{ $item->id }}"
-                                {{ old('siswa_id', $pembayaran->siswa_id) == $item->id ? 'selected' : '' }}>
-                                {{ $item->nis }} - {{ $item->nama }} ({{ $item->kelas }})
-                            </option>
-                        @endforeach
-
-                    </select>
-
-                    @error('siswa_id')
-                        <div class="invalid-feedback">
-                            {{ $message }}
-                        </div>
-                    @enderror
+                    <input type="text" class="form-control bg-light" value="{{ $pembayaran->siswa->nis ?? '-' }} - {{ $pembayaran->siswa->nama ?? '-' }} ({{ $pembayaran->siswa->kelas ?? '-' }})" readonly style="border-radius: 8px;">
                 </div>
 
                 {{-- Info Terbawa Tahun Lalu --}}
@@ -77,78 +55,80 @@
                     </div>
                 @endif
 
-                {{-- Target Pembayaran Per Sub-Kategori --}}
+                {{-- Target Pembayaran Per Sub-Kategori Dinamis --}}
                 <div class="border rounded p-3 mb-3 bg-light" style="border-radius: 10px;">
                     <div class="font-weight-bold text-dark mb-2" style="font-size: 13.5px;">
                         <i class="fas fa-list-check text-success mr-1"></i>
-                        Edit Nominal Target Tiap Kegiatan:
+                        Nominal Item Tagihan Asesmen Siswa Ini:
                     </div>
 
-                    {{-- 1. Target UTS --}}
-                    <div class="form-group row mb-2">
-                        <label for="edit_page_target_uts" class="col-sm-3 col-form-label font-weight-semibold">
-                            Target UTS (Rp)
-                        </label>
-                        <div class="col-sm-9">
-                            <div class="input-group">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text font-weight-bold bg-white">Rp</span>
+                    @forelse($pembayaran->itemsKi as $itKi)
+                        <div class="form-group row mb-2 align-items-center">
+                            <label class="col-sm-4 col-form-label font-weight-semibold">
+                                {{ $itKi->nama_iuran }} <span class="text-muted small">(Rp)</span>
+                            </label>
+                            <div class="col-sm-8">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text font-weight-bold bg-white">Rp</span>
+                                    </div>
+                                    <input type="number"
+                                           name="items[{{ $itKi->id }}][nominal]"
+                                           class="form-control font-weight-bold text-success font-num ki-page-item-input"
+                                           value="{{ (int)$itKi->nominal }}"
+                                           min="0"
+                                           step="1000"
+                                           style="border-radius: 0 8px 8px 0;">
                                 </div>
-                                <input type="number"
-                                       name="target_uts"
-                                       id="edit_page_target_uts"
-                                       class="form-control font-weight-bold text-success font-num ki-page-edit-input"
-                                       value="{{ old('target_uts', (int)($pembayaran->target_uts ?? 0)) }}"
-                                       min="0"
-                                       step="1000"
-                                       style="border-radius: 0 8px 8px 0;">
                             </div>
                         </div>
-                    </div>
+                    @empty
+                        <div class="text-muted small mb-2">Belum ada item spesifik. Menggunakan target global: Rp {{ number_format($pembayaran->target, 0, ',', '.') }}</div>
+                    @endforelse
 
-                    {{-- 2. Target UAS --}}
-                    <div class="form-group row mb-2">
-                        <label for="edit_page_target_uas" class="col-sm-3 col-form-label font-weight-semibold">
-                            Target UAS (Rp)
-                        </label>
-                        <div class="col-sm-9">
-                            <div class="input-group">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text font-weight-bold bg-white">Rp</span>
-                                </div>
-                                <input type="number"
-                                       name="target_uas"
-                                       id="edit_page_target_uas"
-                                       class="form-control font-weight-bold text-success font-num ki-page-edit-input"
-                                       value="{{ old('target_uas', (int)($pembayaran->target_uas ?? 0)) }}"
-                                       min="0"
-                                       step="1000"
-                                       style="border-radius: 0 8px 8px 0;">
-                            </div>
-                        </div>
-                    </div>
+                    @php
+                        $assignedNames = $pembayaran->itemsKi->pluck('nama_iuran')->toArray();
+                        $unassignedActive = ($jenisIuranAktif ?? collect())->whereNotIn('nama', $assignedNames);
+                    @endphp
 
-                    {{-- 3. Target Ujian --}}
-                    <div class="form-group row mb-0">
-                        <label for="edit_page_target_ujian" class="col-sm-3 col-form-label font-weight-semibold">
-                            Target Ujian (Rp)
-                        </label>
-                        <div class="col-sm-9">
-                            <div class="input-group">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text font-weight-bold bg-white">Rp</span>
-                                </div>
-                                <input type="number"
-                                       name="target_ujian"
-                                       id="edit_page_target_ujian"
-                                       class="form-control font-weight-bold text-success font-num ki-page-edit-input"
-                                       value="{{ old('target_ujian', (int)($pembayaran->target_ujian ?? 0)) }}"
-                                       min="0"
-                                       step="1000"
-                                       style="border-radius: 0 8px 8px 0;">
-                            </div>
+                    @if($unassignedActive->isNotEmpty())
+                        <hr class="my-3">
+                        <div class="font-weight-bold text-primary mb-2" style="font-size: 12.5px;">
+                            <i class="fas fa-plus-circle mr-1"></i> Tambahkan Jenis Iuran Lain ke Siswa Ini:
                         </div>
-                    </div>
+                        @foreach($unassignedActive as $uIuran)
+                            <div class="form-group row mb-2 align-items-center">
+                                <div class="col-sm-4">
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox"
+                                               name="new_iuran_ids[]"
+                                               value="{{ $uIuran->id }}"
+                                               id="page_new_iuran_{{ $uIuran->id }}"
+                                               class="custom-control-input"
+                                               onchange="const inp = document.getElementById('page_new_nom_{{ $uIuran->id }}'); inp.disabled = !this.checked; if(this.checked) inp.focus();">
+                                        <label class="custom-control-label font-weight-semibold" for="page_new_iuran_{{ $uIuran->id }}" style="cursor: pointer;">
+                                            {{ $uIuran->nama }}
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-sm-8">
+                                    <div class="input-group input-group-sm">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text bg-light font-weight-bold">Rp</span>
+                                        </div>
+                                        <input type="number"
+                                               name="new_nominals[{{ $uIuran->id }}]"
+                                               id="page_new_nom_{{ $uIuran->id }}"
+                                               class="form-control font-weight-bold text-primary font-num"
+                                               value="{{ (int)$uIuran->nominal_default }}"
+                                               min="0"
+                                               step="1000"
+                                               disabled>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                    @endif
                 </div>
 
                 {{-- Summary Edit Box --}}
@@ -161,7 +141,7 @@
                             </div>
                         </div>
                         <div class="col-md-6 col-12">
-                            <div class="text-muted small">Total Target Tagihan Baru</div>
+                            <div class="text-muted small">Total Target Tagihan Saat Ini</div>
                             <div class="font-weight-bold text-dark font-num" style="font-size: 17px;" id="editPageSummaryTotalLabel">
                                 Rp {{ number_format($pembayaran->target, 0, ',', '.') }}
                             </div>
@@ -196,22 +176,19 @@ function formatRupiah(value) {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
-    const inputUts = document.getElementById('edit_page_target_uts');
-    const inputUas = document.getElementById('edit_page_target_uas');
-    const inputUjian = document.getElementById('edit_page_target_ujian');
     const summaryLabel = document.getElementById('editPageSummaryTotalLabel');
 
     function calculateEditPageTotal() {
-        const uts = parseFloat(inputUts ? inputUts.value : 0) || 0;
-        const uas = parseFloat(inputUas ? inputUas.value : 0) || 0;
-        const ujian = parseFloat(inputUjian ? inputUjian.value : 0) || 0;
-        const total = uts + uas + ujian;
+        let total = 0;
+        document.querySelectorAll('.ki-page-item-input').forEach(function (inp) {
+            total += parseFloat(inp.value || 0);
+        });
         if (summaryLabel) {
             summaryLabel.textContent = `Rp ${formatRupiah(total)}`;
         }
     }
 
-    document.querySelectorAll('.ki-page-edit-input').forEach(function (inp) {
+    document.querySelectorAll('.ki-page-item-input').forEach(function (inp) {
         inp.addEventListener('input', calculateEditPageTotal);
     });
 });

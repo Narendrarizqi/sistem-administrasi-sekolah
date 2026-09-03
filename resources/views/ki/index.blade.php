@@ -160,28 +160,155 @@
             box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.12);
         }
 
-        .btn-ki-add {
+        /* Toolbar Action Buttons (Matching Halaman Siswa Styling & Spacing) */
+        .ki-toolbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: nowrap;
+        }
+
+        /* 1. Kelola Jenis Iuran (Base Accent: Indigo) */
+        .btn-toolbar-master {
             height: 38px;
-            background: #16a34a;
-            border: 1px solid #15803d;
-            color: #ffffff;
-            font-size: 13px;
-            font-weight: 600;
-            padding: 0 15px;
-            border-radius: 8px;
+            padding: 0 14px;
             display: inline-flex;
             align-items: center;
-            gap: 7px;
-            transition: all 0.15s ease;
+            justify-content: center;
+            gap: 6px;
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            color: #1e293b !important;
+            font-size: 13px;
+            font-weight: 600;
+            border-radius: 8px;
+            transition: all 0.18s ease;
             cursor: pointer;
+            white-space: nowrap;
+            text-decoration: none !important;
+        }
+
+        .btn-toolbar-master i {
+            color: #6366f1;
+            transition: color 0.18s ease;
+        }
+
+        .btn-toolbar-master:hover,
+        .btn-toolbar-master:focus {
+            background: #eef2ff;
+            border-color: #c7d2fe;
+            color: #4338ca !important;
+            box-shadow: 0 1px 3px rgba(99, 102, 241, 0.08);
+            transform: translateY(-1px);
+        }
+
+        .btn-toolbar-master:hover i,
+        .btn-toolbar-master:focus i {
+            color: #4f46e5;
+        }
+
+        .btn-toolbar-master:active {
+            background: #e0e7ff;
+            border-color: #a5b4fc;
+            color: #3730a3 !important;
+            transform: translateY(1px);
+        }
+
+        /* 2. Terapkan Massal (Base Accent: Sky Blue) */
+        .btn-toolbar-massal {
+            height: 38px;
+            padding: 0 14px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            color: #1e293b !important;
+            font-size: 13px;
+            font-weight: 600;
+            border-radius: 8px;
+            transition: all 0.18s ease;
+            cursor: pointer;
+            white-space: nowrap;
+            text-decoration: none !important;
+        }
+
+        .btn-toolbar-massal i {
+            color: #0284c7;
+            transition: color 0.18s ease;
+        }
+
+        .btn-toolbar-massal:hover,
+        .btn-toolbar-massal:focus {
+            background: #f0f9ff;
+            border-color: #bae6fd;
+            color: #0369a1 !important;
+            box-shadow: 0 1px 3px rgba(2, 132, 199, 0.08);
+            transform: translateY(-1px);
+        }
+
+        .btn-toolbar-massal:hover i,
+        .btn-toolbar-massal:focus i {
+            color: #0284c7;
+        }
+
+        .btn-toolbar-massal:active {
+            background: #e0f2fe;
+            border-color: #7dd3fc;
+            color: #075985 !important;
+            transform: translateY(1px);
+        }
+
+        /* 3. Tambah Tagihan (Primary Solid Green matching Siswa) */
+        .btn-toolbar-tambah-ki,
+        .btn-ki-add {
+            height: 38px;
+            padding: 0 16px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            background: #16a34a;
+            border: 1px solid #16a34a;
+            color: #ffffff !important;
+            font-size: 13px;
+            font-weight: 600;
+            border-radius: 8px;
+            transition: all 0.18s ease;
+            cursor: pointer;
+            white-space: nowrap;
+            text-decoration: none !important;
             box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
         }
 
-        .btn-ki-add:hover {
-            background: #15803d;
+        .btn-toolbar-tambah-ki i,
+        .btn-ki-add i {
             color: #ffffff;
-            box-shadow: 0 2px 5px rgba(22, 163, 74, 0.2);
+        }
+
+        .btn-toolbar-tambah-ki:hover,
+        .btn-toolbar-tambah-ki:focus,
+        .btn-ki-add:hover,
+        .btn-ki-add:focus {
+            background: #15803d;
+            border-color: #15803d;
+            color: #ffffff !important;
             transform: translateY(-1px);
+            box-shadow: 0 2px 6px rgba(22, 163, 74, 0.25);
+        }
+
+        .btn-toolbar-tambah-ki:active,
+        .btn-ki-add:active {
+            transform: translateY(1px);
+        }
+
+        @media (max-width: 768px) {
+            .ki-toolbar-actions {
+                width: 100%;
+                justify-content: flex-start;
+                flex-wrap: wrap;
+            }
         }
 
         /* 3. Table Container */
@@ -576,6 +703,123 @@
             color: #ffffff !important;
             transform: translateY(-1px) !important;
             box-shadow: 0 6px 16px rgba(220, 38, 38, 0.35) !important;
+        }
+
+        /* Standarisasi Tombol Hijau (Sesuai Tema Sistem) */
+        .btn-simpan-hijau {
+            background-color: #16a34a !important;
+            border: 1px solid #16a34a !important;
+            color: #ffffff !important;
+            font-size: 13px !important;
+            font-weight: 600 !important;
+            border-radius: 8px !important;
+            padding: 8px 20px !important;
+            height: 38px !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 6px !important;
+            box-shadow: 0 2px 6px rgba(22, 163, 74, 0.2) !important;
+            transition: transform 0.18s ease, background-color 0.18s ease, box-shadow 0.18s ease !important;
+            cursor: pointer;
+            text-decoration: none !important;
+            white-space: nowrap !important;
+        }
+
+        .btn-simpan-hijau:hover,
+        .btn-simpan-hijau:focus {
+            background-color: #15803d !important;
+            border-color: #15803d !important;
+            color: #ffffff !important;
+            transform: translateY(-1px) !important;
+            box-shadow: 0 4px 10px rgba(22, 163, 74, 0.28) !important;
+        }
+
+        .btn-simpan-hijau:active {
+            transform: translateY(1px) !important;
+        }
+
+        /* Action Buttons Tabel Master (Theme Siswa / Sarpras) */
+        .act-group {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            white-space: nowrap !important;
+        }
+
+        .btn-act-toggle-off {
+            width: 28px;
+            height: 28px;
+            padding: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            font-size: 11.5px;
+            background: #fff7ed;
+            border: 1px solid #fed7aa;
+            color: #ea580c !important;
+            transition: all 0.15s ease;
+            cursor: pointer;
+        }
+
+        .btn-act-toggle-off:hover {
+            background: #ea580c;
+            border-color: #ea580c;
+            color: #ffffff !important;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 5px rgba(234, 88, 12, 0.25);
+        }
+
+        .btn-act-toggle-on {
+            width: 28px;
+            height: 28px;
+            padding: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            font-size: 11.5px;
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            color: #16a34a !important;
+            transition: all 0.15s ease;
+            cursor: pointer;
+        }
+
+        .btn-act-toggle-on:hover {
+            background: #16a34a;
+            border-color: #16a34a;
+            color: #ffffff !important;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 5px rgba(22, 163, 74, 0.25);
+        }
+
+        .badge-aktif-pill {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            color: #15803d;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 3px 9px;
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .badge-nonaktif-pill {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            color: #64748b;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 3px 9px;
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
         }
 
         .payment-mode-box {
@@ -1042,10 +1286,10 @@
             <div>
                 <h1 class="ki-title">
                     <span class="ki-title-icon"><i class="fas fa-book-open"></i></span>
-                    Kegiatan Intrakurikuler (KI)
+                    Asesmen (Kegiatan Intrakurikuler)
                 </h1>
                 <p class="ki-desc">
-                    Kelola data tagihan UTS, UAS, dan Ujian siswa, verifikasi kuitansi pembayaran, serta status pelunasan tiap kegiatan.
+                    Kelola data tagihan Asesmen (STS Gasal, STS Genap, SAS, SAT, ASAJ, Prakerin, dll.), verifikasi pembayaran, serta status pelunasan siswa.
                 </p>
             </div>
             <div class="ki-header-badges">
@@ -1077,10 +1321,43 @@
                     </div>
                 </div>
 
-                <button type="button" class="btn-ki-add" data-toggle="modal" data-target="#modalTambahKi">
-                    <i class="fas fa-plus"></i>
-                    <span>Tambah Tagihan</span>
-                </button>
+                <div class="ki-toolbar-actions">
+                    {{-- Tombol 1: Kelola Master Jenis Iuran --}}
+                    <button
+                        type="button"
+                        class="btn-toolbar-master"
+                        data-toggle="modal"
+                        data-target="#modalKelolaJenisIuran"
+                        title="Kelola Master Jenis Iuran Asesmen"
+                    >
+                        <i class="fas fa-sliders-h"></i>
+                        <span>Kelola Jenis Iuran</span>
+                    </button>
+
+                    {{-- Tombol 2: Terapkan Massal ke Semua Siswa --}}
+                    <button
+                        type="button"
+                        class="btn-toolbar-massal"
+                        data-toggle="modal"
+                        data-target="#modalTerapkanMassal"
+                        title="Terapkan Tagihan Massal ke Seluruh Siswa Aktif"
+                    >
+                        <i class="fas fa-users-cog"></i>
+                        <span>Terapkan Massal</span>
+                    </button>
+
+                    {{-- Tombol 3: Tambah Tagihan Per Siswa --}}
+                    <button
+                        type="button"
+                        class="btn-toolbar-tambah-ki"
+                        data-toggle="modal"
+                        data-target="#modalTambahKi"
+                        title="Tambah Data Tagihan Asesmen Siswa"
+                    >
+                        <i class="fas fa-plus"></i>
+                        <span>Tambah Tagihan</span>
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -1113,7 +1390,7 @@
                             Sisa (Rp)
                             <i class="fas fa-sort sort-icon"></i>
                         </th>
-                        <th style="min-width: 155px;" class="text-center">Status (UTS / UAS / Ujian)</th>
+                        <th style="min-width: 155px;" class="text-center">Status Asesmen</th>
                         <th style="width: 82px;" class="text-center">Aksi</th>
                     </tr>
                 </thead>
@@ -1197,36 +1474,23 @@
                                 @endif
                             </td>
 
-                            {{-- 9. Status 3 Kategori (UTS, UAS, Ujian) --}}
+                            {{-- 9. Status Asesmen Dinamis --}}
                             <td class="text-left" style="padding-left: 8px;">
-                                <div class="ki-status-group">
-                                    {{-- UTS --}}
-                                    <div class="ki-status-item">
-                                        <span class="ki-status-label">UTS:</span>
-                                        @if($subStatus['UTS']['is_lunas'])
-                                            <span class="badge badge-status-lunas">Lunas</span>
-                                        @else
-                                            <span class="badge badge-status-belum">Belum Lunas</span>
-                                        @endif
-                                    </div>
-                                    {{-- UAS --}}
-                                    <div class="ki-status-item">
-                                        <span class="ki-status-label">UAS:</span>
-                                        @if($subStatus['UAS']['is_lunas'])
-                                            <span class="badge badge-status-lunas">Lunas</span>
-                                        @else
-                                            <span class="badge badge-status-belum">Belum Lunas</span>
-                                        @endif
-                                    </div>
-                                    {{-- Ujian --}}
-                                    <div class="ki-status-item">
-                                        <span class="ki-status-label">Ujian:</span>
-                                        @if($subStatus['Ujian']['is_lunas'])
-                                            <span class="badge badge-status-lunas">Lunas</span>
-                                        @else
-                                            <span class="badge badge-status-belum">Belum Lunas</span>
-                                        @endif
-                                    </div>
+                                <div class="ki-status-group" style="display: flex; flex-direction: column; gap: 3px;">
+                                    @forelse($subStatus as $katNama => $st)
+                                        <div class="ki-status-item d-flex align-items-center justify-content-between" style="font-size: 11px;">
+                                            <span class="ki-status-label mr-2 font-weight-500">{{ $katNama }}:</span>
+                                            @if($st['is_lunas'])
+                                                <span class="badge badge-status-lunas" style="font-size: 9.5px; padding: 2px 6px;">Lunas</span>
+                                            @elseif($st['terbayar'] > 0)
+                                                <span class="badge badge-warning" style="font-size: 9.5px; padding: 2px 6px; background: #fef3c7; color: #b45309; border: 1px solid #fde68a;">Sebagian</span>
+                                            @else
+                                                <span class="badge badge-status-belum" style="font-size: 9.5px; padding: 2px 6px;">Belum</span>
+                                            @endif
+                                        </div>
+                                    @empty
+                                        <span class="text-muted small">-</span>
+                                    @endforelse
                                 </div>
                             </td>
 
@@ -1280,15 +1544,222 @@
          MODALS SECTION
          ========================================================= --}}
 
-    {{-- MODAL TAMBAH TAGIHAN KI (UTS, UAS, UJIAN) --}}
+    {{-- MODAL 1: KELOLA MASTER JENIS IURAN ASESMEN --}}
+    <div class="modal fade" id="modalKelolaJenisIuran" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-content border-0 shadow" style="border-radius: 14px; overflow: hidden;">
+                <div class="modal-header modal-header-payment">
+                    <h5 class="modal-title font-weight-bold" style="font-size: 16px;">
+                        <i class="fas fa-sliders-h mr-2"></i>
+                        Kelola Master Jenis Iuran Asesmen
+                    </h5>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body p-4">
+                    {{-- Form Tambah Jenis Iuran Baru --}}
+                    <div class="card border mb-3 shadow-none" style="border-radius: 10px; background: #f8fafc; border-color: #e2e8f0 !important;">
+                        <div class="card-body p-3">
+                            <h6 class="font-weight-bold text-dark mb-2" style="font-size: 13.5px;">
+                                <i class="fas fa-plus-circle text-success mr-1"></i> Tambah Jenis Iuran Baru
+                            </h6>
+                            <form action="{{ route('ki.jenis-iuran.store') }}" method="POST">
+                                @csrf
+                                <div class="row align-items-end g-2">
+                                    <div class="col-md-4 col-12 mb-2">
+                                        <label class="font-weight-semibold small mb-1">Nama Iuran <span class="text-danger">*</span></label>
+                                        <input type="text" name="nama" class="form-control" placeholder="Contoh: Hawe, Study Tour" style="border-radius: 8px; height: 38px; font-size: 13px;" required>
+                                    </div>
+                                    <div class="col-md-4 col-12 mb-2">
+                                        <label class="font-weight-semibold small mb-1">Nominal Default (Rp)</label>
+                                        <input type="number" name="nominal_default" class="form-control font-num" placeholder="0" min="0" step="1000" value="0" style="border-radius: 8px; height: 38px; font-size: 13px;">
+                                    </div>
+                                    <div class="col-md-4 col-12 mb-2">
+                                        <button type="submit" class="btn-simpan-hijau w-100">
+                                            <i class="fas fa-save mr-1"></i> Simpan ke Master
+                                        </button>
+                                    </div>
+                                    <div class="col-12">
+                                        <input type="text" name="keterangan" class="form-control" placeholder="Keterangan / catatan singkat (opsional)" style="border-radius: 8px; height: 38px; font-size: 13px;">
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    {{-- Tabel Master Jenis Iuran --}}
+                    <div class="table-responsive bg-white rounded border" style="border-color: #e2e8f0 !important;">
+                        <table class="table table-sm table-hover mb-0" style="font-size: 12.5px;">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th style="width: 32px;" class="text-center">No</th>
+                                    <th>Nama Iuran</th>
+                                    <th class="text-right">Nominal Default</th>
+                                    <th class="text-center">Status</th>
+                                    <th class="text-center">Terpakai</th>
+                                    <th class="text-center" style="width: 140px;">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($daftarJenisIuran as $idx => $ji)
+                                    <tr>
+                                        <td class="text-center align-middle font-num">{{ $idx + 1 }}</td>
+                                        <td class="align-middle">
+                                            <strong class="text-dark">{{ $ji->nama }}</strong>
+                                            @if($ji->keterangan)
+                                                <div class="text-muted" style="font-size: 11px;">{{ $ji->keterangan }}</div>
+                                            @endif
+                                        </td>
+                                        <td class="text-right align-middle font-num font-weight-semibold">
+                                            Rp {{ number_format($ji->nominal_default, 0, ',', '.') }}
+                                        </td>
+                                        <td class="text-center align-middle">
+                                            @if($ji->is_active)
+                                                <span class="badge-aktif-pill">
+                                                    <i class="fas fa-check-circle" style="font-size: 9px;"></i> Aktif
+                                                </span>
+                                            @else
+                                                <span class="badge-nonaktif-pill">
+                                                    <i class="fas fa-times-circle" style="font-size: 9px;"></i> Nonaktif
+                                                </span>
+                                            @endif
+                                        </td>
+                                        <td class="text-center align-middle font-num">
+                                            {{ $ji->items_count }} siswa
+                                        </td>
+                                        <td class="text-center align-middle">
+                                            <div class="act-group">
+                                                {{-- Toggle Aktif/Nonaktif --}}
+                                                <form action="{{ route('ki.jenis-iuran.toggle', $ji->id) }}" method="POST" class="d-inline">
+                                                    @csrf
+                                                    <button type="submit" class="{{ $ji->is_active ? 'btn-act-toggle-off' : 'btn-act-toggle-on' }}" title="{{ $ji->is_active ? 'Nonaktifkan Jenis Iuran' : 'Aktifkan Jenis Iuran' }}">
+                                                        <i class="fas {{ $ji->is_active ? 'fa-ban' : 'fa-check' }}"></i>
+                                                    </button>
+                                                </form>
+
+                                                {{-- Tombol Edit --}}
+                                                <button type="button" class="btn-act-edit" data-toggle="collapse" data-target="#editJiRow{{ $ji->id }}" title="Edit Data Iuran">
+                                                    <i class="fas fa-pen"></i>
+                                                </button>
+
+                                                {{-- Hapus (dilindungi jika sudah terpakai) --}}
+                                                <form action="{{ route('ki.jenis-iuran.destroy', $ji->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus jenis iuran ini?');">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="btn-act-hapus" title="Hapus Jenis Iuran">
+                                                        <i class="fas fa-trash-alt"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {{-- Collapse Edit Form --}}
+                                    <tr class="collapse bg-light" id="editJiRow{{ $ji->id }}">
+                                        <td colspan="6" class="p-3" style="background: #f8fafc; border-top: 1px dashed #cbd5e1; border-bottom: 1px dashed #cbd5e1;">
+                                            <form action="{{ route('ki.jenis-iuran.update', $ji->id) }}" method="POST">
+                                                @csrf
+                                                @method('PUT')
+                                                <div class="row g-2 align-items-center">
+                                                    <div class="col-md-4 col-12 mb-1 mb-md-0">
+                                                        <input type="text" name="nama" class="form-control" value="{{ $ji->nama }}" placeholder="Nama Iuran" style="border-radius: 8px; height: 34px; font-size: 12.5px;" required>
+                                                    </div>
+                                                    <div class="col-md-3 col-12 mb-1 mb-md-0">
+                                                        <input type="number" name="nominal_default" class="form-control font-num" value="{{ (int)$ji->nominal_default }}" min="0" step="1000" placeholder="Nominal Default" style="border-radius: 8px; height: 34px; font-size: 12.5px;">
+                                                    </div>
+                                                    <div class="col-md-3 col-12 mb-1 mb-md-0">
+                                                        <input type="text" name="keterangan" class="form-control" value="{{ $ji->keterangan }}" placeholder="Keterangan singkat" style="border-radius: 8px; height: 34px; font-size: 12.5px;">
+                                                    </div>
+                                                    <div class="col-md-2 col-12 d-flex gap-1">
+                                                        <button type="submit" class="btn-simpan-hijau px-3" style="height: 34px; font-size: 12px; padding: 4px 12px !important;">
+                                                            <i class="fas fa-save mr-1"></i> Simpan
+                                                        </button>
+                                                        <button type="button" class="btn-batal-merah px-3" style="height: 34px; font-size: 12px; padding: 4px 12px !important;" data-toggle="collapse" data-target="#editJiRow{{ $ji->id }}">
+                                                            Batal
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="6" class="text-center text-muted py-3">Belum ada jenis iuran.</td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light py-2 px-4 justify-content-end" style="border-top: 1px solid #e2e8f0;">
+                    <button type="button" class="btn btn-tutup-merah px-4" data-dismiss="modal">
+                        <i class="fas fa-times mr-1"></i> Tutup
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- MODAL 2: TERAPKAN MASSAL KE SEMUA SISWA --}}
+    <div class="modal fade" id="modalTerapkanMassal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content border-0 shadow" style="border-radius: 14px; overflow: hidden;">
+                <div class="modal-header modal-header-payment">
+                    <h5 class="modal-title font-weight-bold" style="font-size: 16px;">
+                        <i class="fas fa-users-cog mr-2"></i>
+                        Terapkan Tagihan Massal ke Semua Siswa
+                    </h5>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form action="{{ route('ki.terapkan-massal') }}" method="POST" onsubmit="return confirm('PERINGATAN: Tagihan ini akan otomatis diterapkan ke seluruh siswa aktif pada tahun ajaran ini. Apakah Anda yakin ingin melanjutkan?');">
+                    @csrf
+                    <div class="modal-body p-4">
+                        <div class="alert alert-info py-2 px-3 mb-3 small" style="border-radius: 8px;">
+                            <i class="fas fa-info-circle mr-1"></i>
+                            Fitur ini akan membuat tagihan untuk <strong>seluruh siswa</strong> pada tahun ajaran <strong>{{ $selectedTa->nama ?? 'Aktif' }}</strong>. Siswa yang sudah memiliki tagihan ini akan <strong>dilewati secara otomatis</strong>.
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label class="font-weight-bold">Pilih Jenis Iuran <span class="text-danger">*</span></label>
+                            <select name="jenis_iuran_id" id="massal_jenis_iuran_id" class="form-control" style="border-radius: 8px; height: 38px; font-size: 13px;" required onchange="if(this.options[this.selectedIndex].dataset.default) document.getElementById('massal_nominal').value = this.options[this.selectedIndex].dataset.default;">
+                                <option value="">-- Pilih Jenis Iuran --</option>
+                                @foreach($jenisIuranAktif as $ji)
+                                    <option value="{{ $ji->id }}" data-default="{{ (int)$ji->nominal_default }}">
+                                        {{ $ji->nama }} (Default: Rp {{ number_format($ji->nominal_default, 0, ',', '.') }})
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label class="font-weight-bold">Nominal Tagihan untuk Semua Siswa (Rp) <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text font-weight-bold bg-light" style="border-radius: 8px 0 0 8px;">Rp</span>
+                                </div>
+                                <input type="number" name="nominal" id="massal_nominal" class="form-control font-weight-bold font-num text-success" placeholder="0" min="0" step="1000" style="border-radius: 0 8px 8px 0; height: 38px; font-size: 14px;" required>
+                            </div>
+                            <small class="text-muted">Nominal dapat disesuaikan sebelum diterapkan ke seluruh siswa.</small>
+                        </div>
+                    </div>
+                    <div class="modal-footer bg-light py-2 px-4 justify-content-end" style="border-top: 1px solid #e2e8f0;">
+                        <button type="button" class="btn btn-batal-merah px-4 mr-2" data-dismiss="modal">
+                            Batal
+                        </button>
+                        <button type="submit" class="btn-simpan-hijau px-4">
+                            <i class="fas fa-check-circle mr-1"></i> Terapkan Sekarang
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    {{-- MODAL 3: TAMBAH TAGIHAN ASESMEN PER SISWA --}}
     @php
         $allSiswaKi = \App\Models\Siswa::orderBy('nama')->get();
-        $existingSiswaIds = $data->pluck('siswa_id')->toArray();
-        $bulanIndoList = [
-            1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
-            5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
-            9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'
-        ];
     @endphp
     <div class="modal fade" id="modalTambahKi" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
@@ -1296,7 +1767,7 @@
                 <div class="modal-header modal-header-payment">
                     <h5 class="modal-title font-weight-bold" style="font-size: 16px;">
                         <i class="fas fa-book-open mr-2"></i>
-                        Tambah Tagihan Kegiatan Intrakurikuler (UTS, UAS, Ujian)
+                        Tambah Tagihan Asesmen Siswa
                     </h5>
                     <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
@@ -1307,15 +1778,10 @@
                     @csrf
                     <div class="modal-body p-4">
 
-                        {{-- Alert Jika Siswa Duplikat --}}
-                        <div id="modalKiDuplicateAlert" class="alert alert-danger d-none mb-3 py-2 px-3" style="border-radius: 8px;">
-                            <i class="fas fa-exclamation-circle mr-1"></i>
-                            <strong>Peringatan:</strong> Siswa ini sudah memiliki data tagihan Kegiatan Intrakurikuler (KI) pada tahun ajaran ini. Tidak dapat menambahkan tagihan ganda!
-                        </div>
-                        @if($errors->has('siswa_id'))
+                        @if($errors->any())
                             <div class="alert alert-danger mb-3 py-2 px-3" style="border-radius: 8px;">
                                 <i class="fas fa-exclamation-triangle mr-1"></i>
-                                <strong>Error:</strong> {{ $errors->first('siswa_id') }}
+                                <strong>Error:</strong> {{ $errors->first() }}
                             </div>
                         @endif
 
@@ -1332,15 +1798,12 @@
                                         required>
                                     <option value="">-- Pilih Siswa yang Ditagihkan --</option>
                                     @foreach($allSiswaKi as $itemSiswa)
-                                        @php $isAlreadyTagged = in_array($itemSiswa->id, $existingSiswaIds); @endphp
                                         <option value="{{ $itemSiswa->id }}"
                                                 data-nis="{{ $itemSiswa->nis }}"
                                                 data-nama="{{ $itemSiswa->nama }}"
                                                 data-kelas="{{ $itemSiswa->kelas }}"
-                                                data-exists="{{ $isAlreadyTagged ? '1' : '0' }}"
-                                                {{ $isAlreadyTagged ? 'disabled class=text-muted' : '' }}
                                                 {{ old('siswa_id') == $itemSiswa->id ? 'selected' : '' }}>
-                                            {{ $itemSiswa->nis }} - {{ $itemSiswa->nama }} ({{ $itemSiswa->kelas }}) {{ $isAlreadyTagged ? '— [Sudah Ada Tagihan]' : '' }}
+                                            {{ $itemSiswa->nis }} - {{ $itemSiswa->nama }} ({{ $itemSiswa->kelas }})
                                         </option>
                                     @endforeach
                                 </select>
@@ -1360,80 +1823,72 @@
                             </div>
                         </div>
 
-                        {{-- Rincian Tagihan: UTS, UAS, Ujian --}}
+                        {{-- Rincian Tagihan Dinamis dari Master Iuran Aktif --}}
                         <div class="border rounded p-3 mb-3 bg-light" style="border-radius: 10px;">
-                            <div class="font-weight-bold text-dark mb-2" style="font-size: 13.5px;">
-                                <i class="fas fa-list-check text-success mr-1"></i>
-                                Tentukan Nominal Target Tiap Kegiatan:
+                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                <div class="font-weight-bold text-dark" style="font-size: 13.5px;">
+                                    <i class="fas fa-list-check text-success mr-1"></i>
+                                    Pilih Jenis Iuran Asesmen yang Ditagihkan:
+                                </div>
+                                <span class="badge badge-info" style="font-size: 11px;">Centang untuk memilih</span>
                             </div>
 
-                            {{-- 1. Target UTS --}}
-                            <div class="form-group row mb-2">
-                                <label for="modal_ki_target_uts" class="col-sm-3 col-form-label font-weight-semibold">
-                                    Target UTS <span class="text-muted small">(Rp)</span>
-                                </label>
-                                <div class="col-sm-9">
-                                    <div class="input-group">
-                                        <div class="input-group-prepend">
-                                            <span class="input-group-text font-weight-bold bg-white">Rp</span>
-                                        </div>
-                                        <input type="number"
-                                               name="target_uts"
-                                               id="modal_ki_target_uts"
-                                               class="form-control font-weight-bold text-success font-num ki-subtarget-input"
-                                               placeholder="Nominal UTS..."
-                                               min="0"
-                                               step="1000"
-                                               value="{{ old('target_uts') }}"
-                                               style="border-radius: 0 8px 8px 0;">
-                                    </div>
-                                </div>
-                            </div>
-
-                            {{-- 2. Target UAS --}}
-                            <div class="form-group row mb-2">
-                                <label for="modal_ki_target_uas" class="col-sm-3 col-form-label font-weight-semibold">
-                                    Target UAS <span class="text-muted small">(Rp)</span>
-                                </label>
-                                <div class="col-sm-9">
-                                    <div class="input-group">
-                                        <div class="input-group-prepend">
-                                            <span class="input-group-text font-weight-bold bg-white">Rp</span>
-                                        </div>
-                                        <input type="number"
-                                               name="target_uas"
-                                               id="modal_ki_target_uas"
-                                               class="form-control font-weight-bold text-success font-num ki-subtarget-input"
-                                               placeholder="Nominal UAS..."
-                                               min="0"
-                                               step="1000"
-                                               value="{{ old('target_uas') }}"
-                                               style="border-radius: 0 8px 8px 0;">
-                                    </div>
-                                </div>
-                            </div>
-
-                            {{-- 3. Target Ujian --}}
-                            <div class="form-group row mb-0">
-                                <label for="modal_ki_target_ujian" class="col-sm-3 col-form-label font-weight-semibold">
-                                    Target Ujian <span class="text-muted small">(Rp)</span>
-                                </label>
-                                <div class="col-sm-9">
-                                    <div class="input-group">
-                                        <div class="input-group-prepend">
-                                            <span class="input-group-text font-weight-bold bg-white">Rp</span>
-                                        </div>
-                                        <input type="number"
-                                               name="target_ujian"
-                                               id="modal_ki_target_ujian"
-                                               class="form-control font-weight-bold text-success font-num ki-subtarget-input"
-                                               placeholder="Nominal Ujian..."
-                                               min="0"
-                                               step="1000"
-                                               value="{{ old('target_ujian') }}"
-                                               style="border-radius: 0 8px 8px 0;">
-                                    </div>
-                                </div>
+                            <div class="table-responsive bg-white rounded border">
+                                <table class="table table-sm table-hover mb-0" style="font-size: 13px;">
+                                    <thead class="bg-light">
+                                        <tr>
+                                            <th style="width: 40px;" class="text-center">Pilih</th>
+                                            <th>Nama Iuran</th>
+                                            <th style="width: 220px;">Nominal Tagihan (Rp)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @forelse($jenisIuranAktif as $iuran)
+                                            <tr class="ki-iuran-row">
+                                                <td class="text-center align-middle">
+                                                    <input type="checkbox"
+                                                           name="iuran_ids[]"
+                                                           value="{{ $iuran->id }}"
+                                                           id="iuran_check_{{ $iuran->id }}"
+                                                           class="ki-iuran-checkbox"
+                                                           data-id="{{ $iuran->id }}"
+                                                           data-nama="{{ $iuran->nama }}"
+                                                           data-default="{{ (int)$iuran->nominal_default }}"
+                                                           style="cursor: pointer; width: 17px; height: 17px;">
+                                                </td>
+                                                <td class="align-middle">
+                                                    <label for="iuran_check_{{ $iuran->id }}" class="mb-0 font-weight-semibold" style="cursor: pointer;">
+                                                        {{ $iuran->nama }}
+                                                    </label>
+                                                    @if($iuran->keterangan)
+                                                        <div class="text-muted" style="font-size: 11px;">{{ $iuran->keterangan }}</div>
+                                                    @endif
+                                                </td>
+                                                <td class="align-middle">
+                                                    <div class="input-group input-group-sm">
+                                                        <div class="input-group-prepend">
+                                                            <span class="input-group-text bg-light font-weight-bold">Rp</span>
+                                                        </div>
+                                                        <input type="number"
+                                                               name="nominals[{{ $iuran->id }}]"
+                                                               id="nominal_input_{{ $iuran->id }}"
+                                                               class="form-control font-weight-bold text-success font-num ki-nominal-input"
+                                                               value="{{ (int)$iuran->nominal_default }}"
+                                                               min="0"
+                                                               step="1000"
+                                                               disabled>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        @empty
+                                            <tr>
+                                                <td colspan="3" class="text-center text-muted py-3">
+                                                    Belum ada jenis iuran aktif di master. Silakan klik tombol <strong>Kelola Jenis Iuran</strong> untuk menambahkan jenis baru.
+                                                </td>
+                                            </tr>
+                                        @endforelse
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
 
@@ -1441,13 +1896,13 @@
                         <div class="fee-info-box my-3">
                             <div class="row align-items-center">
                                 <div class="col-md-6 col-12 mb-2 mb-md-0">
-                                    <div class="text-muted small">Rincian Kegiatan:</div>
+                                    <div class="text-muted small">Item Terpilih:</div>
                                     <div class="font-weight-bold text-dark small" id="modalKiBreakdownLabel">
-                                        UTS: Rp 0 | UAS: Rp 0 | Ujian: Rp 0
+                                        Belum ada jenis iuran dipilih
                                     </div>
                                 </div>
                                 <div class="col-md-6 col-12">
-                                    <div class="text-muted small">Total Tagihan KI</div>
+                                    <div class="text-muted small">Total Tagihan Baru</div>
                                     <div class="font-weight-bold text-success font-num" style="font-size: 18px;" id="modalKiSummaryTotalLabel">
                                         Rp 0
                                     </div>
@@ -1461,9 +1916,9 @@
                         <button type="button" class="btn btn-batal-merah px-4 mr-2" data-dismiss="modal">
                             Batal
                         </button>
-                        <button type="submit" id="btnSubmitTambahKi" class="btn btn-success px-4 font-weight-bold" style="border-radius: 8px; height: 38px;">
+                        <button type="submit" id="btnSubmitTambahKi" class="btn-simpan-hijau px-4">
                             <i class="fas fa-save mr-1"></i>
-                            Simpan Tagihan KI
+                            Simpan Tagihan
                         </button>
                     </div>
                 </form>
@@ -1480,36 +1935,35 @@
             $sisaItem = max($totalTagihanItem - $terbayarItem, 0);
             $sisaTerbawaItem = max($terbawaItem - $terbayarItem, 0);
 
-            // Sub-tagihan per kategori
-            $subUts = $item->statusKiSubtagihan()['UTS'];
-            $subUas = $item->statusKiSubtagihan()['UAS'];
-            $subUjian = $item->statusKiSubtagihan()['Ujian'];
+            // Sub-tagihan dinamis per iuran yang dimiliki siswa
+            $subtagihanMap = $item->statusKiSubtagihan();
 
-            // Tentukan default kategori aktif (prioritaskan yang belum lunas dan punya target)
-            $defaultKat = 'UTS';
-            if ($subUts['sisa'] <= 0 && $subUas['sisa'] > 0) {
-                $defaultKat = 'UAS';
-            } elseif ($subUts['sisa'] <= 0 && $subUas['sisa'] <= 0 && $subUjian['sisa'] > 0) {
-                $defaultKat = 'Ujian';
+            // Default kategori aktif (prioritaskan yang belum lunas)
+            $defaultKat = array_key_first($subtagihanMap) ?? '';
+            foreach ($subtagihanMap as $kKey => $kVal) {
+                if ($kVal['sisa'] > 0) {
+                    $defaultKat = $kKey;
+                    break;
+                }
             }
-            $activeSub = $item->statusKiSubtagihan()[$defaultKat];
-            $activeSisa = (float) $activeSub['sisa'];
+            $activeSub = $subtagihanMap[$defaultKat] ?? ['sisa' => 0, 'target' => 0];
+            $activeSisa = (float) ($activeSub['sisa'] ?? 0);
         @endphp
 
         {{-- MODAL BAYAR --}}
         <div class="modal fade modal-bayar-ki" id="modalBayar{{ $item->id }}" tabindex="-1" role="dialog" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-                <div class="modal-content border-0 shadow">
+                <div class="modal-content border-0 shadow" style="border-radius: 14px; overflow: hidden;">
                     
                     {{-- 1. HEADER --}}
-                    <div class="modal-header">
+                    <div class="modal-header modal-header-payment">
                         <div class="header-title-wrap">
                             <div class="header-icon-badge">
-                                <i class="fas fa-industry"></i>
+                                <i class="fas fa-book-open"></i>
                             </div>
                             <div>
-                                <h5 class="header-main-title">Pembayaran Kunjungan Industri (KI)</h5>
-                                <div class="header-sub-info">
+                                <h5 class="header-main-title text-white">Pembayaran Asesmen Siswa</h5>
+                                <div class="header-sub-info text-white-50">
                                     <strong>{{ $item->siswa->nama ?? '-' }}</strong>
                                     <span>·</span>
                                     <span>NIS: {{ $item->siswa->nis ?? '-' }}</span>
@@ -1518,7 +1972,7 @@
                                 </div>
                             </div>
                         </div>
-                        <button type="button" class="modal-close-btn" data-dismiss="modal" aria-label="Close">
+                        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
@@ -1527,80 +1981,38 @@
                         @csrf
                         <div class="modal-body p-4">
 
-                            {{-- 2. RINGKASAN 3 SUB-TAGIHAN (Calm Unified Summary Box) --}}
-                            <div class="summary-container">
-                                <div class="row">
-                                    <div class="col-md-4 col-12 mb-2 mb-md-0 border-right">
-                                        <div class="summary-subtagihan-col">
-                                            <div class="summary-subtagihan-header">
-                                                <span>1. UTS</span>
-                                                <span class="badge {{ $subUts['sisa'] <= 0 && $subUts['target'] > 0 ? 'badge-success' : 'badge-light border' }}" style="font-size: 10px;">
-                                                    {{ $subUts['sisa'] <= 0 && $subUts['target'] > 0 ? 'Lunas' : 'Belum Lunas' }}
-                                                </span>
-                                            </div>
-                                            <div class="summary-sub-line">
-                                                <span>Target</span>
-                                                <span class="font-num font-weight-semibold">Rp {{ number_format($subUts['target'], 0, ',', '.') }}</span>
-                                            </div>
-                                            <div class="summary-sub-line">
-                                                <span>Terbayar</span>
-                                                <span class="text-success font-num font-weight-semibold">Rp {{ number_format($subUts['terbayar'], 0, ',', '.') }}</span>
-                                            </div>
-                                            <div class="summary-sub-line">
-                                                <span>Sisa</span>
-                                                <strong class="{{ $subUts['sisa'] > 0 ? 'text-danger' : 'text-success' }} font-num">Rp {{ number_format($subUts['sisa'], 0, ',', '.') }}</strong>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4 col-12 mb-2 mb-md-0 border-right">
-                                        <div class="summary-subtagihan-col">
-                                            <div class="summary-subtagihan-header">
-                                                <span>2. UAS</span>
-                                                <span class="badge {{ $subUas['sisa'] <= 0 && $subUas['target'] > 0 ? 'badge-success' : 'badge-light border' }}" style="font-size: 10px;">
-                                                    {{ $subUas['sisa'] <= 0 && $subUas['target'] > 0 ? 'Lunas' : 'Belum Lunas' }}
-                                                </span>
-                                            </div>
-                                            <div class="summary-sub-line">
-                                                <span>Target</span>
-                                                <span class="font-num font-weight-semibold">Rp {{ number_format($subUas['target'], 0, ',', '.') }}</span>
-                                            </div>
-                                            <div class="summary-sub-line">
-                                                <span>Terbayar</span>
-                                                <span class="text-success font-num font-weight-semibold">Rp {{ number_format($subUas['terbayar'], 0, ',', '.') }}</span>
-                                            </div>
-                                            <div class="summary-sub-line">
-                                                <span>Sisa</span>
-                                                <strong class="{{ $subUas['sisa'] > 0 ? 'text-danger' : 'text-success' }} font-num">Rp {{ number_format($subUas['sisa'], 0, ',', '.') }}</strong>
+                            {{-- 2. RINGKASAN SUB-TAGIHAN DINAMIS --}}
+                            <div class="summary-container mb-3">
+                                <div class="row g-2">
+                                    @foreach($subtagihanMap as $kName => $kData)
+                                        <div class="col-md-4 col-sm-6 col-12 mb-2">
+                                            <div class="summary-subtagihan-col p-2 border rounded bg-light" style="border-radius: 8px;">
+                                                <div class="summary-subtagihan-header d-flex justify-content-between align-items-center mb-1">
+                                                    <strong style="font-size: 12px;">{{ $kName }}</strong>
+                                                    <span class="badge {{ $kData['sisa'] <= 0 && $kData['target'] > 0 ? 'badge-success' : ($kData['terbayar'] > 0 ? 'badge-warning' : 'badge-light border') }}" style="font-size: 9px; padding: 2px 6px;">
+                                                        {{ $kData['status_text'] }}
+                                                    </span>
+                                                </div>
+                                                <div class="summary-sub-line d-flex justify-content-between text-muted" style="font-size: 11px;">
+                                                    <span>Target:</span>
+                                                    <span class="font-num font-weight-semibold text-dark">Rp {{ number_format($kData['target'], 0, ',', '.') }}</span>
+                                                </div>
+                                                <div class="summary-sub-line d-flex justify-content-between text-muted" style="font-size: 11px;">
+                                                    <span>Terbayar:</span>
+                                                    <span class="text-success font-num font-weight-semibold">Rp {{ number_format($kData['terbayar'], 0, ',', '.') }}</span>
+                                                </div>
+                                                <div class="summary-sub-line d-flex justify-content-between" style="font-size: 11px;">
+                                                    <span>Sisa:</span>
+                                                    <strong class="{{ $kData['sisa'] > 0 ? 'text-danger' : 'text-success' }} font-num">Rp {{ number_format($kData['sisa'], 0, ',', '.') }}</strong>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="col-md-4 col-12">
-                                        <div class="summary-subtagihan-col">
-                                            <div class="summary-subtagihan-header">
-                                                <span>3. Ujian</span>
-                                                <span class="badge {{ $subUjian['sisa'] <= 0 && $subUjian['target'] > 0 ? 'badge-success' : 'badge-light border' }}" style="font-size: 10px;">
-                                                    {{ $subUjian['sisa'] <= 0 && $subUjian['target'] > 0 ? 'Lunas' : 'Belum Lunas' }}
-                                                </span>
-                                            </div>
-                                            <div class="summary-sub-line">
-                                                <span>Target</span>
-                                                <span class="font-num font-weight-semibold">Rp {{ number_format($subUjian['target'], 0, ',', '.') }}</span>
-                                            </div>
-                                            <div class="summary-sub-line">
-                                                <span>Terbayar</span>
-                                                <span class="text-success font-num font-weight-semibold">Rp {{ number_format($subUjian['terbayar'], 0, ',', '.') }}</span>
-                                            </div>
-                                            <div class="summary-sub-line">
-                                                <span>Sisa</span>
-                                                <strong class="{{ $subUjian['sisa'] > 0 ? 'text-danger' : 'text-success' }} font-num">Rp {{ number_format($subUjian['sisa'], 0, ',', '.') }}</strong>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    @endforeach
                                 </div>
                             </div>
 
                             {{-- 3. PILIH SUB-TAGIHAN DIBAYAR --}}
-                            <div class="kategori-select-container">
+                            <div class="kategori-select-container mb-3 p-3 border rounded bg-white" style="border-radius: 8px;">
                                 <div class="form-group row mb-0 align-items-center">
                                     <label class="col-sm-4 col-form-label font-weight-bold text-success small mb-0">
                                         <i class="fas fa-check-circle mr-1"></i> Pilih Tagihan Dibayar <span class="text-danger">*</span>
@@ -1611,27 +2023,15 @@
                                                 class="form-control"
                                                 required
                                                 onchange="updateKiPaymentForm({{ $item->id }})">
-                                            <option value="UTS"
-                                                    data-sisa="{{ (int)$subUts['sisa'] }}"
-                                                    data-target="{{ (int)$subUts['target'] }}"
-                                                    {{ $defaultKat === 'UTS' ? 'selected' : '' }}
-                                                    {{ $subUts['sisa'] <= 0 && $subUts['target'] > 0 ? 'disabled' : '' }}>
-                                                UTS — Sisa: Rp {{ number_format($subUts['sisa'], 0, ',', '.') }} {{ $subUts['sisa'] <= 0 && $subUts['target'] > 0 ? '(Lunas)' : '' }}
-                                            </option>
-                                            <option value="UAS"
-                                                    data-sisa="{{ (int)$subUas['sisa'] }}"
-                                                    data-target="{{ (int)$subUas['target'] }}"
-                                                    {{ $defaultKat === 'UAS' ? 'selected' : '' }}
-                                                    {{ $subUas['sisa'] <= 0 && $subUas['target'] > 0 ? 'disabled' : '' }}>
-                                                UAS — Sisa: Rp {{ number_format($subUas['sisa'], 0, ',', '.') }} {{ $subUas['sisa'] <= 0 && $subUas['target'] > 0 ? '(Lunas)' : '' }}
-                                            </option>
-                                            <option value="Ujian"
-                                                    data-sisa="{{ (int)$subUjian['sisa'] }}"
-                                                    data-target="{{ (int)$subUjian['target'] }}"
-                                                    {{ $defaultKat === 'Ujian' ? 'selected' : '' }}
-                                                    {{ $subUjian['sisa'] <= 0 && $subUjian['target'] > 0 ? 'disabled' : '' }}>
-                                                Ujian — Sisa: Rp {{ number_format($subUjian['sisa'], 0, ',', '.') }} {{ $subUjian['sisa'] <= 0 && $subUjian['target'] > 0 ? '(Lunas)' : '' }}
-                                            </option>
+                                            @foreach($subtagihanMap as $kName => $kData)
+                                                <option value="{{ $kName }}"
+                                                        data-sisa="{{ (int)$kData['sisa'] }}"
+                                                        data-target="{{ (int)$kData['target'] }}"
+                                                        {{ $defaultKat === $kName ? 'selected' : '' }}
+                                                        {{ $kData['sisa'] <= 0 && $kData['target'] > 0 ? 'disabled' : '' }}>
+                                                    {{ $kName }} — Sisa: Rp {{ number_format($kData['sisa'], 0, ',', '.') }} {{ $kData['sisa'] <= 0 && $kData['target'] > 0 ? '(Lunas)' : '' }}
+                                                </option>
+                                            @endforeach
                                         </select>
                                     </div>
                                 </div>
@@ -1821,14 +2221,14 @@
             </div>
         </div>
 
-        {{-- MODAL EDIT DATA TAGIHAN KI (UTS, UAS, UJIAN) --}}
+        {{-- MODAL EDIT DATA TAGIHAN ASESMEN --}}
         <div class="modal fade" id="modalEditKi{{ $item->id }}" tabindex="-1" role="dialog" aria-labelledby="modalEditKiLabel{{ $item->id }}" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
                 <div class="modal-content border-0 shadow" style="border-radius: 14px; overflow: hidden;">
                     <div class="modal-header modal-header-clean">
                         <h5 class="modal-title font-weight-bold text-white" id="modalEditKiLabel{{ $item->id }}" style="font-size: 16px;">
                             <i class="fas fa-user-edit mr-2 text-white"></i>
-                            Edit Data Tagihan Kegiatan Intrakurikuler (KI)
+                            Edit Data Tagihan Asesmen
                         </h5>
                         <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
@@ -1843,26 +2243,11 @@
 
                             {{-- Section 1: Siswa --}}
                             <div class="form-group row mb-3">
-                                <label for="modal_edit_siswa_{{ $item->id }}" class="col-sm-3 col-form-label font-weight-bold">
-                                    Siswa <span class="text-danger">*</span>
+                                <label class="col-sm-3 col-form-label font-weight-bold">
+                                    Siswa
                                 </label>
                                 <div class="col-sm-9">
-                                    <select name="siswa_id"
-                                            id="modal_edit_siswa_{{ $item->id }}"
-                                            class="form-control @error('siswa_id') is-invalid @enderror"
-                                            style="border-radius: 8px;"
-                                            required>
-                                        @foreach($allSiswaKi as $itemSiswa)
-                                            <option value="{{ $itemSiswa->id }}" {{ old('siswa_id', $item->siswa_id) == $itemSiswa->id ? 'selected' : '' }}>
-                                                {{ $itemSiswa->nis }} - {{ $itemSiswa->nama }} ({{ $itemSiswa->kelas }})
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                    @error('siswa_id')
-                                        <div class="invalid-feedback">
-                                            {{ $message }}
-                                        </div>
-                                    @enderror
+                                    <input type="text" class="form-control bg-light" value="{{ $item->siswa->nis ?? '-' }} - {{ $item->siswa->nama ?? '-' }} ({{ $item->siswa->kelas ?? '-' }})" readonly>
                                 </div>
                             </div>
 
@@ -1878,75 +2263,81 @@
                                 </div>
                             @endif
 
-                            {{-- Section 3: Sub-Target Nominal --}}
+                            {{-- Section 3: Item Tagihan Asesmen yang Dimiliki --}}
                             <div class="border rounded p-3 mb-3 bg-light" style="border-radius: 10px;">
                                 <div class="font-weight-bold text-dark mb-2" style="font-size: 13.5px;">
                                     <i class="fas fa-list-check text-success mr-1"></i>
-                                    Edit Nominal Target Kegiatan (Tahun Ini):
+                                    Nominal Item Tagihan Asesmen Siswa Ini:
                                 </div>
 
-                                {{-- Target UTS --}}
-                                <div class="form-group row mb-2">
-                                    <label class="col-sm-3 col-form-label font-weight-semibold">Target UTS (Rp)</label>
-                                    <div class="col-sm-9">
-                                        <div class="input-group">
-                                            <div class="input-group-prepend">
-                                                <span class="input-group-text font-weight-bold bg-white">Rp</span>
+                                @forelse($item->itemsKi as $itKi)
+                                    <div class="form-group row mb-2 align-items-center">
+                                        <label class="col-sm-4 col-form-label font-weight-semibold">
+                                            {{ $itKi->nama_iuran }} <span class="text-muted small">(Rp)</span>
+                                        </label>
+                                        <div class="col-sm-8">
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text font-weight-bold bg-white">Rp</span>
+                                                </div>
+                                                <input type="number"
+                                                       name="items[{{ $itKi->id }}][nominal]"
+                                                       class="form-control font-weight-bold text-success font-num ki-edit-item-input"
+                                                       data-item-id="{{ $item->id }}"
+                                                       value="{{ (int)$itKi->nominal }}"
+                                                       min="0"
+                                                       step="1000"
+                                                       style="border-radius: 0 8px 8px 0;">
                                             </div>
-                                            <input type="number"
-                                                   name="target_uts"
-                                                   id="modal_edit_target_uts_{{ $item->id }}"
-                                                   class="form-control font-weight-bold text-success font-num ki-edit-subtarget-input"
-                                                   data-item-id="{{ $item->id }}"
-                                                   value="{{ old('target_uts', (int)($item->target_uts ?? 0)) }}"
-                                                   min="0"
-                                                   step="1000"
-                                                   style="border-radius: 0 8px 8px 0;">
                                         </div>
                                     </div>
-                                </div>
+                                @empty
+                                    <div class="text-muted small mb-2">Belum ada item spesifik. Menggunakan target global: Rp {{ number_format($item->target, 0, ',', '.') }}</div>
+                                @endforelse
 
-                                {{-- Target UAS --}}
-                                <div class="form-group row mb-2">
-                                    <label class="col-sm-3 col-form-label font-weight-semibold">Target UAS (Rp)</label>
-                                    <div class="col-sm-9">
-                                        <div class="input-group">
-                                            <div class="input-group-prepend">
-                                                <span class="input-group-text font-weight-bold bg-white">Rp</span>
-                                            </div>
-                                            <input type="number"
-                                                   name="target_uas"
-                                                   id="modal_edit_target_uas_{{ $item->id }}"
-                                                   class="form-control font-weight-bold text-success font-num ki-edit-subtarget-input"
-                                                   data-item-id="{{ $item->id }}"
-                                                   value="{{ old('target_uas', (int)($item->target_uas ?? 0)) }}"
-                                                   min="0"
-                                                   step="1000"
-                                                   style="border-radius: 0 8px 8px 0;">
-                                        </div>
-                                    </div>
-                                </div>
+                                @php
+                                    $assignedNames = $item->itemsKi->pluck('nama_iuran')->toArray();
+                                    $unassignedActive = $jenisIuranAktif->whereNotIn('nama', $assignedNames);
+                                @endphp
 
-                                {{-- Target Ujian --}}
-                                <div class="form-group row mb-0">
-                                    <label class="col-sm-3 col-form-label font-weight-semibold">Target Ujian (Rp)</label>
-                                    <div class="col-sm-9">
-                                        <div class="input-group">
-                                            <div class="input-group-prepend">
-                                                <span class="input-group-text font-weight-bold bg-white">Rp</span>
-                                            </div>
-                                            <input type="number"
-                                                   name="target_ujian"
-                                                   id="modal_edit_target_ujian_{{ $item->id }}"
-                                                   class="form-control font-weight-bold text-success font-num ki-edit-subtarget-input"
-                                                   data-item-id="{{ $item->id }}"
-                                                   value="{{ old('target_ujian', (int)($item->target_ujian ?? 0)) }}"
-                                                   min="0"
-                                                   step="1000"
-                                                   style="border-radius: 0 8px 8px 0;">
-                                        </div>
+                                @if($unassignedActive->isNotEmpty())
+                                    <hr class="my-3">
+                                    <div class="font-weight-bold text-primary mb-2" style="font-size: 12.5px;">
+                                        <i class="fas fa-plus-circle mr-1"></i> Tambahkan Jenis Iuran Lain ke Siswa Ini:
                                     </div>
-                                </div>
+                                    @foreach($unassignedActive as $uIuran)
+                                        <div class="form-group row mb-2 align-items-center">
+                                            <div class="col-sm-4">
+                                                <div class="custom-control custom-checkbox">
+                                                    <input type="checkbox"
+                                                           name="new_iuran_ids[]"
+                                                           value="{{ $uIuran->id }}"
+                                                           id="new_iuran_{{ $item->id }}_{{ $uIuran->id }}"
+                                                           class="custom-control-input"
+                                                           onchange="const inp = document.getElementById('new_nom_{{ $item->id }}_{{ $uIuran->id }}'); inp.disabled = !this.checked; if(this.checked) inp.focus();">
+                                                    <label class="custom-control-label font-weight-semibold" for="new_iuran_{{ $item->id }}_{{ $uIuran->id }}" style="cursor: pointer;">
+                                                        {{ $uIuran->nama }}
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-8">
+                                                <div class="input-group input-group-sm">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text bg-light font-weight-bold">Rp</span>
+                                                    </div>
+                                                    <input type="number"
+                                                           name="new_nominals[{{ $uIuran->id }}]"
+                                                           id="new_nom_{{ $item->id }}_{{ $uIuran->id }}"
+                                                           class="form-control font-weight-bold text-primary font-num"
+                                                           value="{{ (int)$uIuran->nominal_default }}"
+                                                           min="0"
+                                                           step="1000"
+                                                           disabled>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                @endif
                             </div>
 
                             {{-- Summary Edit Box --}}
@@ -1959,7 +2350,7 @@
                                         </div>
                                     </div>
                                     <div class="col-md-6 col-12">
-                                        <div class="text-muted small">Total Target Baru</div>
+                                        <div class="text-muted small">Total Target Saat Ini</div>
                                         <div class="font-weight-bold text-dark font-num" style="font-size: 17px;" id="modalEditSummaryTotalLabel_{{ $item->id }}">
                                             Rp {{ number_format($item->target, 0, ',', '.') }}
                                         </div>
@@ -1973,7 +2364,7 @@
                             <button type="button" class="btn btn-batal-merah px-4 mr-2" data-dismiss="modal">
                                 Batal
                             </button>
-                            <button type="submit" class="btn btn-success px-4 font-weight-bold" style="border-radius: 8px; height: 38px;">
+                            <button type="submit" class="btn-simpan-hijau px-4">
                                 <i class="fas fa-save mr-1"></i>
                                 Simpan Perubahan
                             </button>
@@ -2222,7 +2613,7 @@ document.addEventListener('DOMContentLoaded', function () {
         $('#modalTambahKi').modal('show');
     @endif
 
-    // Handler Modal Tambah KI
+    // 1. Handler Modal Tambah Tagihan Asesmen Dinamis
     const modalKiSiswaSelect = document.getElementById('modal_ki_siswa_id');
     const modalKiSelectedSiswaBox = document.getElementById('modalKiSelectedSiswaBox');
     const modalKiPreviewNama = document.getElementById('modalKiPreviewNama');
@@ -2230,28 +2621,50 @@ document.addEventListener('DOMContentLoaded', function () {
     const modalKiPreviewKelas = document.getElementById('modalKiPreviewKelas');
     const modalKiSummaryTotalLabel = document.getElementById('modalKiSummaryTotalLabel');
     const modalKiBreakdownLabel = document.getElementById('modalKiBreakdownLabel');
-    const modalKiDuplicateAlert = document.getElementById('modalKiDuplicateAlert');
     const modalKiSubmitBtn = document.getElementById('btnSubmitTambahKi');
 
-    const inputUts = document.getElementById('modal_ki_target_uts');
-    const inputUas = document.getElementById('modal_ki_target_uas');
-    const inputUjian = document.getElementById('modal_ki_target_ujian');
-
     function calculateKiTambahTotal() {
-        const uts = parseFloat(inputUts ? inputUts.value : 0) || 0;
-        const uas = parseFloat(inputUas ? inputUas.value : 0) || 0;
-        const ujian = parseFloat(inputUjian ? inputUjian.value : 0) || 0;
-        const total = uts + uas + ujian;
+        let total = 0;
+        let selectedNames = [];
+
+        document.querySelectorAll('.ki-iuran-checkbox:checked').forEach(function (chk) {
+            const id = chk.dataset.id;
+            const nama = chk.dataset.nama || '';
+            const inp = document.getElementById('nominal_input_' + id);
+            const val = parseFloat(inp ? inp.value : 0) || 0;
+            total += val;
+            selectedNames.push(`${nama} (Rp ${formatRupiah(val)})`);
+        });
 
         if (modalKiSummaryTotalLabel) {
             modalKiSummaryTotalLabel.textContent = `Rp ${formatRupiah(total)}`;
         }
         if (modalKiBreakdownLabel) {
-            modalKiBreakdownLabel.textContent = `UTS: Rp ${formatRupiah(uts)} | UAS: Rp ${formatRupiah(uas)} | Ujian: Rp ${formatRupiah(ujian)}`;
+            modalKiBreakdownLabel.textContent = selectedNames.length > 0 
+                ? selectedNames.join(' + ') 
+                : 'Belum ada jenis iuran dipilih';
+        }
+
+        if (modalKiSubmitBtn) {
+            modalKiSubmitBtn.disabled = !(modalKiSiswaSelect && modalKiSiswaSelect.value && selectedNames.length > 0);
         }
     }
 
-    document.querySelectorAll('.ki-subtarget-input').forEach(function (inp) {
+    document.querySelectorAll('.ki-iuran-checkbox').forEach(function (chk) {
+        chk.addEventListener('change', function () {
+            const id = this.dataset.id;
+            const inp = document.getElementById('nominal_input_' + id);
+            if (inp) {
+                inp.disabled = !this.checked;
+                if (this.checked && (!inp.value || inp.value == '0')) {
+                    inp.value = this.dataset.default || 0;
+                }
+            }
+            calculateKiTambahTotal();
+        });
+    });
+
+    document.querySelectorAll('.ki-nominal-input').forEach(function (inp) {
         inp.addEventListener('input', calculateKiTambahTotal);
     });
 
@@ -2263,33 +2676,70 @@ document.addEventListener('DOMContentLoaded', function () {
                 modalKiPreviewNis.textContent = opt.dataset.nis || '-';
                 modalKiPreviewKelas.textContent = opt.dataset.kelas || '-';
                 modalKiSelectedSiswaBox.classList.remove('d-none');
-
-                if (opt.dataset.exists === '1') {
-                    if (modalKiDuplicateAlert) modalKiDuplicateAlert.classList.remove('d-none');
-                    if (modalKiSubmitBtn) modalKiSubmitBtn.disabled = true;
-                } else {
-                    if (modalKiDuplicateAlert) modalKiDuplicateAlert.classList.add('d-none');
-                    if (modalKiSubmitBtn) modalKiSubmitBtn.disabled = false;
-                }
             } else {
                 modalKiSelectedSiswaBox.classList.add('d-none');
-                if (modalKiDuplicateAlert) modalKiDuplicateAlert.classList.add('d-none');
-                if (modalKiSubmitBtn) modalKiSubmitBtn.disabled = false;
             }
+            calculateKiTambahTotal();
         });
     }
 
-    // Handler Edit Subtargets
-    document.querySelectorAll('.ki-edit-subtarget-input').forEach(function (inp) {
+    // 2. Global Helper Modal Bayar Asesmen
+    window.updateKiPaymentForm = function(itemId) {
+        const select = document.getElementById('selectKategoriKi' + itemId);
+        if (!select) return;
+        const opt = select.options[select.selectedIndex];
+        if (!opt) return;
+
+        const sisa = parseFloat(opt.dataset.sisa || 0);
+        const kat = opt.value;
+        const inputNominal = document.getElementById('nominalInputModalKi' + itemId);
+        const maxLabel = document.getElementById('maxNominalLabelKi' + itemId);
+        const btnQuick = document.getElementById('btnQuickFillKi' + itemId);
+        const labelQuick = document.getElementById('labelQuickFillKi' + itemId);
+
+        if (inputNominal) {
+            inputNominal.max = sisa > 0 ? sisa : 999999999;
+            if (parseFloat(inputNominal.value) > sisa) {
+                inputNominal.value = sisa;
+            }
+        }
+        if (maxLabel) {
+            maxLabel.innerHTML = `Maksimal pembayaran ${kat}: <strong>Rp ${formatRupiah(sisa)}</strong>`;
+        }
+        if (btnQuick && labelQuick) {
+            if (sisa <= 0) {
+                btnQuick.style.display = 'none';
+            } else {
+                btnQuick.style.display = '';
+                labelQuick.textContent = `Bayar Lunas ${kat} (Rp ${formatRupiah(sisa)})`;
+            }
+        }
+    };
+
+    window.quickFillKiNominal = function(itemId) {
+        const select = document.getElementById('selectKategoriKi' + itemId);
+        if (!select) return;
+        const opt = select.options[select.selectedIndex];
+        if (!opt) return;
+
+        const sisa = parseFloat(opt.dataset.sisa || 0);
+        const inputNominal = document.getElementById('nominalInputModalKi' + itemId);
+        if (inputNominal && sisa > 0) {
+            inputNominal.value = sisa;
+        }
+    };
+
+    // 3. Live Handler Modal Edit Asesmen
+    document.querySelectorAll('.ki-edit-item-input').forEach(function (inp) {
         inp.addEventListener('input', function () {
             const itemId = this.dataset.itemId;
-            const uts = parseFloat(document.getElementById('modal_edit_target_uts_' + itemId)?.value || 0) || 0;
-            const uas = parseFloat(document.getElementById('modal_edit_target_uas_' + itemId)?.value || 0) || 0;
-            const ujian = parseFloat(document.getElementById('modal_edit_target_ujian_' + itemId)?.value || 0) || 0;
-            const total = uts + uas + ujian;
-            const label = document.getElementById('modalEditSummaryTotalLabel_' + itemId);
-            if (label) {
-                label.textContent = `Rp ${formatRupiah(total)}`;
+            let sum = 0;
+            document.querySelectorAll(`.ki-edit-item-input[data-item-id="${itemId}"]`).forEach(function (i) {
+                sum += parseFloat(i.value || 0);
+            });
+            const lbl = document.getElementById('modalEditSummaryTotalLabel_' + itemId);
+            if (lbl) {
+                lbl.textContent = `Rp ${formatRupiah(sum)}`;
             }
         });
     });

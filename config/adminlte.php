@@ -345,7 +345,7 @@ return [
     ],
 
     [
-        'text' => 'Kegiatan Intrakurikuler',
+        'text' => 'Asesmen',
         'route' => 'ki.index',
         'icon' => 'fas fa-book-open',
     ],

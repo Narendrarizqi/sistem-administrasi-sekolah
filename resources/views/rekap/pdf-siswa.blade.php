@@ -342,7 +342,12 @@
                             <span class="status-none">-</span>
                         @endif
                     </td>
-                    <td class="text-right"><strong>{{ number_format($row['total_tagihan'], 0, ',', '.') }}</strong></td>
+                    <td class="text-right">
+                        <strong>{{ number_format($row['total_tagihan'], 0, ',', '.') }}</strong>
+                        @if(($row['potongan'] ?? 0) > 0)
+                            <div style="font-size: 7.5px; color: #15803d; font-weight: bold;">(Potongan: Rp {{ number_format($row['potongan'], 0, ',', '.') }})</div>
+                        @endif
+                    </td>
                     <td class="text-right text-success" style="color:#15803d;">
                         @if($row['terbayar'] > 0)
                             {{ number_format($row['terbayar'], 0, ',', '.') }}
@@ -384,7 +389,12 @@
                         0
                     @endif
                 </td>
-                <td class="text-right">{{ number_format($grandTotal['total_tagihan'], 0, ',', '.') }}</td>
+                <td class="text-right">
+                    <strong>{{ number_format($grandTotal['total_tagihan'], 0, ',', '.') }}</strong>
+                    @if(($grandTotal['potongan'] ?? 0) > 0)
+                        <div style="font-size: 7.5px; color: #15803d; font-weight: bold;">(Total Potongan: Rp {{ number_format($grandTotal['potongan'], 0, ',', '.') }})</div>
+                    @endif
+                </td>
                 <td class="text-right" style="color:#15803d;">{{ number_format($grandTotal['terbayar'], 0, ',', '.') }}</td>
                 <td class="text-right" style="color:#dc2626;">{{ number_format($grandTotal['sisa'], 0, ',', '.') }}</td>
                 <td class="text-center">
@@ -464,7 +474,12 @@
                 <tfoot>
                     <tr>
                         <td colspan="2" class="text-center">TOTAL IPP</td>
-                        <td class="text-right">{{ number_format($ippData['target'], 0, ',', '.') }}</td>
+                        <td class="text-right">
+                            {{ number_format($ippData['total_tagihan'] ?? $ippData['target'], 0, ',', '.') }}
+                            @if(($ippData['potongan'] ?? 0) > 0)
+                                <div style="font-size: 7.5px; color: #15803d; font-weight: bold;">(Potongan: Rp {{ number_format($ippData['potongan'], 0, ',', '.') }})</div>
+                            @endif
+                        </td>
                         <td class="text-right" style="color:#15803d;">{{ number_format($ippData['terbayar'], 0, ',', '.') }}</td>
                         <td class="text-right" style="color:#dc2626;">{{ number_format($ippData['sisa'], 0, ',', '.') }}</td>
                         <td class="text-center">
@@ -492,7 +507,11 @@
                 <div style="font-size: 8px; color: #475569; margin-top: -6px; margin-bottom: 8px;">
                     <strong>Riwayat Transaksi IPP Aktual:</strong>
                     @foreach($ippData['riwayat'] as $d)
-                        &bull; {{ \Carbon\Carbon::parse($d->tanggal)->format('d/m/Y') }}: <span style="color:#15803d; font-weight:bold;">Rp {{ number_format($d->nominal, 0, ',', '.') }}</span> ({{ $d->metode ?? 'Cash' }}){{ $d->keterangan ? ' - ' . $d->keterangan : '' }}
+                        &bull; {{ \Carbon\Carbon::parse($d->tanggal)->format('d/m/Y') }}: <span style="color:#15803d; font-weight:bold;">Rp {{ number_format($d->nominal, 0, ',', '.') }}</span>
+                        @if(($d->potongan ?? 0) > 0)
+                            <span style="color:#15803d; font-weight:bold;">(+ Potongan Rp {{ number_format($d->potongan, 0, ',', '.') }})</span>
+                        @endif
+                        ({{ $d->metode ?? 'Cash' }}){{ $d->keterangan ? ' - ' . $d->keterangan : '' }}
                     @endforeach
                 </div>
             @endif
@@ -503,13 +522,13 @@
 
     {{-- 6. BAGIAN 3: RINCIAN KEGIATAN INTRAKURIKULER (KI) --}}
     <div class="page-break-inside-avoid">
-        <div class="section-header">3. Rincian Kegiatan Intrakurikuler (KI) — UTS, UAS &amp; Ujian</div>
+        <div class="section-header">3. Rincian Asesmen (Kegiatan Intrakurikuler)</div>
         @if($kiData['has_data'])
             <table class="table-data">
                 <thead>
                     <tr>
                         <th style="width: 4%;" class="text-center">No</th>
-                        <th style="width: 26%;">Komponen Evaluasi</th>
+                        <th style="width: 26%;">Jenis Iuran / Komponen</th>
                         <th style="width: 15%;" class="text-right">Tagihan (Rp)</th>
                         <th style="width: 15%;" class="text-right">Terbayar (Rp)</th>
                         <th style="width: 15%;" class="text-right">Sisa (Rp)</th>

@@ -60,7 +60,7 @@
                 <li class="nav-item">
                     <a href="{{ route('ki.index') }}" class="nav-link {{ request()->routeIs('ki.*') || request()->is('ki*') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-book-open"></i>
-                        <p>Kegiatan Intrakurikuler</p>
+                        <p>Asesmen</p>
                     </a>
                 </li>
 

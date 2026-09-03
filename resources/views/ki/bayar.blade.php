@@ -1,6 +1,6 @@
 @extends('adminlte::page')
 
-@section('title', 'Pembayaran Kegiatan Intrakurikuler')
+@section('title', 'Pembayaran Asesmen')
 
 @section('content')
 
@@ -41,19 +41,19 @@ $bulanIndoList = [
     9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'
 ];
 
-$subUts = $pembayaran->statusKiSubtagihan()['UTS'];
-$subUas = $pembayaran->statusKiSubtagihan()['UAS'];
-$subUjian = $pembayaran->statusKiSubtagihan()['Ujian'];
+// Sub-tagihan dinamis per jenis iuran asesmen siswa
+$subtagihanMap = $pembayaran->statusKiSubtagihan();
 
-// Tentukan default kategori aktif (prioritaskan yang belum lunas dan punya target)
-$defaultKat = 'UTS';
-if ($subUts['sisa'] <= 0 && $subUas['sisa'] > 0) {
-    $defaultKat = 'UAS';
-} elseif ($subUts['sisa'] <= 0 && $subUas['sisa'] <= 0 && $subUjian['sisa'] > 0) {
-    $defaultKat = 'Ujian';
+// Default kategori aktif (prioritaskan yang belum lunas)
+$defaultKat = array_key_first($subtagihanMap) ?? '';
+foreach ($subtagihanMap as $kKey => $kVal) {
+    if ($kVal['sisa'] > 0) {
+        $defaultKat = $kKey;
+        break;
+    }
 }
-$activeSub = $pembayaran->statusKiSubtagihan()[$defaultKat];
-$activeSisa = (float) $activeSub['sisa'];
+$activeSub = $subtagihanMap[$defaultKat] ?? ['sisa' => 0, 'target' => 0];
+$activeSisa = (float) ($activeSub['sisa'] ?? 0);
 @endphp
 
 <div class="row">
@@ -64,7 +64,7 @@ $activeSisa = (float) $activeSub['sisa'];
             <div class="card-header bg-white border-bottom py-3">
                 <h5 class="mb-0 font-weight-bold" style="font-size: 15px;">
                     <i class="fas fa-user text-success mr-2"></i>
-                    Informasi Siswa & Tagihan KI
+                    Informasi Siswa & Tagihan Asesmen
                 </h5>
             </div>
             <div class="card-body">
@@ -90,27 +90,15 @@ $activeSisa = (float) $activeSub['sisa'];
                             </span>
                         </td>
                     </tr>
-                    <tr class="border-top">
-                        <td class="text-muted">1. Target UTS</td>
-                        <td class="font-weight-bold font-num">
-                            Rp {{ number_format($subUts['target'], 0, ',', '.') }}
-                            <small class="text-muted">({{ $subUts['is_lunas'] ? 'Lunas' : 'Sisa: Rp ' . number_format($subUts['sisa'], 0, ',', '.') }})</small>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="text-muted">2. Target UAS</td>
-                        <td class="font-weight-bold font-num">
-                            Rp {{ number_format($subUas['target'], 0, ',', '.') }}
-                            <small class="text-muted">({{ $subUas['is_lunas'] ? 'Lunas' : 'Sisa: Rp ' . number_format($subUas['sisa'], 0, ',', '.') }})</small>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="text-muted">3. Target Ujian</td>
-                        <td class="font-weight-bold font-num">
-                            Rp {{ number_format($subUjian['target'], 0, ',', '.') }}
-                            <small class="text-muted">({{ $subUjian['is_lunas'] ? 'Lunas' : 'Sisa: Rp ' . number_format($subUjian['sisa'], 0, ',', '.') }})</small>
-                        </td>
-                    </tr>
+                    @foreach($subtagihanMap as $kName => $kData)
+                        <tr class="{{ $loop->first ? 'border-top' : '' }}">
+                            <td class="text-muted">{{ $kName }}</td>
+                            <td class="font-weight-bold font-num">
+                                Rp {{ number_format($kData['target'], 0, ',', '.') }}
+                                <small class="text-muted">({{ $kData['is_lunas'] ? 'Lunas' : 'Sisa: Rp ' . number_format($kData['sisa'], 0, ',', '.') }})</small>
+                            </td>
+                        </tr>
+                    @endforeach
                     @if($terbawa > 0)
                         <tr>
                             <td class="text-muted">Tagihan Terbawa</td>
@@ -120,7 +108,7 @@ $activeSisa = (float) $activeSub['sisa'];
                         </tr>
                     @endif
                     <tr class="border-top">
-                        <td class="text-muted font-weight-bold">Total Tagihan KI</td>
+                        <td class="text-muted font-weight-bold">Total Tagihan Asesmen</td>
                         <td class="font-weight-bold text-dark font-num" style="font-size: 16px;">
                             Rp {{ number_format($totalTagihan, 0, ',', '.') }}
                         </td>
@@ -139,21 +127,15 @@ $activeSisa = (float) $activeSub['sisa'];
                     </tr>
                 </table>
 
-                {{-- Status Badges 3 Kategori --}}
+                {{-- Status Badges Tiap Komponen Asesmen --}}
                 <div class="mt-3 pt-3 border-top">
-                    <div class="small font-weight-bold text-muted mb-2">Status Pelunasan Tiap Kegiatan:</div>
-                    <div class="d-flex justify-content-between align-items-center mb-1">
-                        <span class="small font-weight-bold text-dark">UTS:</span>
-                        <span class="badge {{ $subUts['badge_class'] }}">{{ $subUts['status_text'] }}</span>
-                    </div>
-                    <div class="d-flex justify-content-between align-items-center mb-1">
-                        <span class="small font-weight-bold text-dark">UAS:</span>
-                        <span class="badge {{ $subUas['badge_class'] }}">{{ $subUas['status_text'] }}</span>
-                    </div>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <span class="small font-weight-bold text-dark">Ujian:</span>
-                        <span class="badge {{ $subUjian['badge_class'] }}">{{ $subUjian['status_text'] }}</span>
-                    </div>
+                    <div class="small font-weight-bold text-muted mb-2">Status Pelunasan Tiap Komponen:</div>
+                    @foreach($subtagihanMap as $kName => $kData)
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <span class="small font-weight-bold text-dark">{{ $kName }}:</span>
+                            <span class="badge {{ $kData['badge_class'] }}">{{ $kData['status_text'] }}</span>
+                        </div>
+                    @endforeach
                 </div>
             </div>
         </div>
@@ -165,7 +147,7 @@ $activeSisa = (float) $activeSub['sisa'];
             <div class="card-header card-header-payment py-3">
                 <h5 class="mb-0 font-weight-bold" style="font-size: 15px;">
                     <i class="fas fa-money-bill-wave mr-2"></i>
-                    Form Pembayaran Kegiatan Intrakurikuler
+                    Form Pembayaran Asesmen
                 </h5>
             </div>
 
@@ -186,27 +168,15 @@ $activeSisa = (float) $activeSub['sisa'];
                                         style="border-radius: 8px; border: 1.5px solid #16a34a;"
                                         required
                                         onchange="updateKiPagePaymentForm()">
-                                    <option value="UTS"
-                                            data-sisa="{{ (int)$subUts['sisa'] }}"
-                                            data-target="{{ (int)$subUts['target'] }}"
-                                            {{ $defaultKat === 'UTS' ? 'selected' : '' }}
-                                            {{ $subUts['sisa'] <= 0 && $subUts['target'] > 0 ? 'disabled' : '' }}>
-                                        UTS — Sisa: Rp {{ number_format($subUts['sisa'], 0, ',', '.') }} {{ $subUts['sisa'] <= 0 && $subUts['target'] > 0 ? '(Lunas)' : '' }}
-                                    </option>
-                                    <option value="UAS"
-                                            data-sisa="{{ (int)$subUas['sisa'] }}"
-                                            data-target="{{ (int)$subUas['target'] }}"
-                                            {{ $defaultKat === 'UAS' ? 'selected' : '' }}
-                                            {{ $subUas['sisa'] <= 0 && $subUas['target'] > 0 ? 'disabled' : '' }}>
-                                        UAS — Sisa: Rp {{ number_format($subUas['sisa'], 0, ',', '.') }} {{ $subUas['sisa'] <= 0 && $subUas['target'] > 0 ? '(Lunas)' : '' }}
-                                    </option>
-                                    <option value="Ujian"
-                                            data-sisa="{{ (int)$subUjian['sisa'] }}"
-                                            data-target="{{ (int)$subUjian['target'] }}"
-                                            {{ $defaultKat === 'Ujian' ? 'selected' : '' }}
-                                            {{ $subUjian['sisa'] <= 0 && $subUjian['target'] > 0 ? 'disabled' : '' }}>
-                                        Ujian — Sisa: Rp {{ number_format($subUjian['sisa'], 0, ',', '.') }} {{ $subUjian['sisa'] <= 0 && $subUjian['target'] > 0 ? '(Lunas)' : '' }}
-                                    </option>
+                                    @foreach($subtagihanMap as $kName => $kData)
+                                        <option value="{{ $kName }}"
+                                                data-sisa="{{ (int)$kData['sisa'] }}"
+                                                data-target="{{ (int)$kData['target'] }}"
+                                                {{ $defaultKat === $kName ? 'selected' : '' }}
+                                                {{ $kData['sisa'] <= 0 && $kData['target'] > 0 ? 'disabled' : '' }}>
+                                            {{ $kName }} — Sisa: Rp {{ number_format($kData['sisa'], 0, ',', '.') }} {{ $kData['sisa'] <= 0 && $kData['target'] > 0 ? '(Lunas)' : '' }}
+                                        </option>
+                                    @endforeach
                                 </select>
                             </div>
                         </div>
