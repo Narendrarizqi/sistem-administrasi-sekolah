@@ -112,6 +112,11 @@
             text-decoration: none !important;
         }
 
+        div.modern-stat-card {
+            cursor: default !important;
+            user-select: none !important;
+        }
+
         .modern-stat-card:hover {
             transform: translateY(-3px) !important;
             box-shadow: 0 10px 24px rgba(0, 0, 0, 0.06), 0 2px 6px rgba(0, 0, 0, 0.03) !important;
@@ -347,15 +352,77 @@
             background: #f0fdf4 !important;
             border: 1px solid #bbf7d0 !important;
             color: #15803d !important;
-            font-size: 12px !important;
+            font-size: 11px !important;
             font-weight: 600 !important;
-            border-radius: 10px !important;
-            padding: 5px 12px !important;
+            border-radius: 8px !important;
+            padding: 3px 9px !important;
             cursor: pointer !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 4px !important;
+            line-height: 1.25 !important;
+            transition: all 0.15s ease !important;
+        }
+
+        .btn-filter-jenis:hover, .btn-filter-jenis:focus {
+            background: #dcfce7 !important;
+            border-color: #86efac !important;
+            color: #166534 !important;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
         }
 
         .btn-filter-jenis::after {
             display: none !important; /* Hapus panah duplikat */
+        }
+
+        /* Dropdown Filter Jenis Chart Ringkas, Rapi & Tidak Terlalu Besar */
+        .dropdown-menu-filter-jenis {
+            min-width: 135px !important;
+            max-width: 155px !important;
+            padding: 3px !important;
+            border-radius: 8px !important;
+            border: 1px solid #e2e8f0 !important;
+            background: #ffffff !important;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08) !important;
+            margin-top: 3px !important;
+        }
+
+        .dropdown-menu-filter-jenis .dropdown-item {
+            font-size: 11px !important;
+            font-weight: 500 !important;
+            color: #334155 !important;
+            padding: 3.5px 8px !important;
+            border-radius: 5px !important;
+            display: flex !important;
+            align-items: center !important;
+            line-height: 1.25 !important;
+            transition: all 0.12s ease !important;
+            white-space: nowrap !important;
+        }
+
+        .dropdown-menu-filter-jenis .dropdown-item:hover {
+            background-color: #f8fafc !important;
+            color: #0f172a !important;
+        }
+
+        .dropdown-menu-filter-jenis .dropdown-item.active {
+            background-color: #f0fdf4 !important;
+            color: #15803d !important;
+            font-weight: 600 !important;
+        }
+
+        .dropdown-menu-filter-jenis .filter-dot {
+            width: 6px !important;
+            height: 6px !important;
+            border-radius: 50% !important;
+            display: inline-block !important;
+            margin-right: 6px !important;
+            flex-shrink: 0 !important;
+        }
+
+        .dropdown-menu-filter-jenis .dropdown-divider {
+            margin: 2px 0 !important;
+            border-top: 1px solid #f1f5f9 !important;
         }
 
         /* Donut Chart */
@@ -600,9 +667,9 @@
 
 {{-- 2. TOP 4 STAT CARDS (PERSIS SESUAI DESAIN REFERENSI) --}}
 <div class="row g-3 mb-4 saas-stat-grid">
-    {{-- Card 1: Target Tahunan --}}
+    {{-- Card 1: Target Tahunan (Informasional, Tidak Dapat Diklik tapi Animasi Tetap Aktif) --}}
     <div class="col-12 col-sm-6 col-xl-3 mb-3 mb-xl-0">
-        <a href="{{ route('target-tahunan.index') }}" class="modern-stat-card card-target text-decoration-none">
+        <div class="modern-stat-card card-target">
             <div class="stat-card-body">
                 <div class="stat-icon-wrapper icon-target">
                     <i class="fas fa-bullseye"></i>
@@ -616,7 +683,7 @@
                 <span class="stat-footer-text">Total target semua jenis</span>
                 <i class="fas fa-chevron-right stat-footer-chevron"></i>
             </div>
-        </a>
+        </div>
     </div>
 
     {{-- Card 2: Terbayar (Sudah Dibayar) --}}
@@ -755,24 +822,24 @@
                 <div class="dropdown">
                     <button class="btn btn-filter-jenis dropdown-toggle" type="button" id="dropdownFilterJenis" data-bs-toggle="dropdown" data-toggle="dropdown" aria-expanded="false">
                         <span id="filterJenisLabel">Semua Jenis</span>
-                        <i class="fas fa-chevron-down ml-1" style="font-size: 9.5px;"></i>
+                        <i class="fas fa-chevron-down ml-1" style="font-size: 8px;"></i>
                     </button>
-                    <ul class="dropdown-menu dropdown-menu-right shadow-sm nav-dropdown-box" aria-labelledby="dropdownFilterJenis" style="min-width: 180px;">
+                    <ul class="dropdown-menu dropdown-menu-right shadow-sm dropdown-menu-filter-jenis" aria-labelledby="dropdownFilterJenis">
                         <li>
-                            <a class="dropdown-item d-flex align-items-center gap-2 active" href="#" data-jenis="all" onclick="filterChartJenis('all', this); return false;">
-                                <span class="d-inline-block rounded-circle mr-2" style="width: 8px; height: 8px; background: #64748b;"></span>
-                                Semua Jenis
+                            <a class="dropdown-item active" href="#" data-jenis="all" onclick="filterChartJenis('all', this); return false;">
+                                <span class="filter-dot" style="background: #64748b;"></span>
+                                <span>Semua Jenis</span>
                             </a>
                         </li>
-                        <li><hr class="dropdown-divider my-1"></li>
+                        <li><hr class="dropdown-divider"></li>
                         @foreach($breakdownJenis as $idx => $bj)
                             @if($bj['target'] > 0)
                             <li>
-                                <a class="dropdown-item d-flex align-items-center gap-2" href="#"
+                                <a class="dropdown-item" href="#"
                                    data-jenis="{{ $bj['id'] }}"
                                    onclick="filterChartJenis({{ $bj['id'] }}, this); return false;">
-                                    <span class="d-inline-block rounded-circle mr-2 jenis-dot-{{ $bj['id'] }}" style="width: 8px; height: 8px;"></span>
-                                    {{ $bj['nama'] }}
+                                    <span class="filter-dot jenis-dot-{{ $bj['id'] }}"></span>
+                                    <span>{{ $bj['nama'] }}</span>
                                 </a>
                             </li>
                             @endif

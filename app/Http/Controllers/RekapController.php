@@ -48,6 +48,13 @@ class RekapController extends Controller
             });
         }
 
+        $kelasFilter = $request->query('kelas');
+        $daftarKelas = Siswa::select('kelas')->whereNotNull('kelas')->where('kelas', '!=', '')->distinct()->orderBy('kelas')->pluck('kelas');
+
+        if ($kelasFilter) {
+            $queryPembayaran->whereHas('siswa', fn ($sq) => $sq->where('kelas', $kelasFilter));
+        }
+
         $pembayaran = $queryPembayaran
             ->orderBy('siswa_id')
             ->orderBy('jenis_id')
@@ -273,13 +280,15 @@ class RekapController extends Controller
             'selectedTa',
             'tahunAjaranId',
             'tahunAjaranNama',
+            'daftarKelas',
+            'kelasFilter',
             'sort',
             'direction'
         ));
     }
 
     /**
-     * Cetak laporan rekap pembayaran (seluruh siswa / periode).
+     * Cetak laporan rekap pembayaran (rincian per siswa dalam format landscape seperti Excel).
      */
     public function cetakPdf(Request $request)
     {
@@ -294,14 +303,57 @@ class RekapController extends Controller
 
         $tahunAjaranId = $selectedTa?->id;
         $tahunAjaranNama = $selectedTa?->nama ?? '2026/2027';
+        $kelasFilter = $request->query('kelas');
 
-        // Ambil seluruh siswa aktif beserta pembayarannya di tahun ajaran terpilih
+        // Tentukan tahun awal untuk penanggalan bulan IPP (Juli s/d Juni)
+        $startYear = 2026;
+        if ($selectedTa && $selectedTa->tanggal_mulai) {
+            $startYear = (int) \Carbon\Carbon::parse($selectedTa->tanggal_mulai)->year;
+        } elseif (preg_match('/^(\d{4})/', $tahunAjaranNama, $m)) {
+            $startYear = (int) $m[1];
+        }
+
+        $bulanList = [
+            ['nama' => 'Juli', 'short' => 'Jul', 'tahun' => $startYear],
+            ['nama' => 'Agustus', 'short' => 'Ags', 'tahun' => $startYear],
+            ['nama' => 'September', 'short' => 'Sep', 'tahun' => $startYear],
+            ['nama' => 'Oktober', 'short' => 'Okt', 'tahun' => $startYear],
+            ['nama' => 'November', 'short' => 'Nov', 'tahun' => $startYear],
+            ['nama' => 'Desember', 'short' => 'Des', 'tahun' => $startYear],
+            ['nama' => 'Januari', 'short' => 'Jan', 'tahun' => $startYear + 1],
+            ['nama' => 'Februari', 'short' => 'Feb', 'tahun' => $startYear + 1],
+            ['nama' => 'Maret', 'short' => 'Mar', 'tahun' => $startYear + 1],
+            ['nama' => 'April', 'short' => 'Apr', 'tahun' => $startYear + 1],
+            ['nama' => 'Mei', 'short' => 'Mei', 'tahun' => $startYear + 1],
+            ['nama' => 'Juni', 'short' => 'Jun', 'tahun' => $startYear + 1],
+        ];
+
+        // 4 Kolom Asesmen standar seperti di Excel: STS Gasal, SAS, STS Genap, SAT
+        $asesmenItems = [
+            ['key' => 'sts_gasal', 'label' => 'STS Gasal', 'aliases' => ['STS Gasal', 'STS 1', 'UTS', 'UTS 1']],
+            ['key' => 'sas_gasal', 'label' => 'SAS',       'aliases' => ['SAS Gasal', 'SAS 1', 'SAS', 'UAS', 'UAS 1']],
+            ['key' => 'sts_genap', 'label' => 'STS Genap', 'aliases' => ['STS Genap', 'STS 2', 'UTS 2']],
+            ['key' => 'sat',       'label' => 'SAT',       'aliases' => ['SAT', 'SAS Genap', 'SAS 2', 'ASAJ', 'Ujian', 'UAS 2']],
+        ];
+
+        // Ambil seluruh siswa aktif
+        $siswaQuery = Siswa::query();
+        if ($kelasFilter) {
+            $siswaQuery->where('kelas', $kelasFilter);
+        }
+        $siswaList = $siswaQuery->orderBy('kelas')->orderBy('nama')->get();
+        $siswaIds = $siswaList->pluck('id')->toArray();
+
+        // Query pembayaran untuk seluruh siswa terpilih pada tahun ajaran ini
         $queryPembayaran = Pembayaran::with([
             'siswa',
             'jenisPembayaran',
             'detailPembayaran',
-            'tahunAjaran',
-        ]);
+            'itemsKi',
+            'itemsEkskul',
+            'itemsKokurikuler',
+        ])
+        ->whereIn('siswa_id', $siswaIds);
 
         if ($tahunAjaranId) {
             $queryPembayaran->where(function ($q) use ($tahunAjaranId, $tahunAjaranNama) {
@@ -313,63 +365,164 @@ class RekapController extends Controller
             });
         }
 
-        $pembayaran = $queryPembayaran
-            ->orderBy('siswa_id')
-            ->orderBy('jenis_id')
-            ->get();
+        $allPembayaran = $queryPembayaran->get()->groupBy('siswa_id');
 
-        $students = $pembayaran
-            ->groupBy(fn ($item) => $item->siswa_id)
-            ->map(function ($items) {
-                $siswa = $items->first()->siswa;
-                $target = (float) $items->sum(fn ($i) => (float) $i->target);
-                $terbawa = (float) $items->sum(fn ($i) => (float) ($i->belum_lunas ?? 0));
-                $potongan = (float) $items->sum(fn ($i) => $i->totalPotongan());
-                $totalTagihan = max($target + $terbawa - $potongan, 0);
-                $terbayar = (float) $items->sum(fn ($i) => (float) $i->detailPembayaran->sum('nominal'));
-                $sisa = max($totalTagihan - $terbayar, 0);
+        $studentsData = [];
+        $hasEkskul = false;
+        $hasKoku = false;
 
-                $status = 'Belum Ada Tagihan';
-                if ($totalTagihan > 0) {
-                    if ($sisa <= 0) {
-                        $status = 'Lunas';
-                    } elseif ($terbayar > 0) {
-                        $status = 'Sebagian';
-                    } else {
-                        $status = 'Belum Lunas';
-                    }
+        foreach ($siswaList as $siswa) {
+            $pembayarans = $allPembayaran->get($siswa->id, collect());
+
+            // 1. SARPRAS
+            $sarprasModel = $pembayarans->first(fn($p) => $p->jenisPembayaran && $p->jenisPembayaran->nama === 'Sarpras');
+            $sarprasTarget = $sarprasModel ? (float)$sarprasModel->totalTagihan() : 0;
+            $sarprasTerbayar = $sarprasModel ? (float)$sarprasModel->detailPembayaran->sum('nominal') : 0;
+
+            // 2. DAFTAR ULANG
+            $duModel = $pembayarans->first(fn($p) => $p->jenisPembayaran && $p->jenisPembayaran->nama === 'DU');
+            $duTarget = $duModel ? (float)$duModel->totalTagihan() : 0;
+            $duTerbayar = $duModel ? (float)$duModel->detailPembayaran->sum('nominal') : 0;
+
+            // 3. IPP (12 BULAN)
+            $ippModel = $pembayarans->first(fn($p) => $p->jenisPembayaran && $p->jenisPembayaran->nama === 'IPP');
+            $ippTarget = $ippModel ? (float)$ippModel->totalTagihan() : 0;
+            $ippTerbayar = $ippModel ? (float)$ippModel->detailPembayaran->sum('nominal') : 0;
+            $ippTerbawa = $ippModel ? (float)($ippModel->belum_lunas ?? 0) : 0;
+            $ippPotongan = $ippModel ? $ippModel->totalPotongan() : 0;
+            $tarifBulanan = $ippModel && max($ippModel->target - $ippPotongan, 0) > 0 ? round(max($ippModel->target - $ippPotongan, 0) / 12, 2) : 0;
+
+            $danaUntukBulan = max(0, $ippTerbayar - $ippTerbawa);
+            $ippBulanMap = [];
+            foreach ($bulanList as $b) {
+                $tagihanBulan = $tarifBulanan;
+                $terbayarBulan = 0;
+                if ($tagihanBulan > 0) {
+                    $terbayarBulan = min($tagihanBulan, max(0, $danaUntukBulan));
+                    $danaUntukBulan = max(0, $danaUntukBulan - $terbayarBulan);
                 }
+                $ippBulanMap[$b['nama']] = $terbayarBulan;
+            }
 
-                return [
-                    'siswa'         => $siswa,
-                    'target'        => $target,
-                    'terbawa'       => $terbawa,
-                    'potongan'      => $potongan,
-                    'total_tagihan' => $totalTagihan,
-                    'terbayar'      => $terbayar,
-                    'sisa'          => $sisa,
-                    'status'        => $status,
-                ];
-            })
-            ->values();
+            // 4. ASESMEN (KI)
+            $kiModel = $pembayarans->first(fn($p) => $p->jenisPembayaran && $p->jenisPembayaran->nama === 'KI');
+            $kiTarget = $kiModel ? (float)$kiModel->totalTagihan() : 0;
+            $kiTerbayar = $kiModel ? (float)$kiModel->detailPembayaran->sum('nominal') : 0;
 
+            $asesmenMap = [];
+            foreach ($asesmenItems as $asm) {
+                $val = 0;
+                if ($kiModel) {
+                    $val = (float)$kiModel->detailPembayaran
+                        ->filter(function($d) use ($asm) {
+                            foreach ($asm['aliases'] as $alias) {
+                                if (stripos($d->kategori, $alias) !== false) return true;
+                            }
+                            return false;
+                        })
+                        ->sum('nominal');
+                }
+                $asesmenMap[$asm['key']] = $val;
+            }
+
+            // 5. EKSTRAKURIKULER
+            $ekskulModel = $pembayarans->first(fn($p) => $p->jenisPembayaran && $p->jenisPembayaran->nama === 'Ekstrakurikuler');
+            $ekskulTarget = $ekskulModel ? (float)$ekskulModel->totalTagihan() : 0;
+            $ekskulTerbayar = $ekskulModel ? (float)$ekskulModel->detailPembayaran->sum('nominal') : 0;
+            if ($ekskulTarget > 0 || $ekskulTerbayar > 0) $hasEkskul = true;
+
+            // 6. KOKURIKULER
+            $kokuModel = $pembayarans->first(fn($p) => $p->jenisPembayaran && $p->jenisPembayaran->nama === 'Kokurikuler');
+            $kokuTarget = $kokuModel ? (float)$kokuModel->totalTagihan() : 0;
+            $kokuTerbayar = $kokuModel ? (float)$kokuModel->detailPembayaran->sum('nominal') : 0;
+            if ($kokuTarget > 0 || $kokuTerbayar > 0) $hasKoku = true;
+
+            // TOTALS
+            $totalTagihan = $sarprasTarget + $duTarget + $ippTarget + $kiTarget + $ekskulTarget + $kokuTarget;
+            $totalTerbayar = $sarprasTerbayar + $duTerbayar + $ippTerbayar + $kiTerbayar + $ekskulTerbayar + $kokuTerbayar;
+            $sisa = max($totalTagihan - $totalTerbayar, 0);
+            $status = ($totalTagihan > 0 && $sisa <= 0) ? 'Lunas' : ($totalTerbayar > 0 ? 'Sebagian' : ($totalTagihan > 0 ? 'Belum Lunas' : '-'));
+
+            $studentsData[] = [
+                'siswa'          => $siswa,
+                'kelas'          => $siswa->kelas ?: 'Tanpa Kelas',
+                'sarpras'        => $sarprasTerbayar,
+                'du'             => $duTerbayar,
+                'ipp_bulan'      => $ippBulanMap,
+                'asesmen'        => $asesmenMap,
+                'ekskul'         => $ekskulTerbayar,
+                'kokurikuler'    => $kokuTerbayar,
+                'total_tagihan'  => $totalTagihan,
+                'total_terbayar' => $totalTerbayar,
+                'sisa'           => $sisa,
+                'status'         => $status,
+            ];
+        }
+
+        // Group by Kelas
+        $groupedByKelas = collect($studentsData)->groupBy('kelas');
+
+        // Subtotals per Kelas
+        $classSubtotals = [];
+        foreach ($groupedByKelas as $k => $students) {
+            $classSubtotals[$k] = [
+                'sarpras'        => $students->sum('sarpras'),
+                'du'             => $students->sum('du'),
+                'ipp_bulan'      => [],
+                'asesmen'        => [],
+                'ekskul'         => $students->sum('ekskul'),
+                'kokurikuler'    => $students->sum('kokurikuler'),
+                'total_tagihan'  => $students->sum('total_tagihan'),
+                'total_terbayar' => $students->sum('total_terbayar'),
+                'sisa'           => $students->sum('sisa'),
+            ];
+            foreach ($bulanList as $b) {
+                $classSubtotals[$k]['ipp_bulan'][$b['nama']] = $students->sum(fn($s) => $s['ipp_bulan'][$b['nama']] ?? 0);
+            }
+            foreach ($asesmenItems as $asm) {
+                $classSubtotals[$k]['asesmen'][$asm['key']] = $students->sum(fn($s) => $s['asesmen'][$asm['key']] ?? 0);
+            }
+        }
+
+        // Grand Total across all classes
         $grandTotal = [
-            'target'        => $students->sum('target'),
-            'terbawa'       => $students->sum('terbawa'),
-            'potongan'      => $students->sum('potongan'),
-            'total_tagihan' => $students->sum('total_tagihan'),
-            'terbayar'      => $students->sum('terbayar'),
-            'sisa'          => $students->sum('sisa'),
+            'total_siswa'    => count($studentsData),
+            'sarpras'        => collect($studentsData)->sum('sarpras'),
+            'du'             => collect($studentsData)->sum('du'),
+            'ipp_bulan'      => [],
+            'asesmen'        => [],
+            'ekskul'         => collect($studentsData)->sum('ekskul'),
+            'kokurikuler'    => collect($studentsData)->sum('kokurikuler'),
+            'total_tagihan'  => collect($studentsData)->sum('total_tagihan'),
+            'total_terbayar' => collect($studentsData)->sum('total_terbayar'),
+            'sisa'           => collect($studentsData)->sum('sisa'),
         ];
+        foreach ($bulanList as $b) {
+            $grandTotal['ipp_bulan'][$b['nama']] = collect($studentsData)->sum(fn($s) => $s['ipp_bulan'][$b['nama']] ?? 0);
+        }
+        foreach ($asesmenItems as $asm) {
+            $grandTotal['asesmen'][$asm['key']] = collect($studentsData)->sum(fn($s) => $s['asesmen'][$asm['key']] ?? 0);
+        }
 
         $pdf = Pdf::loadView('rekap.pdf', [
-            'students'        => $students,
+            'groupedByKelas'  => $groupedByKelas,
+            'classSubtotals'  => $classSubtotals,
             'grandTotal'      => $grandTotal,
+            'bulanList'       => $bulanList,
+            'asesmenItems'    => $asesmenItems,
+            'hasEkskul'       => $hasEkskul,
+            'hasKoku'         => $hasKoku,
             'tahunAjaranNama' => $tahunAjaranNama,
+            'kelasFilter'     => $kelasFilter,
             'tanggalCetak'    => \Carbon\Carbon::now()->translatedFormat('d F Y'),
-        ])->setPaper('a4', 'portrait');
+        ])->setPaper('a4', 'landscape');
 
-        return $pdf->stream('Laporan-Rekap-Pembayaran-' . str_replace('/', '-', $tahunAjaranNama) . '.pdf');
+        $namaFile = 'Laporan-Rekap-Target-Pemasukan-' . str_replace('/', '-', $tahunAjaranNama);
+        if ($kelasFilter) {
+            $namaFile .= '-Kelas-' . str_replace(' ', '-', $kelasFilter);
+        }
+
+        return $pdf->stream($namaFile . '.pdf');
     }
 
     /**

@@ -651,7 +651,7 @@
                             >
                         </div>
 
-                        @if($daftarTahunAjaran->isNotEmpty())
+                        @if($daftarTahunAjaran->isNotEmpty() || (!empty($daftarKelas) && $daftarKelas->isNotEmpty()))
                             <form action="{{ route('rekap.index') }}" method="GET" class="d-flex align-items-center mb-0">
                                 <select
                                     name="tahun_ajaran_id"
@@ -665,13 +665,29 @@
                                         </option>
                                     @endforeach
                                 </select>
+
+                                @if(!empty($daftarKelas) && $daftarKelas->isNotEmpty())
+                                    <select
+                                        name="kelas"
+                                        class="rekap-select-ta ml-2"
+                                        onchange="this.form.submit()"
+                                        title="Filter Kelas"
+                                    >
+                                        <option value="">Semua Kelas</option>
+                                        @foreach($daftarKelas as $k)
+                                            <option value="{{ $k }}" {{ request('kelas') == $k ? 'selected' : '' }}>
+                                                Kelas {{ $k }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                @endif
                             </form>
                         @endif
                     </div>
 
                     <div class="rekap-toolbar-right">
                         <a
-                            href="{{ route('rekap.cetak', ['tahun_ajaran_id' => $tahunAjaranId]) }}"
+                            href="{{ route('rekap.cetak', array_filter(['tahun_ajaran_id' => $tahunAjaranId, 'kelas' => request('kelas')])) }}"
                             target="_blank"
                             class="btn-rekap-pdf"
                             title="Cetak Laporan Rekap Seluruh Siswa (PDF)"
