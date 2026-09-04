@@ -256,7 +256,7 @@
                         <tbody>
                             @foreach($ringkasan as $r)
                                 <tr>
-                                    <td class="fw-semibold">{{ $r['jenis']->nama }}</td>
+                                    <td class="fw-semibold">{{ ($r['jenis']->nama === 'KI' || $r['jenis']->nama === 'Kegiatan Intrakurikuler') ? 'Asesmen' : $r['jenis']->nama }}</td>
                                     <td class="text-right">
                                         {{ number_format($r['target'], 0, ',', '.') }}
                                     </td>

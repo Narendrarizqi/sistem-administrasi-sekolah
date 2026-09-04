@@ -1,6 +1,6 @@
 @extends('adminlte::page')
 
-@section('title', 'Pembayaran Kegiatan Intrakurikuler')
+@section('title', 'Pembayaran Asesmen')
 
 @section('css')
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1286,7 +1286,7 @@
             <div>
                 <h1 class="ki-title">
                     <span class="ki-title-icon"><i class="fas fa-book-open"></i></span>
-                    Asesmen (Kegiatan Intrakurikuler)
+                    Asesmen
                 </h1>
                 <p class="ki-desc">
                     Kelola data tagihan Asesmen (STS Gasal, STS Genap, SAS, SAT, ASAJ, Prakerin, dll.), verifikasi pembayaran, serta status pelunasan siswa.
@@ -1500,7 +1500,7 @@
                                     {{-- Tombol 1: Bayar (Hijau) --}}
                                     <button type="button"
                                             class="btn-act-bayar"
-                                            title="Bayar Tagihan KI"
+                                            title="Bayar Tagihan Asesmen"
                                             data-toggle="modal"
                                             data-target="#modalBayar{{ $item->id }}"
                                             {{ $isLunasPenuh ? 'disabled' : '' }}>
@@ -1510,7 +1510,7 @@
                                     {{-- Tombol 2: Edit (Kuning) Modal Popup --}}
                                     <button type="button"
                                             class="btn-act-edit"
-                                            title="Edit Data Tagihan KI"
+                                            title="Edit Data Tagihan Asesmen"
                                             data-toggle="modal"
                                             data-target="#modalEditKi{{ $item->id }}">
                                         <i class="fas fa-pen"></i>
@@ -1531,7 +1531,7 @@
                         <tr>
                             <td colspan="10" class="text-center py-5 text-muted">
                                 <i class="fas fa-folder-open fa-2x mb-2 d-block opacity-25"></i>
-                                Belum ada data tagihan Kegiatan Intrakurikuler pada tahun ajaran ini.
+                                Belum ada data tagihan Asesmen pada tahun ajaran ini.
                             </td>
                         </tr>
                     @endforelse
@@ -1719,51 +1719,88 @@
                 <div class="modal-header modal-header-payment">
                     <h5 class="modal-title font-weight-bold" style="font-size: 16px;">
                         <i class="fas fa-users-cog mr-2"></i>
-                        Terapkan Tagihan Massal ke Semua Siswa
+                        <span id="labelHeaderTerapkanMassal">Terapkan Tagihan Massal ke Semua Siswa</span>
                     </h5>
                     <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <form action="{{ route('ki.terapkan-massal') }}" method="POST" onsubmit="return confirm('PERINGATAN: Tagihan ini akan otomatis diterapkan ke seluruh siswa aktif pada tahun ajaran ini. Apakah Anda yakin ingin melanjutkan?');">
+                <form id="formTerapkanMassal" action="{{ route('ki.terapkan-massal') }}" method="POST">
                     @csrf
-                    <div class="modal-body p-4">
-                        <div class="alert alert-info py-2 px-3 mb-3 small" style="border-radius: 8px;">
-                            <i class="fas fa-info-circle mr-1"></i>
-                            Fitur ini akan membuat tagihan untuk <strong>seluruh siswa</strong> pada tahun ajaran <strong>{{ $selectedTa->nama ?? 'Aktif' }}</strong>. Siswa yang sudah memiliki tagihan ini akan <strong>dilewati secara otomatis</strong>.
-                        </div>
 
-                        <div class="form-group mb-3">
-                            <label class="font-weight-bold">Pilih Jenis Iuran <span class="text-danger">*</span></label>
-                            <select name="jenis_iuran_id" id="massal_jenis_iuran_id" class="form-control" style="border-radius: 8px; height: 38px; font-size: 13px;" required onchange="if(this.options[this.selectedIndex].dataset.default) document.getElementById('massal_nominal').value = this.options[this.selectedIndex].dataset.default;">
-                                <option value="">-- Pilih Jenis Iuran --</option>
-                                @foreach($jenisIuranAktif as $ji)
-                                    <option value="{{ $ji->id }}" data-default="{{ (int)$ji->nominal_default }}">
-                                        {{ $ji->nama }} (Default: Rp {{ number_format($ji->nominal_default, 0, ',', '.') }})
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        <div class="form-group mb-3">
-                            <label class="font-weight-bold">Nominal Tagihan untuk Semua Siswa (Rp) <span class="text-danger">*</span></label>
-                            <div class="input-group">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text font-weight-bold bg-light" style="border-radius: 8px 0 0 8px;">Rp</span>
-                                </div>
-                                <input type="number" name="nominal" id="massal_nominal" class="form-control font-weight-bold font-num text-success" placeholder="0" min="0" step="1000" style="border-radius: 0 8px 8px 0; height: 38px; font-size: 14px;" required>
+                    {{-- STEP 1: FORM INPUT --}}
+                    <div id="stepMassalFormInput">
+                        <div class="modal-body p-4">
+                            <div class="alert alert-info py-2 px-3 mb-3 small" style="border-radius: 8px;">
+                                <i class="fas fa-info-circle mr-1"></i>
+                                Fitur ini akan membuat tagihan untuk <strong>seluruh siswa</strong> pada tahun ajaran <strong>{{ $selectedTa->nama ?? 'Aktif' }}</strong>. Siswa yang sudah memiliki tagihan ini akan <strong>dilewati secara otomatis</strong>.
                             </div>
-                            <small class="text-muted">Nominal dapat disesuaikan sebelum diterapkan ke seluruh siswa.</small>
+
+                            <div class="form-group mb-3">
+                                <label class="font-weight-bold">Pilih Jenis Iuran <span class="text-danger">*</span></label>
+                                <select name="jenis_iuran_id" id="massal_jenis_iuran_id" class="form-control" style="border-radius: 8px; height: 38px; font-size: 13px;" required onchange="if(this.options[this.selectedIndex].dataset.default) document.getElementById('massal_nominal').value = this.options[this.selectedIndex].dataset.default;">
+                                    <option value="">-- Pilih Jenis Iuran --</option>
+                                    @foreach($jenisIuranAktif as $ji)
+                                        <option value="{{ $ji->id }}" data-default="{{ (int)$ji->nominal_default }}">
+                                            {{ $ji->nama }} (Default: Rp {{ number_format($ji->nominal_default, 0, ',', '.') }})
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div class="form-group mb-3">
+                                <label class="font-weight-bold">Nominal Tagihan untuk Semua Siswa (Rp) <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text font-weight-bold bg-light" style="border-radius: 8px 0 0 8px;">Rp</span>
+                                    </div>
+                                    <input type="number" name="nominal" id="massal_nominal" class="form-control font-weight-bold font-num text-success" placeholder="0" min="0" step="1000" style="border-radius: 0 8px 8px 0; height: 38px; font-size: 14px;" required>
+                                </div>
+                                <small class="text-muted">Nominal dapat disesuaikan sebelum diterapkan ke seluruh siswa.</small>
+                            </div>
+                        </div>
+                        <div class="modal-footer bg-light py-2 px-4 justify-content-end" style="border-top: 1px solid #e2e8f0;">
+                            <button type="button" class="btn btn-batal-merah px-4 mr-2" data-dismiss="modal">
+                                Batal
+                            </button>
+                            <button type="button" id="btnTriggerKonfirmasiMassal" class="btn-simpan-hijau px-4">
+                                Terapkan
+                            </button>
                         </div>
                     </div>
-                    <div class="modal-footer bg-light py-2 px-4 justify-content-end" style="border-top: 1px solid #e2e8f0;">
-                        <button type="button" class="btn btn-batal-merah px-4 mr-2" data-dismiss="modal">
-                            Batal
-                        </button>
-                        <button type="submit" class="btn-simpan-hijau px-4">
-                            <i class="fas fa-check-circle mr-1"></i> Terapkan Sekarang
-                        </button>
+
+                    {{-- STEP 2: KONFIRMASI RINGKASAN (DALAM MODAL YANG SAMA) --}}
+                    <div id="stepMassalKonfirmasi" style="display: none;">
+                        <div class="modal-body p-4">
+                            <p class="mb-3 text-dark font-weight-500" style="font-size: 14px;">
+                                Apakah Anda yakin ingin menerapkan tagihan ini secara massal ke seluruh siswa aktif?
+                            </p>
+
+                            <div class="p-3 bg-light border rounded mb-0" style="border-radius: 8px;">
+                                <div class="d-flex justify-content-between align-items-center py-1 border-bottom" style="font-size: 14px;">
+                                    <span class="text-muted">Jenis Iuran:</span>
+                                    <span class="font-weight-bold text-dark" id="konfirmasiMassalJenisIuran">-</span>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center py-1 border-bottom" style="font-size: 14px;">
+                                    <span class="text-muted">Nominal Tagihan:</span>
+                                    <span class="font-weight-bold text-success" id="konfirmasiMassalNominal">Rp 0</span>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center pt-2" style="font-size: 14px;">
+                                    <span class="text-muted">Tahun Ajaran:</span>
+                                    <span class="font-weight-bold text-dark">{{ $selectedTa->nama ?? 'Aktif' }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer bg-light py-2 px-4 justify-content-between" style="border-top: 1px solid #e2e8f0;">
+                            <button type="button" class="btn btn-batal-merah px-4" id="btnBackToFormMassal" style="border-radius: 8px; height: 38px;">
+                                <i class="fas fa-arrow-left mr-1"></i> Ubah
+                            </button>
+                            <button type="button" id="btnEksekusiTerapkanMassal" class="btn-simpan-hijau px-4">
+                                Ya
+                            </button>
+                        </div>
                     </div>
+
                 </form>
             </div>
         </div>
@@ -2185,7 +2222,7 @@
                                                         <td class="font-num">{{ \Carbon\Carbon::parse($detail->tanggal)->format('d/m/Y') }}</td>
                                                         <td class="text-center">
                                                             <span class="badge badge-success px-2 py-1" style="font-size: 10px; border-radius: 6px;">
-                                                                {{ $detail->kategori ?? 'KI' }}
+                                                                {{ ($detail->kategori && $detail->kategori !== 'KI') ? $detail->kategori : 'Asesmen' }}
                                                             </span>
                                                         </td>
                                                         <td class="font-weight-bold text-success font-num">{{ number_format($detail->nominal, 0, ',', '.') }}</td>
@@ -2401,7 +2438,7 @@
                     </div>
                     <div class="modal-body p-4">
                         <p class="mb-2 text-dark" style="font-size: 14px;">
-                            Apakah Anda yakin ingin menghapus tagihan Kegiatan Intrakurikuler untuk siswa:
+                            Apakah Anda yakin ingin menghapus tagihan Asesmen untuk siswa:
                         </p>
                         <div class="p-3 bg-light border rounded mb-3" style="border-radius: 10px;">
                             <div class="font-weight-bold text-dark" style="font-size: 15px;">{{ $item->siswa->nama ?? '-' }}</div>
@@ -2438,7 +2475,7 @@
                     </div>
                     <div class="modal-body text-center py-4 px-4">
                         <i class="fas fa-receipt text-success fa-3x mb-3"></i>
-                        <h5 class="font-weight-bold">Pembayaran Kegiatan Intrakurikuler berhasil dicatat!</h5>
+                        <h5 class="font-weight-bold">Pembayaran Asesmen berhasil dicatat!</h5>
                         <p class="text-muted mb-0">Apakah Anda ingin mencetak kuitansi pembayaran sekarang?</p>
                     </div>
                     <div class="modal-footer bg-light justify-content-center py-3">
@@ -2475,7 +2512,7 @@ function updateKiPaymentForm(itemId) {
 
     const opt = select.options[select.selectedIndex];
     const sisa = opt ? (parseFloat(opt.dataset.sisa) || 0) : 0;
-    const kategori = opt ? opt.value : 'KI';
+    const kategori = opt ? (opt.value === 'KI' ? 'Asesmen' : opt.value) : 'Asesmen';
 
     input.max = sisa > 0 ? sisa : 999999999;
     input.value = ''; // Selalu kosongkan saat ganti pilihan atau dibuka
@@ -2755,6 +2792,74 @@ document.addEventListener('DOMContentLoaded', function () {
                 lbl.textContent = `Rp ${formatRupiah(sum)}`;
             }
         });
+    });
+
+    // 4. Modal Terapkan Massal - Alur Bebas Stuck (Single Modal Step-Transition)
+    const modalTerapkanMassal = $('#modalTerapkanMassal');
+    const stepMassalFormInput = document.getElementById('stepMassalFormInput');
+    const stepMassalKonfirmasi = document.getElementById('stepMassalKonfirmasi');
+    const labelHeaderTerapkanMassal = document.getElementById('labelHeaderTerapkanMassal');
+    const btnTriggerKonfirmasiMassal = document.getElementById('btnTriggerKonfirmasiMassal');
+    const btnBackToFormMassal = document.getElementById('btnBackToFormMassal');
+    const btnEksekusiTerapkanMassal = document.getElementById('btnEksekusiTerapkanMassal');
+    const formTerapkanMassal = document.getElementById('formTerapkanMassal');
+
+    function switchStepMassal(step) {
+        if (step === 'confirm') {
+            if (stepMassalFormInput) stepMassalFormInput.style.display = 'none';
+            if (stepMassalKonfirmasi) stepMassalKonfirmasi.style.display = 'block';
+            if (labelHeaderTerapkanMassal) labelHeaderTerapkanMassal.textContent = 'Konfirmasi Penerapan Tagihan Massal';
+        } else {
+            if (stepMassalKonfirmasi) stepMassalKonfirmasi.style.display = 'none';
+            if (stepMassalFormInput) stepMassalFormInput.style.display = 'block';
+            if (labelHeaderTerapkanMassal) labelHeaderTerapkanMassal.textContent = 'Terapkan Tagihan Massal ke Semua Siswa';
+        }
+    }
+
+    if (btnTriggerKonfirmasiMassal && formTerapkanMassal) {
+        btnTriggerKonfirmasiMassal.addEventListener('click', function () {
+            if (!formTerapkanMassal.checkValidity()) {
+                formTerapkanMassal.reportValidity();
+                return;
+            }
+
+            const selectJi = document.getElementById('massal_jenis_iuran_id');
+            const inputNominal = document.getElementById('massal_nominal');
+            const rawText = selectJi.options[selectJi.selectedIndex]?.text || '';
+            const namaJi = rawText.includes('(Default') ? rawText.split('(Default')[0].trim() : rawText.trim();
+            const valNominal = parseFloat(inputNominal.value) || 0;
+
+            const elemJi = document.getElementById('konfirmasiMassalJenisIuran');
+            const elemNom = document.getElementById('konfirmasiMassalNominal');
+
+            if (elemJi) elemJi.textContent = namaJi || '-';
+            if (elemNom) elemNom.textContent = 'Rp ' + formatRupiah(valNominal);
+
+            switchStepMassal('confirm');
+        });
+    }
+
+    if (btnBackToFormMassal) {
+        btnBackToFormMassal.addEventListener('click', function () {
+            switchStepMassal('input');
+        });
+    }
+
+    if (btnEksekusiTerapkanMassal && formTerapkanMassal) {
+        btnEksekusiTerapkanMassal.addEventListener('click', function () {
+            btnEksekusiTerapkanMassal.disabled = true;
+            btnEksekusiTerapkanMassal.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Menerapkan...';
+            formTerapkanMassal.submit();
+        });
+    }
+
+    modalTerapkanMassal.on('hidden.bs.modal', function () {
+        switchStepMassal('input');
+        // Bersihkan backdrop jika ada
+        if (!$('.modal.show').length) {
+            $('.modal-backdrop').remove();
+            $('body').removeClass('modal-open').css({'padding-right': '', 'overflow': ''});
+        }
     });
 });
 </script>

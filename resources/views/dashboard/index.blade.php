@@ -853,7 +853,7 @@
                                 </td>
                                 <td>
                                     <span class="badge-jenis-pill">
-                                        {{ $jenisObj?->nama ?? '-' }}
+                                        {{ ($jenisObj?->nama === 'KI' || $jenisObj?->nama === 'Kegiatan Intrakurikuler') ? 'Asesmen' : ($jenisObj?->nama ?? '-') }}
                                     </span>
                                 </td>
                                 <td class="font-weight-bold text-dark font-tabular">

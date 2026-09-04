@@ -709,7 +709,7 @@ class RekapController extends Controller
         $totalTerbayarTerbawa = 0;
         $totalSisaTerbawa = 0;
 
-        foreach (['IPP' => $ippData, 'Daftar Ulang' => $duData, 'Sarana & Prasarana' => $sarprasData, 'Kegiatan Intrakurikuler' => $kiData] as $jenisLabel => $d) {
+        foreach (['IPP' => $ippData, 'Daftar Ulang' => $duData, 'Sarana & Prasarana' => $sarprasData, 'Asesmen' => $kiData] as $jenisLabel => $d) {
             if ($d['terbawa'] > 0) {
                 $terbayarUntukTerbawa = min($d['terbawa'], $d['terbayar']);
                 $sisaTerbawa = max($d['terbawa'] - $terbayarUntukTerbawa, 0);
@@ -766,7 +766,7 @@ class RekapController extends Controller
             ],
             [
                 'no'            => 4,
-                'jenis'         => 'Kegiatan Intrakurikuler (KI)',
+                'jenis'         => 'Asesmen',
                 'target'        => $kiData['target'],
                 'potongan'      => $kiData['potongan'] ?? 0,
                 'terbawa'       => $kiData['terbawa'],

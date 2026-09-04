@@ -524,7 +524,7 @@
                         <div class="feature-icon-box">
                             <i class="fas fa-building-columns"></i>
                         </div>
-                        <span class="feature-text">Sarana &amp; Prasarana dan Kegiatan Intrakurikuler</span>
+                        <span class="feature-text">Sarana &amp; Prasarana dan Asesmen</span>
                     </div>
 
                     <div class="feature-item">

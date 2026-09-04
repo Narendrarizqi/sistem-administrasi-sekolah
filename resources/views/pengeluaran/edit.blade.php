@@ -68,7 +68,7 @@
                             <option value="IPP" {{ old('sumber_dana', $pengeluaran->sumber_dana) === 'IPP' ? 'selected' : '' }}>IPP (Iuran Pembayaran Pendidikan)</option>
                             <option value="DU" {{ old('sumber_dana', $pengeluaran->sumber_dana) === 'DU' ? 'selected' : '' }}>DU (Daftar Ulang)</option>
                             <option value="Sarpras" {{ old('sumber_dana', $pengeluaran->sumber_dana) === 'Sarpras' ? 'selected' : '' }}>Sarpras (Sarana Prasarana)</option>
-                            <option value="KI" {{ old('sumber_dana', $pengeluaran->sumber_dana) === 'KI' ? 'selected' : '' }}>KI (Kegiatan Intrakurikuler)</option>
+                            <option value="KI" {{ old('sumber_dana', $pengeluaran->sumber_dana) === 'KI' ? 'selected' : '' }}>Asesmen</option>
                             <option value="BOS" {{ old('sumber_dana', $pengeluaran->sumber_dana) === 'BOS' ? 'selected' : '' }}>BOS (Bantuan Operasional Sekolah)</option>
                         </select>
                         @error('sumber_dana')

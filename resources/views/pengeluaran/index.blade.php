@@ -790,7 +790,7 @@
                     <option value="IPP">IPP</option>
                     <option value="DU">Daftar Ulang (DU)</option>
                     <option value="Sarpras">Sarana & Prasarana</option>
-                    <option value="KI">Kegiatan Intrakurikuler</option>
+                    <option value="KI">Asesmen</option>
                     <option value="BOS">Bantuan Operasional Sekolah (BOS)</option>
                 </select>
 
@@ -870,7 +870,7 @@
                                 $sumberLabel = 'Sarpras';
                             } elseif ($sumber === 'KI') {
                                 $badgeClass = 'badge-sumber-ki';
-                                $sumberLabel = 'KI';
+                                $sumberLabel = 'Asesmen';
                             } elseif ($sumber === 'BOS') {
                                 $badgeClass = 'badge-sumber-bos';
                                 $sumberLabel = 'BOS';
@@ -996,7 +996,7 @@
                             'IPP'     => 'IPP',
                             'DU'      => 'Daftar Ulang',
                             'Sarpras' => 'Sarana & Prasarana',
-                            'KI'      => 'Kegiatan Intrakurikuler',
+                            'KI'      => 'Asesmen',
                             'BOS'     => 'Dana BOS',
                         ];
                     @endphp
@@ -1095,7 +1095,7 @@
                                     <option value="IPP" {{ old('sumber_dana') === 'IPP' ? 'selected' : '' }}>IPP (Iuran Pembayaran Pendidikan)</option>
                                     <option value="DU" {{ old('sumber_dana') === 'DU' ? 'selected' : '' }}>DU (Daftar Ulang)</option>
                                     <option value="Sarpras" {{ old('sumber_dana') === 'Sarpras' ? 'selected' : '' }}>Sarpras (Sarana Prasarana)</option>
-                                    <option value="KI" {{ old('sumber_dana') === 'KI' ? 'selected' : '' }}>KI (Kegiatan Intrakurikuler)</option>
+                                    <option value="KI" {{ old('sumber_dana') === 'KI' ? 'selected' : '' }}>Asesmen</option>
                                     <option value="BOS" {{ old('sumber_dana') === 'BOS' ? 'selected' : '' }}>BOS (Bantuan Operasional Sekolah)</option>
                                 </select>
                             </div>
@@ -1197,7 +1197,7 @@
                                         <option value="IPP" {{ old('sumber_dana', $item->sumber_dana) === 'IPP' ? 'selected' : '' }}>IPP (Iuran Pembayaran Pendidikan)</option>
                                         <option value="DU" {{ old('sumber_dana', $item->sumber_dana) === 'DU' ? 'selected' : '' }}>DU (Daftar Ulang)</option>
                                         <option value="Sarpras" {{ old('sumber_dana', $item->sumber_dana) === 'Sarpras' ? 'selected' : '' }}>Sarpras (Sarana Prasarana)</option>
-                                        <option value="KI" {{ old('sumber_dana', $item->sumber_dana) === 'KI' ? 'selected' : '' }}>KI (Kegiatan Intrakurikuler)</option>
+                                        <option value="KI" {{ old('sumber_dana', $item->sumber_dana) === 'KI' ? 'selected' : '' }}>Asesmen</option>
                                         <option value="BOS" {{ old('sumber_dana', $item->sumber_dana) === 'BOS' ? 'selected' : '' }}>BOS (Bantuan Operasional Sekolah)</option>
                                     </select>
                                 </div>
@@ -1272,7 +1272,7 @@
                             <div class="font-weight-bold text-dark" style="font-size: 14.5px;">{{ $item->keterangan }}</div>
                             <div class="text-muted small mt-1">
                                 Tanggal: {{ \Carbon\Carbon::parse($item->tanggal)->format('d/m/Y') }} &bull;
-                                Sumber: <span class="font-weight-bold text-dark">{{ $item->sumber_dana }}</span>
+                                Sumber: <span class="font-weight-bold text-dark">{{ $item->sumber_dana === 'KI' ? 'Asesmen' : $item->sumber_dana }}</span>
                             </div>
                             <div class="text-danger font-weight-bold font-num mt-1" style="font-size: 14px;">
                                 Nominal: Rp {{ number_format($item->nominal, 0, ',', '.') }}

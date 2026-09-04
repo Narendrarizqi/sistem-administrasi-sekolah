@@ -295,7 +295,7 @@ $activeSisa = (float) ($activeSub['sisa'] ?? 0);
     <div class="card-header bg-white border-bottom py-3">
         <h5 class="mb-0 font-weight-bold" style="font-size: 15px;">
             <i class="fas fa-history text-success mr-2"></i>
-            Riwayat Pembayaran Kegiatan Intrakurikuler Siswa Ini
+            Riwayat Pembayaran Asesmen Siswa Ini
         </h5>
     </div>
     <div class="card-body p-0">
@@ -305,7 +305,7 @@ $activeSisa = (float) ($activeSub['sisa'] ?? 0);
                     <tr>
                         <th class="text-center" style="width: 40px;">No</th>
                         <th>Tanggal Bayar</th>
-                        <th class="text-center" style="background:#e8f5e9; color:#1b5e20;">Kegiatan</th>
+                        <th class="text-center" style="background:#e8f5e9; color:#1b5e20;">Kategori</th>
                         <th>Nominal (Rp)</th>
                         <th>Metode</th>
                         <th>Bukti Transfer</th>
@@ -320,7 +320,7 @@ $activeSisa = (float) ($activeSub['sisa'] ?? 0);
                             <td class="font-num">{{ \Carbon\Carbon::parse($detail->tanggal)->format('d/m/Y') }}</td>
                             <td class="text-center">
                                 <span class="badge badge-success px-2 py-1" style="font-size: 11px; border-radius: 6px;">
-                                    {{ $detail->kategori ?? 'KI' }}
+                                    {{ ($detail->kategori && $detail->kategori !== 'KI') ? $detail->kategori : 'Asesmen' }}
                                 </span>
                             </td>
                             <td class="font-weight-bold text-success font-num">{{ number_format($detail->nominal, 0, ',', '.') }}</td>
@@ -364,7 +364,7 @@ $activeSisa = (float) ($activeSub['sisa'] ?? 0);
                 </div>
                 <div class="modal-body text-center py-4 px-4">
                     <i class="fas fa-receipt text-success fa-3x mb-3"></i>
-                    <h5 class="font-weight-bold">Pembayaran Kegiatan Intrakurikuler berhasil dicatat!</h5>
+                    <h5 class="font-weight-bold">Pembayaran Asesmen berhasil dicatat!</h5>
                     <p class="text-muted mb-0">Apakah Anda ingin mencetak kuitansi pembayaran sekarang?</p>
                 </div>
                 <div class="modal-footer bg-light justify-content-center py-3">
@@ -401,7 +401,7 @@ function updateKiPagePaymentForm() {
 
     const opt = select.options[select.selectedIndex];
     const sisa = opt ? (parseFloat(opt.dataset.sisa) || 0) : 0;
-    const kategori = opt ? opt.value : 'KI';
+    const kategori = opt ? (opt.value === 'KI' ? 'Asesmen' : opt.value) : 'Asesmen';
 
     input.max = sisa > 0 ? sisa : 999999999;
     input.value = '';

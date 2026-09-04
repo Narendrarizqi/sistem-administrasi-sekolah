@@ -1,6 +1,6 @@
 @extends('adminlte::page')
 
-@section('title', 'Tambah Tagihan Kegiatan Intrakurikuler (KI)')
+@section('title', 'Tambah Tagihan Asesmen')
 
 @section('content')
 
@@ -27,10 +27,10 @@
                     <div class="d-flex align-items-center justify-content-between">
                         <h5 class="mb-0 font-weight-bold" style="font-size: 16px;">
                             <i class="fas fa-book-open mr-2"></i>
-                            Tambah Tagihan Kegiatan Intrakurikuler (KI)
+                            Tambah Tagihan Asesmen
                         </h5>
                         <span class="badge badge-light px-3 py-1 font-weight-bold text-success" style="font-size: 12px;">
-                            KI
+                            Asesmen
                         </span>
                     </div>
                 </div>
@@ -43,7 +43,7 @@
                         {{-- Alert Jika Siswa Duplikat --}}
                         <div id="siswaDuplicateAlert" class="alert alert-danger d-none mb-3 py-2 px-3">
                             <i class="fas fa-exclamation-circle mr-1"></i>
-                            <strong>Peringatan:</strong> Siswa ini sudah memiliki data tagihan Kegiatan Intrakurikuler (KI) pada tahun ajaran ini. Tidak dapat menambahkan tagihan ganda!
+                            <strong>Peringatan:</strong> Siswa ini sudah memiliki data tagihan Asesmen pada tahun ajaran ini. Tidak dapat menambahkan tagihan ganda!
                         </div>
 
                         {{-- Siswa --}}
@@ -112,7 +112,7 @@
                                 @error('target')
                                     <div class="invalid-feedback d-block">{{ $message }}</div>
                                 @enderror
-                                <small class="text-muted">Total target biaya Kegiatan Intrakurikuler yang harus dibayarkan.</small>
+                                <small class="text-muted">Total target biaya Asesmen yang harus dibayarkan.</small>
                             </div>
                         </div>
 
@@ -122,7 +122,7 @@
                                 <div class="col-md-6 col-12 mb-2 mb-md-0">
                                     <div class="text-muted small">Jenis Tagihan</div>
                                     <div class="font-weight-bold text-dark">
-                                        Kegiatan Intrakurikuler (KI)
+                                        Asesmen
                                     </div>
                                 </div>
                                 <div class="col-md-6 col-12">
@@ -143,7 +143,7 @@
 
                             <button type="submit" id="btnSubmitKi" class="btn btn-success px-4 font-weight-bold">
                                 <i class="fas fa-save mr-1"></i>
-                                Simpan Tagihan KI
+                                Simpan Tagihan Asesmen
                             </button>
                         </div>
 

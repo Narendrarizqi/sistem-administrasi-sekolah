@@ -41,7 +41,7 @@ class PengeluaranController extends Controller
             'IPP'     => 'IPP',
             'DU'      => 'Daftar Ulang',
             'Sarpras' => 'Sarana & Prasarana',
-            'KI'      => 'Kegiatan Intrakurikuler',
+            'KI'      => 'Asesmen',
             'BOS'     => 'Dana BOS',
         ];
 

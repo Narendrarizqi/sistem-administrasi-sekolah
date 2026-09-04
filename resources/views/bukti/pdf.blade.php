@@ -143,7 +143,15 @@
         <tr>
             <td class="label">Jenis Pembayaran</td>
             <td class="sep">:</td>
-            <td>{{ $pembayaran->jenisPembayaran->nama ?? '-' }} {{ $detail->kategori ? "({$detail->kategori})" : '' }}</td>
+            <td>
+                @php
+                    $rawJenis = $pembayaran->jenisPembayaran->nama ?? '-';
+                    $namaJenis = ($rawJenis === 'KI' || $rawJenis === 'Kegiatan Intrakurikuler') ? 'Asesmen' : $rawJenis;
+                    $rawKategori = $detail->kategori;
+                    $kategoriDisplay = ($rawKategori === 'KI' || $rawKategori === 'Kegiatan Intrakurikuler') ? 'Asesmen' : $rawKategori;
+                @endphp
+                {{ $namaJenis }}{{ ($kategoriDisplay && $kategoriDisplay !== $namaJenis) ? " ({$kategoriDisplay})" : '' }}
+            </td>
         </tr>
         <tr>
             <td class="label">Metode Pembayaran</td>

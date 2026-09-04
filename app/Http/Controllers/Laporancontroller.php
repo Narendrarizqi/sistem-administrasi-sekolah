@@ -20,7 +20,7 @@ class LaporanController extends Controller
             'IPP'     => ['IPP'],
             'DU'      => ['DU'],
             'Sarpras' => ['Sarpras', 'SARPAS'],
-            'KI'      => ['KI'],
+            'Asesmen' => ['KI', 'Asesmen'],
             'BOS'     => ['BOS'],
         ];
     }
@@ -95,8 +95,9 @@ class LaporanController extends Controller
 
                 $siswa = $detail->pembayaran->siswa ?? null;
 
-                $jenis = $detail->pembayaran->jenisPembayaran->nama
+                $rawJenis = $detail->pembayaran->jenisPembayaran->nama
                     ?? 'Pembayaran';
+                $jenis = ($rawJenis === 'KI' || $rawJenis === 'Kegiatan Intrakurikuler') ? 'Asesmen' : $rawJenis;
 
                 $transaksi->push([
                     'tanggal' => $detail->tanggal,
@@ -134,11 +135,13 @@ class LaporanController extends Controller
         // Pengeluaran
         Pengeluaran::all()->each(function ($item) use ($transaksi) {
 
-            $transaksi->push([
-                'tanggal' => $item->tanggal,
-                'created_at' => $item->created_at,
+                $sumberDanaDisplay = ($item->sumber_dana === 'KI' || $item->sumber_dana === 'Kegiatan Intrakurikuler') ? 'Asesmen' : $item->sumber_dana;
 
-                'uraian' => $item->keterangan . ($item->sumber_dana ? ' [' . $item->sumber_dana . ']' : ''),
+                $transaksi->push([
+                    'tanggal' => $item->tanggal,
+                    'created_at' => $item->created_at,
+
+                    'uraian' => $item->keterangan . ($sumberDanaDisplay ? ' [' . $sumberDanaDisplay . ']' : ''),
 
                 'masuk' => 0,
                 'keluar' => (float) $item->nominal,
@@ -214,8 +217,9 @@ class LaporanController extends Controller
 
                 $siswa = $detail->pembayaran->siswa ?? null;
 
-                $jenis = $detail->pembayaran->jenisPembayaran->nama
+                $rawJenis = $detail->pembayaran->jenisPembayaran->nama
                     ?? 'Pembayaran';
+                $jenis = ($rawJenis === 'KI' || $rawJenis === 'Kegiatan Intrakurikuler') ? 'Asesmen' : $rawJenis;
 
                 $transaksi->push([
                     'tanggal' => $detail->tanggal,
@@ -256,11 +260,13 @@ class LaporanController extends Controller
 
         Pengeluaran::all()->each(function ($item) use ($transaksi) {
 
-            $transaksi->push([
-                'tanggal' => $item->tanggal,
-                'created_at' => $item->created_at,
+                $sumberDanaDisplay = ($item->sumber_dana === 'KI' || $item->sumber_dana === 'Kegiatan Intrakurikuler') ? 'Asesmen' : $item->sumber_dana;
 
-                'uraian' => $item->keterangan . ($item->sumber_dana ? ' [' . $item->sumber_dana . ']' : ''),
+                $transaksi->push([
+                    'tanggal' => $item->tanggal,
+                    'created_at' => $item->created_at,
+
+                    'uraian' => $item->keterangan . ($sumberDanaDisplay ? ' [' . $sumberDanaDisplay . ']' : ''),
 
                 'masuk' => 0,
                 'keluar' => (float) $item->nominal,

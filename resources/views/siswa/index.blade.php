@@ -666,15 +666,6 @@
             color: #ef4444;
         }
 
-        /* Hilangkan delay animasi preloader pada halaman data siswa */
-        .preloader {
-            display: none !important;
-            height: 0 !important;
-            opacity: 0 !important;
-            visibility: hidden !important;
-            pointer-events: none !important;
-        }
-
         /* Pagination Styling */
         .siswa-pagination-container {
             display: flex;
@@ -1645,26 +1636,54 @@
         </div>
     </div>
 
+    {{-- MODAL KONFIRMASI IMPORT DATA SISWA --}}
+    <div class="modal fade" id="modalKonfirmasiImportSiswa" tabindex="-1" role="dialog" aria-hidden="true" style="z-index: 1065;">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content border-0 shadow" style="border-radius: 12px; overflow: hidden;">
+                <div class="modal-header modal-header-clean">
+                    <h5 class="modal-title font-weight-bold text-white" style="font-size: 15px;">
+                        <i class="fas fa-file-import mr-2 text-white"></i>
+                        Konfirmasi Import Data Siswa
+                    </h5>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <div class="modal-body p-4">
+                    <p class="mb-3 text-dark" style="font-size: 14px;">
+                        Apakah Anda yakin ingin mengimport dan memproses data siswa ini ke dalam database?
+                    </p>
+
+                    <div class="p-3 bg-light border rounded mb-0" style="border-radius: 8px;">
+                        <div class="d-flex justify-content-between align-items-center py-1 border-bottom" style="font-size: 14px;">
+                            <span class="text-muted">Total Data Diproses:</span>
+                            <span class="font-weight-bold text-success" id="konfirmasiJumlahSiswa">0 Siswa</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center pt-2" style="font-size: 14px;">
+                            <span class="text-muted">Penanganan Duplikasi:</span>
+                            <span class="font-weight-bold text-dark" id="konfirmasiOpsiDuplikasi">Lewati data lama</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer bg-light py-2 px-4 justify-content-end" style="border-top: 1px solid #e2e8f0;">
+                    <button type="button" class="btn btn-batal-merah px-4 mr-2" id="btnBatalModalKonfirmasiImport" data-dismiss="modal">
+                        Batal
+                    </button>
+                    <button type="button" class="btn btn-success font-weight-bold px-4" id="btnEksekusiImportModal" style="height: 38px; border-radius: 8px;">
+                        <i class="fas fa-check-circle mr-1"></i> Ya, Lanjutkan
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 @stop
 
 @section('js')
 <script>
-// Hilangkan delay animasi preloader secepat mungkin saat halaman dibuka
-(function() {
-    var pl = document.querySelector('.preloader');
-    if (pl) {
-        pl.style.display = 'none';
-        pl.style.height = '0';
-        try { pl.remove(); } catch(e) {}
-    }
-})();
-
 document.addEventListener('DOMContentLoaded', function () {
-    // Pastikan preloader benar-benar bersih
-    var pl = document.querySelector('.preloader');
-    if (pl) {
-        try { pl.remove(); } catch(e) {}
-    }
 
     // Tooltip init
     if (window.jQuery && $.fn.tooltip) {
@@ -2013,8 +2032,28 @@ document.addEventListener('DOMContentLoaded', function () {
         btnBackToUploadFromPreview.addEventListener('click', () => switchStep('upload'));
     }
 
-    // Eksekusi Konfirmasi Import
+    // Eksekusi Konfirmasi Import via Modal Bersih Bebas Stuck
     const btnConfirmExecuteImport = document.getElementById('btnConfirmExecuteImport');
+    const modalKonfirmasiImport = $('#modalKonfirmasiImportSiswa');
+    const btnBatalModalKonfirmasiImport = document.getElementById('btnBatalModalKonfirmasiImport');
+    const btnEksekusiImportModal = document.getElementById('btnEksekusiImportModal');
+
+    if (btnBatalModalKonfirmasiImport) {
+        btnBatalModalKonfirmasiImport.addEventListener('click', function () {
+            modalKonfirmasiImport.modal('hide');
+            setTimeout(function () {
+                modalImport.modal('show');
+            }, 300);
+        });
+    }
+
+    modalKonfirmasiImport.on('hidden.bs.modal', function () {
+        if (!$('.modal.show').length) {
+            $('.modal-backdrop').remove();
+            $('body').removeClass('modal-open').css({'padding-right': '', 'overflow': ''});
+        }
+    });
+
     if (btnConfirmExecuteImport) {
         btnConfirmExecuteImport.addEventListener('click', function () {
             const dupAction = document.querySelector('input[name="duplicateAction"]:checked')?.value || 'skip';
@@ -2025,12 +2064,32 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
 
-            if (!confirm(`Konfirmasi import: Anda akan mengimport/memproses ${finalCount} data siswa ke database. Lanjutkan?`)) {
-                return;
+            const countElem = document.getElementById('konfirmasiJumlahSiswa');
+            const dupElem = document.getElementById('konfirmasiOpsiDuplikasi');
+            if (countElem) countElem.textContent = `${finalCount} Siswa`;
+            if (dupElem) {
+                dupElem.textContent = dupAction === 'update' 
+                    ? 'Perbarui data nama & kelas jika NIS sama' 
+                    : 'Lewati data lama (hanya tambah data baru)';
             }
 
-            btnConfirmExecuteImport.disabled = true;
-            btnConfirmExecuteImport.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Menyimpan ke Database...';
+            modalImport.modal('hide');
+            setTimeout(function () {
+                modalKonfirmasiImport.modal('show');
+            }, 300);
+        });
+    }
+
+    if (btnEksekusiImportModal) {
+        btnEksekusiImportModal.addEventListener('click', function () {
+            const dupAction = document.querySelector('input[name="duplicateAction"]:checked')?.value || 'skip';
+
+            btnEksekusiImportModal.disabled = true;
+            btnEksekusiImportModal.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Menyimpan...';
+            if (btnConfirmExecuteImport) {
+                btnConfirmExecuteImport.disabled = true;
+                btnConfirmExecuteImport.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Menyimpan...';
+            }
 
             fetch('{{ route("siswa.import.confirm") }}', {
                 method: 'POST',
@@ -2048,19 +2107,28 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(res => res.json())
             .then(data => {
                 if (!data.success) {
-                    btnConfirmExecuteImport.disabled = false;
-                    btnConfirmExecuteImport.innerHTML = '<i class="fas fa-check-circle mr-1"></i> Konfirmasi & Import';
+                    btnEksekusiImportModal.disabled = false;
+                    btnEksekusiImportModal.innerHTML = '<i class="fas fa-check-circle mr-1"></i> Ya, Lanjutkan';
+                    if (btnConfirmExecuteImport) {
+                        btnConfirmExecuteImport.disabled = false;
+                        btnConfirmExecuteImport.innerHTML = '<i class="fas fa-check-circle mr-1"></i> Konfirmasi & Import';
+                    }
                     alert(data.message || 'Gagal mengimport data.');
                     return;
                 }
 
                 // Sukses -> tutup modal dan reload halaman agar data terbaru langsung tampil
+                modalKonfirmasiImport.modal('hide');
                 modalImport.modal('hide');
                 window.location.reload();
             })
             .catch(err => {
-                btnConfirmExecuteImport.disabled = false;
-                btnConfirmExecuteImport.innerHTML = '<i class="fas fa-check-circle mr-1"></i> Konfirmasi & Import';
+                btnEksekusiImportModal.disabled = false;
+                btnEksekusiImportModal.innerHTML = '<i class="fas fa-check-circle mr-1"></i> Ya, Lanjutkan';
+                if (btnConfirmExecuteImport) {
+                    btnConfirmExecuteImport.disabled = false;
+                    btnConfirmExecuteImport.innerHTML = '<i class="fas fa-check-circle mr-1"></i> Konfirmasi & Import';
+                }
                 alert('Terjadi kesalahan saat menyimpan data: ' + err.message);
             });
         });

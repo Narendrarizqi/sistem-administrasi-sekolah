@@ -522,7 +522,7 @@
 
     {{-- 6. BAGIAN 3: RINCIAN KEGIATAN INTRAKURIKULER (KI) --}}
     <div class="page-break-inside-avoid">
-        <div class="section-header">3. Rincian Asesmen (Kegiatan Intrakurikuler)</div>
+        <div class="section-header">3. Rincian Asesmen</div>
         @if($kiData['has_data'])
             <table class="table-data">
                 <thead>
@@ -585,7 +585,7 @@
                 </tbody>
                 <tfoot>
                     <tr>
-                        <td colspan="2" class="text-center">TOTAL KI</td>
+                        <td colspan="2" class="text-center">TOTAL ASESMEN</td>
                         <td class="text-right">{{ number_format($kiData['target'], 0, ',', '.') }}</td>
                         <td class="text-right" style="color:#15803d;">{{ number_format($kiData['terbayar'], 0, ',', '.') }}</td>
                         <td class="text-right" style="color:#dc2626;">{{ number_format($kiData['sisa'], 0, ',', '.') }}</td>
@@ -609,7 +609,7 @@
                 </tfoot>
             </table>
         @else
-            <p style="font-size: 8.5px; color: #94a3b8; margin: 4px 0 10px;">Tidak ada tagihan Kegiatan Intrakurikuler yang terdaftar untuk siswa pada tahun ajaran ini.</p>
+            <p style="font-size: 8.5px; color: #94a3b8; margin: 4px 0 10px;">Tidak ada tagihan Asesmen yang terdaftar untuk siswa pada tahun ajaran ini.</p>
         @endif
     </div>
 
