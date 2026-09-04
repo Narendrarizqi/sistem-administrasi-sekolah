@@ -87,10 +87,10 @@ class PengeluaranController extends Controller
             $daftarTahun = [date('Y')];
         }
 
-        // Data Tabel Paginated (50 data per halaman)
+        // Data Tabel Paginated (25 data per halaman)
         $pengeluaran = Pengeluaran::orderByDesc('tanggal')
             ->orderByDesc('id')
-            ->paginate(50)
+            ->paginate(25)
             ->withQueryString();
 
         return view('pengeluaran.index', compact(

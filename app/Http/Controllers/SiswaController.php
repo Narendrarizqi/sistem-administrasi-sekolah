@@ -51,7 +51,7 @@ class SiswaController extends Controller
         }
 
         $totalSiswa = Siswa::count();
-        $siswa = $query->paginate(50)->withQueryString();
+        $siswa = $query->paginate(25)->withQueryString();
 
         return view('siswa.index', compact('siswa', 'tahunAjaranNama', 'totalSiswa', 'search', 'sort', 'direction'));
     }

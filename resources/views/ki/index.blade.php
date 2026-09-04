@@ -1539,7 +1539,7 @@
             </table>
         </div>
 
-        {{-- Pagination Links (50 per halaman) --}}
+        {{-- Pagination Links (25 per halaman) --}}
         @if(method_exists($data, 'hasPages') && ($data->hasPages() || $data->total() > 0))
             <div class="table-pagination-container px-3 pb-3">
                 <div class="table-pagination-info">
@@ -2525,7 +2525,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function updateNumber() {
         const rows = getRows();
-        let number = 1;
+        const pageStartIndex = {{ method_exists($data, 'firstItem') && $data->firstItem() ? $data->firstItem() : 1 }};
+        let number = pageStartIndex;
         rows.forEach(function (row) {
             const numberCell = row.querySelector('.row-number');
             if (numberCell && row.style.display !== 'none') {

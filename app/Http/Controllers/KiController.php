@@ -42,7 +42,7 @@ class KiController extends Controller
                 });
             })
             ->latest('id')
-            ->paginate(50)
+            ->paginate(25)
             ->withQueryString();
 
         // Master jenis iuran untuk modal manajemen & form tambah

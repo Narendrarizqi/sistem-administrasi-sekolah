@@ -995,7 +995,7 @@
                     </table>
                 </div>
 
-                {{-- Pagination Links (50 per halaman) --}}
+                {{-- Pagination Links (25 per halaman) --}}
                 @if($siswa->hasPages() || $siswa->total() > 0)
                     <div class="siswa-pagination-container">
                         <div class="siswa-pagination-info">

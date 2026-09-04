@@ -827,7 +827,7 @@
             </table>
         </div>
 
-        {{-- Pagination Links (50 per halaman) --}}
+        {{-- Pagination Links (25 per halaman) --}}
         @if(method_exists($pengeluaranBos, 'hasPages') && ($pengeluaranBos->hasPages() || $pengeluaranBos->total() > 0))
             <div class="table-pagination-container px-3 pb-3">
                 <div class="table-pagination-info">

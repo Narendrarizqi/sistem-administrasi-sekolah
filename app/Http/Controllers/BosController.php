@@ -63,7 +63,7 @@ class BosController extends Controller
 
         $pengeluaranBos = $pengeluaranQuery->orderByDesc('tanggal')
             ->orderByDesc('id')
-            ->paginate(50)
+            ->paginate(25)
             ->withQueryString();
 
         return view('bos.index', compact(

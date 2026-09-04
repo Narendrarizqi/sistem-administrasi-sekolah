@@ -813,7 +813,7 @@
                     </table>
                 </div>
 
-                {{-- Pagination Links (50 per halaman) --}}
+                {{-- Pagination Links (25 per halaman) --}}
                 @if(method_exists($students, 'hasPages') && ($students->hasPages() || $students->total() > 0))
                     <div class="table-pagination-container px-3 pb-3">
                         <div class="table-pagination-info">
@@ -1156,7 +1156,8 @@
 
     function updateNumbering() {
         const rows = document.querySelectorAll('#rekapTable tbody tr');
-        let nomor = 1;
+        const pageStartIndex = {{ method_exists($students, 'firstItem') && $students->firstItem() ? $students->firstItem() : 1 }};
+        let nomor = pageStartIndex;
         rows.forEach(function (row) {
             const nomorCell = row.querySelector('.nomor-cell');
             if (nomorCell && row.style.display !== 'none') {

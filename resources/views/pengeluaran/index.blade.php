@@ -959,7 +959,7 @@
             </div>
         </div>
 
-        {{-- Pagination Links (50 per halaman) --}}
+        {{-- Pagination Links (25 per halaman) --}}
         @if(method_exists($pengeluaran, 'hasPages') && ($pengeluaran->hasPages() || $pengeluaran->total() > 0))
             <div class="table-pagination-container px-3 pb-3">
                 <div class="table-pagination-info">
@@ -1371,12 +1371,13 @@ document.addEventListener('DOMContentLoaded', function () {
             row.style.display = 'none';
         });
 
+        const pageStartIndex = {{ method_exists($pengeluaran, 'firstItem') && $pengeluaran->firstItem() ? $pengeluaran->firstItem() : 1 }};
         // Display all filtered rows inside scrollable table container
         filteredRows.forEach(function (row, idx) {
             row.style.display = '';
             const numCell = row.querySelector('.row-number');
             if (numCell) {
-                numCell.textContent = idx + 1;
+                numCell.textContent = pageStartIndex + idx;
             }
             tbody.appendChild(row);
         });

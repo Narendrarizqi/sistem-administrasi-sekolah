@@ -44,7 +44,7 @@ class DaftarUlangController extends Controller
                 });
             })
             ->latest('id')
-            ->paginate(50)
+            ->paginate(25)
             ->withQueryString();
 
         return view('du.index', compact(

@@ -225,8 +225,8 @@ class RekapController extends Controller
             })
             ->values();
 
-        // Paginasi 50 siswa per halaman
-        $perPage = 50;
+        // Paginasi 25 siswa per halaman
+        $perPage = 25;
         $currentPage = \Illuminate\Pagination\Paginator::resolveCurrentPage() ?: 1;
         $currentItems = $students->slice(($currentPage - 1) * $perPage, $perPage)->values();
         $students = new \Illuminate\Pagination\LengthAwarePaginator(

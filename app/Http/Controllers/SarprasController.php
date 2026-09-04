@@ -39,7 +39,7 @@ class SarprasController extends Controller
                 });
             })
             ->latest('id')
-            ->paginate(50)
+            ->paginate(25)
             ->withQueryString();
 
         return view('sarpras.index', compact(
