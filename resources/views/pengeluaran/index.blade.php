@@ -90,6 +90,12 @@
             box-shadow: 0 2px 6px rgba(239, 68, 68, 0.25);
         }
 
+        .icon-circle-blue {
+            background: #0284c7;
+            color: #ffffff;
+            box-shadow: 0 2px 6px rgba(2, 132, 199, 0.25);
+        }
+
         .icon-circle-gray {
             background: #f1f5f9;
             color: #475569;
@@ -724,7 +730,7 @@
         {{-- Card 2: Pengeluaran Bulan Ini --}}
         <div class="col-12 col-md-4 mb-3">
             <div class="stat-card-clean">
-                <div class="stat-card-icon-circle icon-circle-gray">
+                <div class="stat-card-icon-circle icon-circle-blue">
                     <i class="far fa-calendar-alt"></i>
                 </div>
                 <div class="stat-card-info">
@@ -739,7 +745,7 @@
             </div>
         </div>
 
-        {{-- Card 3: Pengeluaran Terbesar Berdasarkan Kategori --}}
+        {{-- Card 3: Pengeluaran Berdasarkan Kategori --}}
         <div class="col-12 col-md-4 mb-3">
             <div class="stat-card-clean">
                 <div class="stat-card-icon-circle icon-circle-orange">

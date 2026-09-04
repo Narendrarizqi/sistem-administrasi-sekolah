@@ -523,7 +523,6 @@
                             <h3 class="stat-value text-success font-num">
                                 Rp {{ number_format($totalMasuk, 0, ',', '.') }}
                             </h3>
-                            <span class="stat-desc">Akumulasi seluruh kas masuk</span>
                         </div>
                     </div>
                 </div>
@@ -596,7 +595,6 @@
                             <h3 class="stat-value text-danger font-num">
                                 Rp {{ number_format($totalKeluar, 0, ',', '.') }}
                             </h3>
-                            <span class="stat-desc">Akumulasi seluruh pengeluaran</span>
                         </div>
                     </div>
                 </div>
@@ -669,7 +667,6 @@
                             <h3 class="stat-value font-num" style="color: #2563eb;">
                                 Rp {{ number_format($saldoAkhir, 0, ',', '.') }}
                             </h3>
-                            <span class="stat-desc">Total kas masuk dikurangi keluar</span>
                         </div>
                     </div>
                 </div>

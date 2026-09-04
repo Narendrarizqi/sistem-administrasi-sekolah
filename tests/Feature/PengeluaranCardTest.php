@@ -36,8 +36,8 @@ test('pengeluaran index renders 3 stat cards including pengeluaran terbesar berd
     $response->assertSee('Total Pengeluaran');
     $response->assertSee('Pengeluaran Bulan Ini');
 
-    // Pastikan card Pengeluaran Terbesar Berdasarkan Kategori ada
-    $response->assertSee('Pengeluaran Terbesar Berdasarkan Kategori');
+    // Pastikan card Pengeluaran Berdasarkan Kategori ada
+    $response->assertSee('Pengeluaran Berdasarkan Kategori');
     $response->assertSee('Sarana & Prasarana');
     $response->assertSee('Rp 5.000.000');
     $response->assertSee('83.3% dari total');
