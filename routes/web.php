@@ -9,6 +9,8 @@ use App\Http\Controllers\IppController;
 use App\Http\Controllers\DaftarUlangController;
 use App\Http\Controllers\SarprasController;
 use App\Http\Controllers\KiController;
+use App\Http\Controllers\EkstrakurikulerController;
+use App\Http\Controllers\KokurikulerController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\PengeluaranController;
@@ -75,6 +77,24 @@ Route::middleware('auth')->group(function () {
     Route::post('/ki/jenis-iuran/{id}/toggle', [KiController::class, 'toggleJenisIuran'])->name('ki.jenis-iuran.toggle');
     Route::post('/ki/terapkan-massal', [KiController::class, 'terapkanMassal'])->name('ki.terapkan-massal');
 
+    // Ekstrakurikuler
+    Route::resource('ekstrakurikuler', EkstrakurikulerController::class);
+    Route::post('/ekstrakurikuler/{id}/bayar', [EkstrakurikulerController::class, 'bayar'])->name('ekstrakurikuler.bayar');
+    Route::post('/ekstrakurikuler/jenis', [EkstrakurikulerController::class, 'storeJenis'])->name('ekstrakurikuler.jenis.store');
+    Route::put('/ekstrakurikuler/jenis/{id}', [EkstrakurikulerController::class, 'updateJenis'])->name('ekstrakurikuler.jenis.update');
+    Route::delete('/ekstrakurikuler/jenis/{id}', [EkstrakurikulerController::class, 'destroyJenis'])->name('ekstrakurikuler.jenis.destroy');
+    Route::post('/ekstrakurikuler/jenis/{id}/toggle', [EkstrakurikulerController::class, 'toggleJenis'])->name('ekstrakurikuler.jenis.toggle');
+    Route::post('/ekstrakurikuler/terapkan-massal', [EkstrakurikulerController::class, 'terapkanMassal'])->name('ekstrakurikuler.terapkan-massal');
+
+    // Kokurikuler
+    Route::resource('kokurikuler', KokurikulerController::class);
+    Route::post('/kokurikuler/{id}/bayar', [KokurikulerController::class, 'bayar'])->name('kokurikuler.bayar');
+    Route::post('/kokurikuler/jenis', [KokurikulerController::class, 'storeJenis'])->name('kokurikuler.jenis.store');
+    Route::put('/kokurikuler/jenis/{id}', [KokurikulerController::class, 'updateJenis'])->name('kokurikuler.jenis.update');
+    Route::delete('/kokurikuler/jenis/{id}', [KokurikulerController::class, 'destroyJenis'])->name('kokurikuler.jenis.destroy');
+    Route::post('/kokurikuler/jenis/{id}/toggle', [KokurikulerController::class, 'toggleJenis'])->name('kokurikuler.jenis.toggle');
+    Route::post('/kokurikuler/terapkan-massal', [KokurikulerController::class, 'terapkanMassal'])->name('kokurikuler.terapkan-massal');
+
     Route::get('/pengaturan', function () {
         return view('dashboard.index');
     })->name('pengaturan.index');
@@ -116,11 +136,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/du/create', [DaftarUlangController::class, 'create'])->name('du.create');
     Route::post('/du', [DaftarUlangController::class, 'store'])->name('du.store');
     Route::post('/du/store', [DaftarUlangController::class, 'store'])->name('du.store');
+    Route::post('/du/terapkan-massal', [DaftarUlangController::class, 'terapkanMassal'])->name('du.terapkan-massal');
 
     Route::resource('sarpras', SarprasController::class);
 
     Route::post('/sarpras/{id}/bayar', [SarprasController::class,'bayar'])
         ->name('sarpras.bayar');
+    Route::post('/sarpras/terapkan-massal', [SarprasController::class, 'terapkanMassal'])->name('sarpras.terapkan-massal');
 
     // Bantuan Operasional Sekolah (BOS)
     Route::get('/bos', [BosController::class, 'index'])->name('bos.index');

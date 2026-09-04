@@ -351,6 +351,18 @@ return [
     ],
 
     [
+        'text' => 'Ekstrakurikuler',
+        'route' => 'ekstrakurikuler.index',
+        'icon' => 'fas fa-futbol',
+    ],
+
+    [
+        'text' => 'Kokurikuler',
+        'route' => 'kokurikuler.index',
+        'icon' => 'fas fa-compass',
+    ],
+
+    [
         'header' => 'DANA BOS',
     ],
 

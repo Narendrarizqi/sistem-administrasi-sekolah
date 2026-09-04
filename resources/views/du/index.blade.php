@@ -184,6 +184,85 @@
             transform: translateY(-1px);
         }
 
+        /* Terapkan Massal (Base Accent: Sky Blue) */
+        .btn-toolbar-massal {
+            height: 38px;
+            padding: 0 14px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            color: #1e293b !important;
+            font-size: 13px;
+            font-weight: 600;
+            border-radius: 8px;
+            transition: all 0.18s ease;
+            cursor: pointer;
+            white-space: nowrap;
+            text-decoration: none !important;
+        }
+
+        .btn-toolbar-massal i {
+            color: #0284c7;
+            transition: color 0.18s ease;
+        }
+
+        .btn-toolbar-massal:hover,
+        .btn-toolbar-massal:focus {
+            background: #f0f9ff;
+            border-color: #bae6fd;
+            color: #0369a1 !important;
+            box-shadow: 0 1px 3px rgba(2, 132, 199, 0.08);
+            transform: translateY(-1px);
+        }
+
+        .btn-toolbar-massal:hover i,
+        .btn-toolbar-massal:focus i {
+            color: #0284c7;
+        }
+
+        .btn-toolbar-massal:active {
+            background: #e0f2fe;
+            border-color: #7dd3fc;
+            color: #075985 !important;
+            transform: translateY(1px);
+        }
+
+        .btn-simpan-hijau {
+            background-color: #16a34a !important;
+            border: 1px solid #16a34a !important;
+            color: #ffffff !important;
+            font-size: 13px !important;
+            font-weight: 600 !important;
+            border-radius: 8px !important;
+            padding: 8px 20px !important;
+            height: 38px !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 6px !important;
+            box-shadow: 0 2px 6px rgba(22, 163, 74, 0.2) !important;
+            transition: transform 0.18s ease, background-color 0.18s ease, box-shadow 0.18s ease !important;
+            cursor: pointer;
+            text-decoration: none !important;
+            white-space: nowrap !important;
+        }
+
+        .btn-simpan-hijau:hover,
+        .btn-simpan-hijau:focus {
+            background-color: #15803d !important;
+            border-color: #15803d !important;
+            color: #ffffff !important;
+            transform: translateY(-1px) !important;
+            box-shadow: 0 4px 10px rgba(22, 163, 74, 0.28) !important;
+        }
+
+        .btn-simpan-hijau:active {
+            transform: translateY(1px) !important;
+        }
+
         /* 3. Table Container */
         .du-table-responsive {
             width: 100%;
@@ -233,12 +312,27 @@
         }
 
         #duTable th.sortable {
-            cursor: pointer;
+            padding: 0 !important;
             user-select: none;
             transition: background-color 0.15s ease, color 0.15s ease;
         }
 
-        #duTable th.sortable:hover {
+        #duTable th.sortable .sort-header-link {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+            padding: 7px 4px;
+            color: inherit !important;
+            font-size: inherit;
+            font-weight: inherit;
+            letter-spacing: inherit;
+            text-decoration: none !important;
+            cursor: pointer;
+            transition: background-color 0.15s ease, color 0.15s ease;
+        }
+
+        #duTable th.sortable:hover .sort-header-link {
             background-color: #e6f9ed !important;
             color: #0f172a !important;
         }
@@ -249,8 +343,9 @@
             opacity: 0.45;
         }
 
-        #duTable th.sort-active {
+        #duTable th.sort-active .sort-header-link {
             color: #15803d !important;
+            background-color: #e6f9ed !important;
         }
 
         #duTable th.sort-active .sort-icon {
@@ -1031,25 +1126,59 @@
                     </div>
                 </div>
 
-                <button type="button" class="btn-du-add" data-toggle="modal" data-target="#modalTambahDu">
-                    <i class="fas fa-plus"></i>
-                    <span>Tambah Tagihan</span>
-                </button>
+                <div class="d-flex align-items-center" style="gap: 8px;">
+                    <button
+                        type="button"
+                        class="btn-toolbar-massal"
+                        data-toggle="modal"
+                        data-target="#modalTerapkanMassalDu"
+                        title="Terapkan Tagihan Massal ke Seluruh Siswa Aktif"
+                    >
+                        <i class="fas fa-users-cog"></i>
+                        <span>Terapkan Massal</span>
+                    </button>
+
+                    <button type="button" class="btn-du-add" data-toggle="modal" data-target="#modalTambahDu">
+                        <i class="fas fa-plus"></i>
+                        <span>Tambah Tagihan</span>
+                    </button>
+                </div>
             </div>
         </div>
+
+        @php
+            $currentSort = $sort ?? request('sort', 'nama');
+            $currentDir = $direction ?? request('direction', 'asc');
+            $sortUrl = function($column) use ($currentSort, $currentDir) {
+                $nextDir = ($currentSort === $column && $currentDir === 'asc') ? 'desc' : 'asc';
+                return request()->fullUrlWithQuery(['sort' => $column, 'direction' => $nextDir, 'page' => 1]);
+            };
+        @endphp
 
         <div class="du-table-responsive">
             <table class="table" id="duTable">
                 <thead>
                     <tr>
                         <th style="width: 26px; padding-left: 1px; padding-right: 1px;" class="text-center">No</th>
-                        <th style="width: 70px;" class="sortable" data-sort="nis" title="Klik untuk mengurutkan berdasarkan NIS">
-                            NIS
-                            <i class="fas fa-sort sort-icon"></i>
+                        <th style="width: 70px;" class="sortable {{ $currentSort === 'nis' ? 'sort-active' : '' }}">
+                            <a href="{{ $sortUrl('nis') }}" class="sort-header-link" title="Klik untuk mengurutkan berdasarkan NIS ({{ $currentSort === 'nis' && $currentDir === 'asc' ? 'Terbesar ke Terkecil' : 'Terkecil ke Terbesar' }})">
+                                <span>NIS</span>
+                                @if($currentSort === 'nis')
+                                    <i class="fas fa-sort-{{ $currentDir === 'asc' ? 'up' : 'down' }} sort-icon"></i>
+                                @else
+                                    <i class="fas fa-sort sort-icon"></i>
+                                @endif
+                            </a>
                         </th>
-                        <th style="min-width: 100px; max-width: 125px;" class="sortable" data-sort="nama" title="Klik untuk mengurutkan berdasarkan Nama">
-                            Nama Siswa
-                            <i class="fas fa-sort sort-icon"></i>
+                        <th style="min-width: 100px; max-width: 125px;" class="sortable {{ $currentSort === 'nama' ? 'sort-active' : '' }}">
+                            <a href="{{ $sortUrl('nama') }}" class="sort-header-link" title="Klik untuk mengurutkan berdasarkan Nama Siswa ({{ $currentSort === 'nama' && $currentDir === 'asc' ? 'Z ke A' : 'A ke Z' }})">
+                                <span>Nama Siswa</span>
+                                @if($currentSort === 'nama')
+                                    <i class="fas fa-sort-{{ $currentDir === 'asc' ? 'up' : 'down' }} sort-icon"></i>
+                                @else
+                                    <i class="fas fa-sort sort-icon"></i>
+                                @endif
+                            </a>
                         </th>
                         <th class="text-right text-end" style="width: 74px;" title="Kewajiban tagihan tahun berjalan">
                             Target (Rp)
@@ -1063,9 +1192,15 @@
                         <th class="text-right text-end" style="width: 74px;" title="Total pembayaran yang sudah diterima">
                             Terbayar (Rp)
                         </th>
-                        <th class="text-right text-end sortable" data-sort="sisa" style="width: 74px;" title="Klik untuk mengurutkan berdasarkan Sisa Tagihan">
-                            Sisa (Rp)
-                            <i class="fas fa-sort sort-icon"></i>
+                        <th class="text-right text-end sortable {{ $currentSort === 'sisa' ? 'sort-active' : '' }}" style="width: 74px;">
+                            <a href="{{ $sortUrl('sisa') }}" class="sort-header-link justify-content-end text-right" title="Klik untuk mengurutkan berdasarkan Sisa Tagihan ({{ $currentSort === 'sisa' && $currentDir === 'asc' ? 'Terbesar ke Terkecil' : 'Terkecil ke Terbesar' }})">
+                                <span>Sisa (Rp)</span>
+                                @if($currentSort === 'sisa')
+                                    <i class="fas fa-sort-{{ $currentDir === 'asc' ? 'up' : 'down' }} sort-icon"></i>
+                                @else
+                                    <i class="fas fa-sort sort-icon"></i>
+                                @endif
+                            </a>
                         </th>
                         <th style="min-width: 125px;" class="text-center">Status</th>
                         <th style="width: 82px;" class="text-center">Aksi</th>
@@ -1218,6 +1353,88 @@
     {{-- =========================================================
          MODALS SECTION
          ========================================================= --}}
+
+    {{-- MODAL TERAPKAN MASSAL DU --}}
+    <div class="modal fade" id="modalTerapkanMassalDu" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content border-0 shadow" style="border-radius: 14px; overflow: hidden;">
+                <div class="modal-header modal-header-payment">
+                    <h5 class="modal-title font-weight-bold" style="font-size: 16px;">
+                        <i class="fas fa-users-cog mr-2"></i>
+                        <span id="labelHeaderTerapkanMassalDu">Terapkan Tagihan Massal Daftar Ulang</span>
+                    </h5>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form id="formTerapkanMassalDu" action="{{ route('du.terapkan-massal') }}" method="POST">
+                    @csrf
+                    <input type="hidden" name="tahun_ajaran_id" value="{{ $tahunAjaranId }}">
+
+                    {{-- STEP 1: FORM INPUT --}}
+                    <div id="stepMassalDuFormInput">
+                        <div class="modal-body p-4">
+                            <div class="alert alert-info py-2 px-3 mb-3 small" style="border-radius: 8px;">
+                                <i class="fas fa-info-circle mr-1"></i>
+                                Fitur ini akan membuat tagihan <strong>Daftar Ulang (DU)</strong> untuk <strong>seluruh siswa</strong> pada tahun ajaran <strong>{{ $selectedTa->nama ?? 'Aktif' }}</strong>. Siswa yang sudah memiliki tagihan ini akan <strong>dilewati secara otomatis</strong>.
+                            </div>
+
+                            <div class="form-group mb-3">
+                                <label class="font-weight-bold">Nominal Tagihan untuk Semua Siswa (Rp) <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text font-weight-bold bg-light" style="border-radius: 8px 0 0 8px;">Rp</span>
+                                    </div>
+                                    <input type="number" name="nominal" id="massal_du_nominal" class="form-control font-weight-bold font-num text-success" placeholder="0" min="0" step="any" style="border-radius: 0 8px 8px 0; height: 38px; font-size: 14px;" required>
+                                </div>
+                                <small class="text-muted">Nominal tagihan Daftar Ulang yang akan diterapkan ke seluruh siswa.</small>
+                            </div>
+                        </div>
+                        <div class="modal-footer bg-light py-2 px-4 justify-content-end" style="border-top: 1px solid #e2e8f0;">
+                            <button type="button" class="btn btn-batal-merah px-4 mr-2" data-dismiss="modal">
+                                Batal
+                            </button>
+                            <button type="button" id="btnTriggerKonfirmasiMassalDu" class="btn-simpan-hijau px-4">
+                                Terapkan
+                            </button>
+                        </div>
+                    </div>
+
+                    {{-- STEP 2: KONFIRMASI RINGKASAN --}}
+                    <div id="stepMassalDuKonfirmasi" style="display: none;">
+                        <div class="modal-body p-4">
+                            <p class="mb-3 text-dark font-weight-500" style="font-size: 14px;">
+                                Apakah Anda yakin ingin menerapkan tagihan Daftar Ulang ini secara massal ke seluruh siswa aktif?
+                            </p>
+
+                            <div class="p-3 bg-light border rounded mb-0" style="border-radius: 8px;">
+                                <div class="d-flex justify-content-between align-items-center py-1 border-bottom" style="font-size: 14px;">
+                                    <span class="text-muted">Jenis Tagihan:</span>
+                                    <span class="font-weight-bold text-dark">Daftar Ulang (DU)</span>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center py-1 border-bottom" style="font-size: 14px;">
+                                    <span class="text-muted">Nominal Tagihan:</span>
+                                    <span class="font-weight-bold text-success" id="konfirmasiMassalDuNominal">Rp 0</span>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center pt-2" style="font-size: 14px;">
+                                    <span class="text-muted">Tahun Ajaran:</span>
+                                    <span class="font-weight-bold text-dark">{{ $selectedTa->nama ?? 'Aktif' }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer bg-light py-2 px-4 justify-content-between" style="border-top: 1px solid #e2e8f0;">
+                            <button type="button" class="btn btn-batal-merah px-4" id="btnBackToFormMassalDu" style="border-radius: 8px; height: 38px;">
+                                <i class="fas fa-arrow-left mr-1"></i> Ubah
+                            </button>
+                            <button type="button" id="btnEksekusiTerapkanMassalDu" class="btn-simpan-hijau px-4">
+                                Ya, Terapkan Sekarang
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
     {{-- MODAL TAMBAH TAGIHAN DU --}}
     @php
@@ -1839,67 +2056,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    function updateSortIcon() {
-        document.querySelectorAll('#duTable th.sortable').forEach(function (header) {
-            header.classList.remove('sort-active');
-            const icon = header.querySelector('.sort-icon');
-            if (icon) icon.className = 'fas fa-sort sort-icon';
-        });
-
-        const activeHeader = document.querySelector('#duTable th[data-sort="' + sortColumn + '"]');
-        if (!activeHeader) return;
-        activeHeader.classList.add('sort-active');
-        const icon = activeHeader.querySelector('.sort-icon');
-        if (icon) {
-            icon.className = (sortDirection === 'asc') ? 'fas fa-sort-up sort-icon' : 'fas fa-sort-down sort-icon';
-        }
-    }
-
-    function sortTable(column) {
-        if (sortColumn === column) {
-            sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
-        } else {
-            sortColumn = column;
-            sortDirection = 'asc';
-        }
-
-        const rows = getRows();
-        rows.sort(function (a, b) {
-            let valueA, valueB;
-            if (column === 'nis') {
-                valueA = a.dataset.nis || '';
-                valueB = b.dataset.nis || '';
-                return sortDirection === 'asc'
-                    ? valueA.localeCompare(valueB, undefined, { numeric: true, sensitivity: 'base' })
-                    : valueB.localeCompare(valueA, undefined, { numeric: true, sensitivity: 'base' });
-            }
-            if (column === 'nama') {
-                valueA = (a.dataset.nama || '').toLowerCase();
-                valueB = (b.dataset.nama || '').toLowerCase();
-                return sortDirection === 'asc' ? valueA.localeCompare(valueB, 'id') : valueB.localeCompare(valueA, 'id');
-            }
-            if (column === 'sisa') {
-                valueA = Number(a.dataset.sisa || 0);
-                valueB = Number(b.dataset.sisa || 0);
-                return sortDirection === 'asc' ? valueA - valueB : valueB - valueA;
-            }
-            return 0;
-        });
-
-        rows.forEach(function (row) {
-            tbody.appendChild(row);
-        });
-
-        updateNumber();
-        updateSortIcon();
-    }
-
-    document.querySelectorAll('#duTable th.sortable').forEach(function (header) {
-        header.addEventListener('click', function () {
-            sortTable(this.dataset.sort);
-        });
-    });
-
     if (searchInput) {
         searchInput.addEventListener('keyup', function () {
             const query = this.value.toLowerCase().trim();
@@ -1910,11 +2066,6 @@ document.addEventListener('DOMContentLoaded', function () {
             updateNumber();
         });
     }
-
-    // Default sort Nama A-Z
-    sortColumn = '';
-    sortDirection = 'asc';
-    sortTable('nama');
 
     @if(session('last_detail_id'))
         $('#modalCetakBukti').modal('show');
@@ -1974,6 +2125,76 @@ document.addEventListener('DOMContentLoaded', function () {
             modalDuSummaryTotalLabel.textContent = `Rp ${formatRupiah(val)}`;
         });
     }
+
+    // Modal Terapkan Massal DU
+    const modalTerapkanMassalDu = $('#modalTerapkanMassalDu');
+    const stepMassalDuFormInput = document.getElementById('stepMassalDuFormInput');
+    const stepMassalDuKonfirmasi = document.getElementById('stepMassalDuKonfirmasi');
+    const labelHeaderTerapkanMassalDu = document.getElementById('labelHeaderTerapkanMassalDu');
+    const btnTriggerKonfirmasiMassalDu = document.getElementById('btnTriggerKonfirmasiMassalDu');
+    const btnBackToFormMassalDu = document.getElementById('btnBackToFormMassalDu');
+    const btnEksekusiTerapkanMassalDu = document.getElementById('btnEksekusiTerapkanMassalDu');
+    const formTerapkanMassalDu = document.getElementById('formTerapkanMassalDu');
+
+    function switchStepMassalDu(step) {
+        if (step === 'confirm') {
+            if (stepMassalDuFormInput) stepMassalDuFormInput.style.display = 'none';
+            if (stepMassalDuKonfirmasi) stepMassalDuKonfirmasi.style.display = 'block';
+            if (labelHeaderTerapkanMassalDu) labelHeaderTerapkanMassalDu.textContent = 'Konfirmasi Penerapan Massal DU';
+        } else {
+            if (stepMassalDuKonfirmasi) stepMassalDuKonfirmasi.style.display = 'none';
+            if (stepMassalDuFormInput) stepMassalDuFormInput.style.display = 'block';
+            if (labelHeaderTerapkanMassalDu) labelHeaderTerapkanMassalDu.textContent = 'Terapkan Tagihan Massal Daftar Ulang';
+        }
+    }
+
+    if (btnTriggerKonfirmasiMassalDu && formTerapkanMassalDu) {
+        btnTriggerKonfirmasiMassalDu.addEventListener('click', function () {
+            const inputNominal = document.getElementById('massal_du_nominal');
+            const valNominal = parseFloat(inputNominal ? inputNominal.value : 0) || 0;
+
+            if (!formTerapkanMassalDu.checkValidity()) {
+                formTerapkanMassalDu.reportValidity();
+                return;
+            }
+
+            if (valNominal <= 0) {
+                if (inputNominal) {
+                    inputNominal.setCustomValidity('Nominal tagihan harus lebih dari 0.');
+                    inputNominal.reportValidity();
+                    inputNominal.setCustomValidity('');
+                }
+                return;
+            }
+
+            const elemNom = document.getElementById('konfirmasiMassalDuNominal');
+            if (elemNom) elemNom.textContent = 'Rp ' + formatRupiah(valNominal);
+
+            switchStepMassalDu('confirm');
+        });
+    }
+
+    if (btnBackToFormMassalDu) {
+        btnBackToFormMassalDu.addEventListener('click', function () {
+            switchStepMassalDu('input');
+        });
+    }
+
+    if (btnEksekusiTerapkanMassalDu && formTerapkanMassalDu) {
+        btnEksekusiTerapkanMassalDu.addEventListener('click', function () {
+            btnEksekusiTerapkanMassalDu.disabled = true;
+            btnEksekusiTerapkanMassalDu.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Menerapkan...';
+            formTerapkanMassalDu.submit();
+        });
+    }
+
+    modalTerapkanMassalDu.on('hidden.bs.modal', function () {
+        switchStepMassalDu('input');
+        if (!$('.modal.show').length) {
+            $('.modal-backdrop').remove();
+            $('body').removeClass('modal-open').css({'padding-right': '', 'overflow': ''});
+        }
+    });
 });
 </script>
 @stop

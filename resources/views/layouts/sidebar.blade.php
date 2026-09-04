@@ -63,6 +63,18 @@
                         <p>Asesmen</p>
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a href="{{ route('ekstrakurikuler.index') }}" class="nav-link {{ request()->routeIs('ekstrakurikuler.*') || request()->is('ekstrakurikuler*') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-futbol"></i>
+                        <p>Ekstrakurikuler</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('kokurikuler.index') }}" class="nav-link {{ request()->routeIs('kokurikuler.*') || request()->is('kokurikuler*') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-compass"></i>
+                        <p>Kokurikuler</p>
+                    </a>
+                </li>
 
                 {{-- DANA BOS --}}
                 <li class="nav-header">DANA BOS</li>

@@ -255,12 +255,27 @@
         }
 
         #ippTable th.sortable {
-            cursor: pointer;
+            padding: 0 !important;
             user-select: none;
             transition: background-color 0.15s ease, color 0.15s ease;
         }
 
-        #ippTable th.sortable:hover {
+        #ippTable th.sortable .sort-header-link {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+            padding: 7px 3px;
+            color: inherit !important;
+            font-size: inherit;
+            font-weight: inherit;
+            letter-spacing: inherit;
+            text-decoration: none !important;
+            cursor: pointer;
+            transition: background-color 0.15s ease, color 0.15s ease;
+        }
+
+        #ippTable th.sortable:hover .sort-header-link {
             background-color: #e6f9ed !important;
             color: #0f172a !important;
         }
@@ -271,8 +286,9 @@
             opacity: 0.45;
         }
 
-        #ippTable th.sort-active {
+        #ippTable th.sort-active .sort-header-link {
             color: #15803d !important;
+            background-color: #e6f9ed !important;
         }
 
         #ippTable th.sort-active .sort-icon {
@@ -1157,19 +1173,40 @@
             </div>
         </div>
 
+        @php
+            $currentSort = $sort ?? request('sort', 'nama');
+            $currentDir = $direction ?? request('direction', 'asc');
+            $sortUrl = function($column) use ($currentSort, $currentDir) {
+                $nextDir = ($currentSort === $column && $currentDir === 'asc') ? 'desc' : 'asc';
+                return request()->fullUrlWithQuery(['sort' => $column, 'direction' => $nextDir, 'page' => 1]);
+            };
+        @endphp
+
         {{-- Table Container with Subtle Horizontal Scroll --}}
         <div class="ipp-table-responsive">
             <table class="table" id="ippTable">
                 <thead>
                     <tr>
                         <th style="width: 26px; padding-left: 1px; padding-right: 1px;" class="text-center">No</th>
-                        <th style="width: 70px;" class="sortable" data-sort="nis" title="Klik untuk mengurutkan berdasarkan NIS">
-                            NIS
-                            <i class="fas fa-sort sort-icon"></i>
+                        <th style="width: 70px;" class="sortable {{ $currentSort === 'nis' ? 'sort-active' : '' }}">
+                            <a href="{{ $sortUrl('nis') }}" class="sort-header-link" title="Klik untuk mengurutkan berdasarkan NIS ({{ $currentSort === 'nis' && $currentDir === 'asc' ? 'Terbesar ke Terkecil' : 'Terkecil ke Terbesar' }})">
+                                <span>NIS</span>
+                                @if($currentSort === 'nis')
+                                    <i class="fas fa-sort-{{ $currentDir === 'asc' ? 'up' : 'down' }} sort-icon"></i>
+                                @else
+                                    <i class="fas fa-sort sort-icon"></i>
+                                @endif
+                            </a>
                         </th>
-                        <th style="min-width: 100px; max-width: 125px;" class="sortable" data-sort="nama" title="Klik untuk mengurutkan berdasarkan Nama">
-                            Nama Siswa
-                            <i class="fas fa-sort sort-icon"></i>
+                        <th style="min-width: 100px; max-width: 125px;" class="sortable {{ $currentSort === 'nama' ? 'sort-active' : '' }}">
+                            <a href="{{ $sortUrl('nama') }}" class="sort-header-link" title="Klik untuk mengurutkan berdasarkan Nama Siswa ({{ $currentSort === 'nama' && $currentDir === 'asc' ? 'Z ke A' : 'A ke Z' }})">
+                                <span>Nama Siswa</span>
+                                @if($currentSort === 'nama')
+                                    <i class="fas fa-sort-{{ $currentDir === 'asc' ? 'up' : 'down' }} sort-icon"></i>
+                                @else
+                                    <i class="fas fa-sort sort-icon"></i>
+                                @endif
+                            </a>
                         </th>
                         <th class="text-right text-end" style="width: 74px;" title="Kewajiban tagihan tahun berjalan">
                             Target (Rp)
@@ -1183,9 +1220,15 @@
                         <th class="text-right text-end" style="width: 74px;" title="Total pembayaran yang sudah diterima">
                             Terbayar (Rp)
                         </th>
-                        <th class="text-right text-end sortable" data-sort="sisa" style="width: 74px;" title="Klik untuk mengurutkan berdasarkan Sisa Tagihan">
-                            Sisa (Rp)
-                            <i class="fas fa-sort sort-icon"></i>
+                        <th class="text-right text-end sortable {{ $currentSort === 'sisa' ? 'sort-active' : '' }}" style="width: 74px;">
+                            <a href="{{ $sortUrl('sisa') }}" class="sort-header-link justify-content-end text-right" title="Klik untuk mengurutkan berdasarkan Sisa Tagihan ({{ $currentSort === 'sisa' && $currentDir === 'asc' ? 'Terbesar ke Terkecil' : 'Terkecil ke Terbesar' }})">
+                                <span>Sisa (Rp)</span>
+                                @if($currentSort === 'sisa')
+                                    <i class="fas fa-sort-{{ $currentDir === 'asc' ? 'up' : 'down' }} sort-icon"></i>
+                                @else
+                                    <i class="fas fa-sort sort-icon"></i>
+                                @endif
+                            </a>
                         </th>
                         <th style="min-width: 125px;" class="text-center">Status</th>
                         <th style="width: 82px;" class="text-center">Aksi</th>
@@ -1876,13 +1919,13 @@
             </div>
         </div>
 
-        {{-- MODAL EDIT DATA TAGIHAN IPP (Identical clean style to Siswa modal) --}}
-        <div class="modal fade" id="modalEditIpp{{ $item->id }}" tabindex="-1" role="dialog" aria-labelledby="modalEditIppLabel{{ $item->id }}" aria-hidden="true">
+        {{-- MODAL EDIT DATA TAGIHAN IPP (Mirrors Modal Tambah with Monthly Breakdown & Auto Calculation) --}}
+        <div class="modal fade modal-edit-ipp" id="modalEditIpp{{ $item->id }}" tabindex="-1" role="dialog" aria-labelledby="modalEditIppLabel{{ $item->id }}" aria-hidden="true" data-item-id="{{ $item->id }}" data-terbawa="{{ (float)($item->belum_lunas ?? 0) }}">
             <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
                 <div class="modal-content border-0 shadow" style="border-radius: 14px; overflow: hidden;">
                     <div class="modal-header modal-header-clean">
                         <h5 class="modal-title font-weight-bold text-white" id="modalEditIppLabel{{ $item->id }}" style="font-size: 16px;">
-                            <i class="fas fa-user-edit mr-2 text-white"></i>
+                            <i class="fas fa-edit mr-2 text-white"></i>
                             Edit Data Tagihan IPP
                         </h5>
                         <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
@@ -1933,10 +1976,16 @@
                                 </div>
                             @endif
 
-                            {{-- Section 3: Target Pembayaran --}}
+                            @php
+                                $initialTarget = (float) $item->target;
+                                $initialNominalBulan = $initialTarget > 0 ? (int) round($initialTarget / 12) : 0;
+                                $terbawaAmount = (float) ($item->belum_lunas ?? 0);
+                            @endphp
+
+                            {{-- Section 3: Input Nominal Tagihan Bulanan --}}
                             <div class="form-group row mb-3">
-                                <label for="modal_edit_target_{{ $item->id }}" class="col-sm-3 col-form-label font-weight-bold">
-                                    Target Pembayaran (Tahun Ini) <span class="text-danger">*</span>
+                                <label for="modal_edit_nominal_per_bulan_{{ $item->id }}" class="col-sm-3 col-form-label font-weight-bold">
+                                    Nominal per Bulan <span class="text-danger">*</span>
                                 </label>
                                 <div class="col-sm-9">
                                     <div class="input-group">
@@ -1944,24 +1993,90 @@
                                             <span class="input-group-text font-weight-bold bg-light">Rp</span>
                                         </div>
                                         <input type="number"
-                                               name="target"
-                                               id="modal_edit_target_{{ $item->id }}"
-                                               class="form-control font-weight-bold text-success font-num"
-                                               value="{{ old('target', (int)$item->target) }}"
+                                               id="modal_edit_nominal_per_bulan_{{ $item->id }}"
+                                               class="form-control font-weight-bold text-success font-num edit-nominal-per-bulan"
+                                               data-id="{{ $item->id }}"
+                                               value="{{ $initialNominalBulan > 0 ? $initialNominalBulan : '' }}"
+                                               placeholder="Masukkan nominal per bulan (contoh: 100000)..."
                                                min="0"
                                                step="1000"
-                                               placeholder="Masukkan target pembayaran..."
                                                style="border-radius: 0 8px 8px 0;"
                                                required>
                                     </div>
                                     <small class="form-text text-muted">
-                                        Tarif per bulan otomatis = Target / 12 (Rp {{ number_format($item->target / 12, 0, ',', '.') }}/bulan).
+                                        Masukkan tarif tagihan 1 bulan, sistem akan otomatis menghitung total target tahun ini berdasarkan durasi.
                                     </small>
-                                    @error('target')
-                                        <div class="invalid-feedback d-block">
-                                            {{ $message }}
+                                </div>
+                            </div>
+
+                            {{-- Section 4: Durasi Tagihan & Rincian Bulan 1 s/d 12 --}}
+                            <div class="form-group row mb-3">
+                                <label for="modal_edit_jumlah_bulan_{{ $item->id }}" class="col-sm-3 col-form-label font-weight-bold">
+                                    Durasi Tagihan
+                                </label>
+                                <div class="col-sm-9">
+                                    <div class="d-flex align-items-center gap-2 flex-wrap mb-2">
+                                        <select id="modal_edit_jumlah_bulan_{{ $item->id }}"
+                                                class="form-control edit-jumlah-bulan"
+                                                data-id="{{ $item->id }}"
+                                                style="width: auto; min-width: 220px; border-radius: 8px;">
+                                            <option value="12" selected>12 Bulan (1 Tahun / 2 Semester)</option>
+                                            <option value="6">6 Bulan (1 Semester)</option>
+                                            <option value="1">1 Bulan</option>
+                                            <option value="2">2 Bulan</option>
+                                            <option value="3">3 Bulan (1 Triwulan)</option>
+                                            <option value="4">4 Bulan</option>
+                                            <option value="5">5 Bulan</option>
+                                        </select>
+                                    </div>
+
+                                    {{-- Visual Breakdown 12 Bulan --}}
+                                    <div class="p-3 bg-light border rounded mb-2" style="border-radius: 10px;">
+                                        <div class="small font-weight-bold text-muted mb-2">
+                                            <i class="fas fa-list-ol mr-1"></i> Rincian Tiap Bulan (Bulan 1 s/d Bulan 12):
                                         </div>
-                                    @enderror
+                                        <div id="modalEditBreakdownContainer_{{ $item->id }}" class="d-flex flex-wrap gap-2 edit-breakdown-container" style="gap: 6px;">
+                                            <!-- Diisi oleh JavaScript -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- Hidden Target Input to be sent to backend --}}
+                            <input type="hidden"
+                                   name="target"
+                                   id="modal_edit_final_target_{{ $item->id }}"
+                                   class="edit-final-target"
+                                   value="{{ (int)$item->target }}">
+
+                            {{-- Summary Fee Box --}}
+                            <div class="fee-info-box my-3">
+                                <div class="row align-items-center">
+                                    <div class="col-md-4 col-12 mb-2 mb-md-0">
+                                        <div class="text-muted small">Nominal per Bulan</div>
+                                        <div class="font-weight-bold text-dark font-num" id="modalEditSummaryNominalBulan_{{ $item->id }}">
+                                            Rp {{ number_format($initialNominalBulan, 0, ',', '.') }}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 col-12 mb-2 mb-md-0">
+                                        <div class="text-muted small">Kalkulasi Durasi</div>
+                                        <div class="font-weight-bold text-dark font-num" id="modalEditSummaryKalkulasi_{{ $item->id }}">
+                                            Rp {{ number_format($initialNominalBulan, 0, ',', '.') }} × 12 Bulan
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 col-12">
+                                        <div class="text-muted small">Target Disimpan (Tahun Ini)</div>
+                                        <div class="font-weight-bold text-success font-num" style="font-size: 18px;" id="modalEditSummaryTotalLabel_{{ $item->id }}">
+                                            Rp {{ number_format($initialTarget, 0, ',', '.') }}
+                                        </div>
+                                        @if($terbawaAmount > 0)
+                                            <div class="text-muted mt-1 font-num" style="font-size: 11px;">
+                                                + Terbawa: Rp {{ number_format($terbawaAmount, 0, ',', '.') }}
+                                                <br>
+                                                <span class="font-weight-bold text-dark">Total Tagihan Siswa: <span id="modalEditSummaryTotalKewajiban_{{ $item->id }}">Rp {{ number_format($initialTarget + $terbawaAmount, 0, ',', '.') }}</span></span>
+                                            </div>
+                                        @endif
+                                    </div>
                                 </div>
                             </div>
 
@@ -2122,67 +2237,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    function updateSortIcon() {
-        document.querySelectorAll('#ippTable th.sortable').forEach(function (header) {
-            header.classList.remove('sort-active');
-            const icon = header.querySelector('.sort-icon');
-            if (icon) icon.className = 'fas fa-sort sort-icon';
-        });
-
-        const activeHeader = document.querySelector('#ippTable th[data-sort="' + sortColumn + '"]');
-        if (!activeHeader) return;
-        activeHeader.classList.add('sort-active');
-        const icon = activeHeader.querySelector('.sort-icon');
-        if (icon) {
-            icon.className = (sortDirection === 'asc') ? 'fas fa-sort-up sort-icon' : 'fas fa-sort-down sort-icon';
-        }
-    }
-
-    function sortTable(column) {
-        if (sortColumn === column) {
-            sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
-        } else {
-            sortColumn = column;
-            sortDirection = 'asc';
-        }
-
-        const rows = getRows();
-        rows.sort(function (a, b) {
-            let valueA, valueB;
-            if (column === 'nis') {
-                valueA = a.dataset.nis || '';
-                valueB = b.dataset.nis || '';
-                return sortDirection === 'asc'
-                    ? valueA.localeCompare(valueB, undefined, { numeric: true, sensitivity: 'base' })
-                    : valueB.localeCompare(valueA, undefined, { numeric: true, sensitivity: 'base' });
-            }
-            if (column === 'nama') {
-                valueA = (a.dataset.nama || '').toLowerCase();
-                valueB = (b.dataset.nama || '').toLowerCase();
-                return sortDirection === 'asc' ? valueA.localeCompare(valueB, 'id') : valueB.localeCompare(valueA, 'id');
-            }
-            if (column === 'sisa') {
-                valueA = Number(a.dataset.sisa || 0);
-                valueB = Number(b.dataset.sisa || 0);
-                return sortDirection === 'asc' ? valueA - valueB : valueB - valueA;
-            }
-            return 0;
-        });
-
-        rows.forEach(function (row) {
-            tbody.appendChild(row);
-        });
-
-        updateNumber();
-        updateSortIcon();
-    }
-
-    document.querySelectorAll('#ippTable th.sortable').forEach(function (header) {
-        header.addEventListener('click', function () {
-            sortTable(this.dataset.sort);
-        });
-    });
-
     if (searchInput) {
         searchInput.addEventListener('keyup', function () {
             const query = this.value.toLowerCase().trim();
@@ -2193,11 +2247,6 @@ document.addEventListener('DOMContentLoaded', function () {
             updateNumber();
         });
     }
-
-    // Default sort Nama A-Z
-    sortColumn = '';
-    sortDirection = 'asc';
-    sortTable('nama');
 
     @if(session('last_detail_id'))
         $('#modalCetakBukti').modal('show');
@@ -2296,8 +2345,82 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (modalInputNominalPerBulan) modalInputNominalPerBulan.addEventListener('input', calculateModalTotal);
     if (modalSelectJumlahBulan) modalSelectJumlahBulan.addEventListener('change', calculateModalTotal);
-
     calculateModalTotal();
+
+    // Handler Modal Edit Tagihan IPP (Sama persis seperti Tambah Tagihan)
+    function calculateEditModalTotal(modalEl) {
+        if (!modalEl) return;
+        const itemId = modalEl.dataset.itemId;
+        const terbawa = parseFloat(modalEl.dataset.terbawa || 0) || 0;
+
+        const inputNominal = modalEl.querySelector('.edit-nominal-per-bulan');
+        const selectJumlah = modalEl.querySelector('.edit-jumlah-bulan');
+        const hiddenTarget = modalEl.querySelector('.edit-final-target');
+        const breakdownCont = modalEl.querySelector('.edit-breakdown-container');
+
+        const summaryNominal = document.getElementById(`modalEditSummaryNominalBulan_${itemId}`);
+        const summaryKalkulasi = document.getElementById(`modalEditSummaryKalkulasi_${itemId}`);
+        const summaryTotalLabel = document.getElementById(`modalEditSummaryTotalLabel_${itemId}`);
+        const summaryKewajiban = document.getElementById(`modalEditSummaryTotalKewajiban_${itemId}`);
+
+        const nominalBulan = parseFloat(inputNominal ? inputNominal.value : 0) || 0;
+        const jumlahBulan = parseInt(selectJumlah ? selectJumlah.value : 12) || 12;
+        const targetTotal = nominalBulan * jumlahBulan;
+
+        if (hiddenTarget) {
+            hiddenTarget.value = targetTotal;
+        }
+
+        if (summaryNominal) {
+            summaryNominal.textContent = nominalBulan > 0 ? `Rp ${formatRupiah(nominalBulan)}` : 'Rp 0';
+        }
+        if (summaryKalkulasi) {
+            summaryKalkulasi.textContent = nominalBulan > 0 ? `Rp ${formatRupiah(nominalBulan)} × ${jumlahBulan} Bulan` : `Rp 0 × ${jumlahBulan} Bulan`;
+        }
+        if (summaryTotalLabel) {
+            summaryTotalLabel.textContent = targetTotal > 0 ? `Rp ${formatRupiah(targetTotal)}` : 'Rp 0';
+        }
+        if (summaryKewajiban) {
+            const totalKewajiban = targetTotal + terbawa;
+            summaryKewajiban.textContent = `Rp ${formatRupiah(totalKewajiban)}`;
+        }
+
+        if (breakdownCont) {
+            breakdownCont.innerHTML = '';
+            for (let i = 0; i < jumlahBulan; i++) {
+                const chip = document.createElement('div');
+                chip.className = 'badge badge-light border p-2 mr-1 mb-1';
+                chip.style.fontSize = '11.5px';
+                chip.innerHTML = `
+                    <span class="text-secondary mr-1">${bulanList[i] || `Bulan ${i + 1}`}:</span>
+                    <strong class="text-success font-num">${nominalBulan > 0 ? 'Rp ' + formatRupiah(nominalBulan) : 'Rp 0'}</strong>
+                `;
+                breakdownCont.appendChild(chip);
+            }
+        }
+    }
+
+    document.querySelectorAll('.modal-edit-ipp').forEach(function (modal) {
+        calculateEditModalTotal(modal);
+
+        const inputNominal = modal.querySelector('.edit-nominal-per-bulan');
+        const selectJumlah = modal.querySelector('.edit-jumlah-bulan');
+
+        if (inputNominal) {
+            inputNominal.addEventListener('input', function () {
+                calculateEditModalTotal(modal);
+            });
+        }
+        if (selectJumlah) {
+            selectJumlah.addEventListener('change', function () {
+                calculateEditModalTotal(modal);
+            });
+        }
+    });
+
+    $(document).on('shown.bs.modal', '.modal-edit-ipp', function () {
+        calculateEditModalTotal(this);
+    });
 });
 </script>
 @stop

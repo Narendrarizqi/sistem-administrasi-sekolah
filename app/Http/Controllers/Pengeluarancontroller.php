@@ -38,11 +38,13 @@ class PengeluaranController extends Controller
 
         // 4. Ringkasan Pengeluaran Berdasarkan Sumber Dana
         $sumberList = [
-            'IPP'     => 'IPP',
-            'DU'      => 'Daftar Ulang',
-            'Sarpras' => 'Sarana & Prasarana',
-            'KI'      => 'Asesmen',
-            'BOS'     => 'Dana BOS',
+            'IPP'             => 'IPP',
+            'DU'              => 'Daftar Ulang',
+            'Sarpras'         => 'Sarana & Prasarana',
+            'KI'              => 'Asesmen',
+            'Ekstrakurikuler' => 'Ekstrakurikuler',
+            'Kokurikuler'     => 'Kokurikuler',
+            'BOS'             => 'Dana BOS',
         ];
 
         $ringkasanSumber = [];
@@ -132,7 +134,7 @@ class PengeluaranController extends Controller
     {
         $validated = $request->validate([
             'tanggal'     => 'required|date',
-            'sumber_dana' => 'required|in:IPP,DU,Sarpras,KI,BOS',
+            'sumber_dana' => 'required|in:IPP,DU,Sarpras,KI,BOS,Ekstrakurikuler,Kokurikuler',
             'keterangan'  => 'required|string|max:500',
             'nominal'     => 'required|numeric|min:1',
         ]);
@@ -170,7 +172,7 @@ class PengeluaranController extends Controller
     {
         $validated = $request->validate([
             'tanggal'     => 'required|date',
-            'sumber_dana' => 'required|in:IPP,DU,Sarpras,KI,BOS',
+            'sumber_dana' => 'required|in:IPP,DU,Sarpras,KI,BOS,Ekstrakurikuler,Kokurikuler',
             'keterangan'  => 'required|string|max:500',
             'nominal'     => 'required|numeric|min:1',
         ]);

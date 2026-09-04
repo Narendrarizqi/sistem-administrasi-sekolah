@@ -360,12 +360,27 @@
         }
 
         #kiTable th.sortable {
-            cursor: pointer;
+            padding: 0 !important;
             user-select: none;
             transition: background-color 0.15s ease, color 0.15s ease;
         }
 
-        #kiTable th.sortable:hover {
+        #kiTable th.sortable .sort-header-link {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+            padding: 7px 3px;
+            color: inherit !important;
+            font-size: inherit;
+            font-weight: inherit;
+            letter-spacing: inherit;
+            text-decoration: none !important;
+            cursor: pointer;
+            transition: background-color 0.15s ease, color 0.15s ease;
+        }
+
+        #kiTable th.sortable:hover .sort-header-link {
             background-color: #e6f9ed !important;
             color: #0f172a !important;
         }
@@ -376,8 +391,9 @@
             opacity: 0.45;
         }
 
-        #kiTable th.sort-active {
+        #kiTable th.sort-active .sort-header-link {
             color: #15803d !important;
+            background-color: #e6f9ed !important;
         }
 
         #kiTable th.sort-active .sort-icon {
@@ -533,30 +549,76 @@
             color: #dc2626 !important;
         }
 
-        /* Sub-Tagihan 3-Status Group */
-        .ki-status-group {
+        /* Sub-Tagihan Asesmen Dinamis - Card & Row Alignment */
+        .badge-status-sebagian,
+        .table .badge-status-sebagian {
+            background-color: #fffbeb !important;
+            color: #b45309 !important;
+            border: 1px solid #fde68a !important;
+            font-weight: 600 !important;
+            border-radius: 999px !important;
+            letter-spacing: 0.02em;
+        }
+
+        .badge-status-sebagian *,
+        .table .badge-status-sebagian * {
+            color: #b45309 !important;
+        }
+
+        .ki-status-card {
             display: flex;
             flex-direction: column;
-            gap: 2.5px;
-            align-items: flex-start;
-            justify-content: center;
-            padding: 1px 0;
-        }
-
-        .ki-status-item {
-            display: inline-flex;
-            align-items: center;
             gap: 4px;
-            font-size: 10px;
-            white-space: nowrap !important;
+            width: 100%;
+            min-width: 145px;
+            max-width: 175px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 6px 9px;
+            margin: 0 auto;
+            box-sizing: border-box;
         }
 
-        .ki-status-label {
-            font-weight: 700;
-            color: #475569;
-            min-width: 32px;
-            font-size: 9.5px;
-            letter-spacing: -0.01em;
+        .ki-status-row {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+            width: 100% !important;
+            gap: 8px;
+            padding: 1.5px 0;
+        }
+
+        .ki-status-row:not(:last-child) {
+            border-bottom: 1px solid #f1f5f9;
+            padding-bottom: 3.5px;
+        }
+
+        .ki-status-name {
+            font-size: 11px;
+            font-weight: 600;
+            color: #334155;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            line-height: 1.2;
+        }
+
+        .ki-status-pill {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            min-width: 52px !important;
+            width: 52px !important;
+            height: 20px !important;
+            font-size: 9.5px !important;
+            font-weight: 600 !important;
+            padding: 0 4px !important;
+            border-radius: 999px !important;
+            line-height: 1 !important;
+            flex-shrink: 0 !important;
+            letter-spacing: 0.01em !important;
+            text-align: center !important;
         }
 
         /* 5. Action Buttons */
@@ -1361,18 +1423,39 @@
             </div>
         </div>
 
+        @php
+            $currentSort = $sort ?? request('sort', 'nama');
+            $currentDir = $direction ?? request('direction', 'asc');
+            $sortUrl = function($column) use ($currentSort, $currentDir) {
+                $nextDir = ($currentSort === $column && $currentDir === 'asc') ? 'desc' : 'asc';
+                return request()->fullUrlWithQuery(['sort' => $column, 'direction' => $nextDir, 'page' => 1]);
+            };
+        @endphp
+
         <div class="ki-table-responsive">
             <table class="table" id="kiTable">
                 <thead>
                     <tr>
                         <th style="width: 26px; padding-left: 1px; padding-right: 1px;" class="text-center">No</th>
-                        <th style="width: 70px;" class="sortable" data-sort="nis" title="Klik untuk mengurutkan berdasarkan NIS">
-                            NIS
-                            <i class="fas fa-sort sort-icon"></i>
+                        <th style="width: 70px;" class="sortable {{ $currentSort === 'nis' ? 'sort-active' : '' }}">
+                            <a href="{{ $sortUrl('nis') }}" class="sort-header-link" title="Klik untuk mengurutkan berdasarkan NIS ({{ $currentSort === 'nis' && $currentDir === 'asc' ? 'Terbesar ke Terkecil' : 'Terkecil ke Terbesar' }})">
+                                <span>NIS</span>
+                                @if($currentSort === 'nis')
+                                    <i class="fas fa-sort-{{ $currentDir === 'asc' ? 'up' : 'down' }} sort-icon"></i>
+                                @else
+                                    <i class="fas fa-sort sort-icon"></i>
+                                @endif
+                            </a>
                         </th>
-                        <th style="min-width: 100px; max-width: 125px;" class="sortable" data-sort="nama" title="Klik untuk mengurutkan berdasarkan Nama">
-                            Nama Siswa
-                            <i class="fas fa-sort sort-icon"></i>
+                        <th style="min-width: 100px; max-width: 125px;" class="sortable {{ $currentSort === 'nama' ? 'sort-active' : '' }}">
+                            <a href="{{ $sortUrl('nama') }}" class="sort-header-link" title="Klik untuk mengurutkan berdasarkan Nama Siswa ({{ $currentSort === 'nama' && $currentDir === 'asc' ? 'Z ke A' : 'A ke Z' }})">
+                                <span>Nama Siswa</span>
+                                @if($currentSort === 'nama')
+                                    <i class="fas fa-sort-{{ $currentDir === 'asc' ? 'up' : 'down' }} sort-icon"></i>
+                                @else
+                                    <i class="fas fa-sort sort-icon"></i>
+                                @endif
+                            </a>
                         </th>
                         <th class="text-right text-end" style="width: 74px;" title="Kewajiban tagihan tahun berjalan">
                             Target (Rp)
@@ -1386,11 +1469,17 @@
                         <th class="text-right text-end" style="width: 74px;" title="Total pembayaran yang sudah diterima">
                             Terbayar (Rp)
                         </th>
-                        <th class="text-right text-end sortable" data-sort="sisa" style="width: 74px;" title="Klik untuk mengurutkan berdasarkan Sisa Tagihan">
-                            Sisa (Rp)
-                            <i class="fas fa-sort sort-icon"></i>
+                        <th class="text-right text-end sortable {{ $currentSort === 'sisa' ? 'sort-active' : '' }}" style="width: 74px;">
+                            <a href="{{ $sortUrl('sisa') }}" class="sort-header-link justify-content-end text-right" title="Klik untuk mengurutkan berdasarkan Sisa Tagihan ({{ $currentSort === 'sisa' && $currentDir === 'asc' ? 'Terbesar ke Terkecil' : 'Terkecil ke Terbesar' }})">
+                                <span>Sisa (Rp)</span>
+                                @if($currentSort === 'sisa')
+                                    <i class="fas fa-sort-{{ $currentDir === 'asc' ? 'up' : 'down' }} sort-icon"></i>
+                                @else
+                                    <i class="fas fa-sort sort-icon"></i>
+                                @endif
+                            </a>
                         </th>
-                        <th style="min-width: 155px;" class="text-center">Status Asesmen</th>
+                        <th style="width: 175px; min-width: 165px;" class="text-center">Status Asesmen</th>
                         <th style="width: 82px;" class="text-center">Aksi</th>
                     </tr>
                 </thead>
@@ -1475,17 +1564,17 @@
                             </td>
 
                             {{-- 9. Status Asesmen Dinamis --}}
-                            <td class="text-left" style="padding-left: 8px;">
-                                <div class="ki-status-group" style="display: flex; flex-direction: column; gap: 3px;">
+                            <td class="text-center" style="padding: 6px 8px; vertical-align: middle;">
+                                <div class="ki-status-card">
                                     @forelse($subStatus as $katNama => $st)
-                                        <div class="ki-status-item d-flex align-items-center justify-content-between" style="font-size: 11px;">
-                                            <span class="ki-status-label mr-2 font-weight-500">{{ $katNama }}:</span>
+                                        <div class="ki-status-row">
+                                            <span class="ki-status-name" title="{{ $katNama }}">{{ $katNama }}</span>
                                             @if($st['is_lunas'])
-                                                <span class="badge badge-status-lunas" style="font-size: 9.5px; padding: 2px 6px;">Lunas</span>
+                                                <span class="badge badge-status-lunas ki-status-pill">Lunas</span>
                                             @elseif($st['terbayar'] > 0)
-                                                <span class="badge badge-warning" style="font-size: 9.5px; padding: 2px 6px; background: #fef3c7; color: #b45309; border: 1px solid #fde68a;">Sebagian</span>
+                                                <span class="badge badge-status-sebagian ki-status-pill">Sebagian</span>
                                             @else
-                                                <span class="badge badge-status-belum" style="font-size: 9.5px; padding: 2px 6px;">Belum</span>
+                                                <span class="badge badge-status-belum ki-status-pill">Belum</span>
                                             @endif
                                         </div>
                                     @empty
@@ -1754,7 +1843,7 @@
                                     <div class="input-group-prepend">
                                         <span class="input-group-text font-weight-bold bg-light" style="border-radius: 8px 0 0 8px;">Rp</span>
                                     </div>
-                                    <input type="number" name="nominal" id="massal_nominal" class="form-control font-weight-bold font-num text-success" placeholder="0" min="0" step="1000" style="border-radius: 0 8px 8px 0; height: 38px; font-size: 14px;" required>
+                                    <input type="number" name="nominal" id="massal_nominal" class="form-control font-weight-bold font-num text-success" placeholder="0" min="0" step="any" style="border-radius: 0 8px 8px 0; height: 38px; font-size: 14px;" required>
                                 </div>
                                 <small class="text-muted">Nominal dapat disesuaikan sebelum diterapkan ke seluruh siswa.</small>
                             </div>
@@ -1796,7 +1885,7 @@
                                 <i class="fas fa-arrow-left mr-1"></i> Ubah
                             </button>
                             <button type="button" id="btnEksekusiTerapkanMassal" class="btn-simpan-hijau px-4">
-                                Ya
+                                Ya, Terapkan Sekarang
                             </button>
                         </div>
                     </div>
@@ -2573,67 +2662,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    function updateSortIcon() {
-        document.querySelectorAll('#kiTable th.sortable').forEach(function (header) {
-            header.classList.remove('sort-active');
-            const icon = header.querySelector('.sort-icon');
-            if (icon) icon.className = 'fas fa-sort sort-icon';
-        });
-
-        const activeHeader = document.querySelector('#kiTable th[data-sort="' + sortColumn + '"]');
-        if (!activeHeader) return;
-        activeHeader.classList.add('sort-active');
-        const icon = activeHeader.querySelector('.sort-icon');
-        if (icon) {
-            icon.className = (sortDirection === 'asc') ? 'fas fa-sort-up sort-icon' : 'fas fa-sort-down sort-icon';
-        }
-    }
-
-    function sortTable(column) {
-        if (sortColumn === column) {
-            sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
-        } else {
-            sortColumn = column;
-            sortDirection = 'asc';
-        }
-
-        const rows = getRows();
-        rows.sort(function (a, b) {
-            let valueA, valueB;
-            if (column === 'nis') {
-                valueA = a.dataset.nis || '';
-                valueB = b.dataset.nis || '';
-                return sortDirection === 'asc'
-                    ? valueA.localeCompare(valueB, undefined, { numeric: true, sensitivity: 'base' })
-                    : valueB.localeCompare(valueA, undefined, { numeric: true, sensitivity: 'base' });
-            }
-            if (column === 'nama') {
-                valueA = (a.dataset.nama || '').toLowerCase();
-                valueB = (b.dataset.nama || '').toLowerCase();
-                return sortDirection === 'asc' ? valueA.localeCompare(valueB, 'id') : valueB.localeCompare(valueA, 'id');
-            }
-            if (column === 'sisa') {
-                valueA = Number(a.dataset.sisa || 0);
-                valueB = Number(b.dataset.sisa || 0);
-                return sortDirection === 'asc' ? valueA - valueB : valueB - valueA;
-            }
-            return 0;
-        });
-
-        rows.forEach(function (row) {
-            tbody.appendChild(row);
-        });
-
-        updateNumber();
-        updateSortIcon();
-    }
-
-    document.querySelectorAll('#kiTable th.sortable').forEach(function (header) {
-        header.addEventListener('click', function () {
-            sortTable(this.dataset.sort);
-        });
-    });
-
     if (searchInput) {
         searchInput.addEventListener('keyup', function () {
             const query = this.value.toLowerCase().trim();
@@ -2644,11 +2672,6 @@ document.addEventListener('DOMContentLoaded', function () {
             updateNumber();
         });
     }
-
-    // Default sort Nama A-Z
-    sortColumn = '';
-    sortDirection = 'asc';
-    sortTable('nama');
 
     @if(session('last_detail_id'))
         $('#modalCetakBukti').modal('show');

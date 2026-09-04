@@ -425,6 +425,26 @@
             padding: 2.5px 8px !important;
         }
 
+        .badge-sumber-ekskul {
+            background: #f0fdfa !important;
+            border: 1px solid #99f6e4 !important;
+            color: #0f766e !important;
+            font-size: 11px !important;
+            font-weight: 600 !important;
+            border-radius: 999px !important;
+            padding: 2.5px 8px !important;
+        }
+
+        .badge-sumber-kokurikuler {
+            background: #faf5ff !important;
+            border: 1px solid #e9d5ff !important;
+            color: #7e22ce !important;
+            font-size: 11px !important;
+            font-weight: 600 !important;
+            border-radius: 999px !important;
+            padding: 2.5px 8px !important;
+        }
+
         .badge-sumber-bos {
             background: #ecfeff !important;
             border: 1px solid #a5f3fc !important;
@@ -791,6 +811,8 @@
                     <option value="DU">Daftar Ulang (DU)</option>
                     <option value="Sarpras">Sarana & Prasarana</option>
                     <option value="KI">Asesmen</option>
+                    <option value="Ekstrakurikuler">Ekstrakurikuler</option>
+                    <option value="Kokurikuler">Kokurikuler</option>
                     <option value="BOS">Bantuan Operasional Sekolah (BOS)</option>
                 </select>
 
@@ -871,6 +893,12 @@
                             } elseif ($sumber === 'KI') {
                                 $badgeClass = 'badge-sumber-ki';
                                 $sumberLabel = 'Asesmen';
+                            } elseif ($sumber === 'Ekstrakurikuler') {
+                                $badgeClass = 'badge-sumber-ekskul';
+                                $sumberLabel = 'Ekstrakurikuler';
+                            } elseif ($sumber === 'Kokurikuler') {
+                                $badgeClass = 'badge-sumber-kokurikuler';
+                                $sumberLabel = 'Kokurikuler';
                             } elseif ($sumber === 'BOS') {
                                 $badgeClass = 'badge-sumber-bos';
                                 $sumberLabel = 'BOS';
@@ -1096,6 +1124,8 @@
                                     <option value="DU" {{ old('sumber_dana') === 'DU' ? 'selected' : '' }}>DU (Daftar Ulang)</option>
                                     <option value="Sarpras" {{ old('sumber_dana') === 'Sarpras' ? 'selected' : '' }}>Sarpras (Sarana Prasarana)</option>
                                     <option value="KI" {{ old('sumber_dana') === 'KI' ? 'selected' : '' }}>Asesmen</option>
+                                    <option value="Ekstrakurikuler" {{ old('sumber_dana') === 'Ekstrakurikuler' ? 'selected' : '' }}>Ekstrakurikuler</option>
+                                    <option value="Kokurikuler" {{ old('sumber_dana') === 'Kokurikuler' ? 'selected' : '' }}>Kokurikuler</option>
                                     <option value="BOS" {{ old('sumber_dana') === 'BOS' ? 'selected' : '' }}>BOS (Bantuan Operasional Sekolah)</option>
                                 </select>
                             </div>
@@ -1198,6 +1228,8 @@
                                         <option value="DU" {{ old('sumber_dana', $item->sumber_dana) === 'DU' ? 'selected' : '' }}>DU (Daftar Ulang)</option>
                                         <option value="Sarpras" {{ old('sumber_dana', $item->sumber_dana) === 'Sarpras' ? 'selected' : '' }}>Sarpras (Sarana Prasarana)</option>
                                         <option value="KI" {{ old('sumber_dana', $item->sumber_dana) === 'KI' ? 'selected' : '' }}>Asesmen</option>
+                                        <option value="Ekstrakurikuler" {{ old('sumber_dana', $item->sumber_dana) === 'Ekstrakurikuler' ? 'selected' : '' }}>Ekstrakurikuler</option>
+                                        <option value="Kokurikuler" {{ old('sumber_dana', $item->sumber_dana) === 'Kokurikuler' ? 'selected' : '' }}>Kokurikuler</option>
                                         <option value="BOS" {{ old('sumber_dana', $item->sumber_dana) === 'BOS' ? 'selected' : '' }}>BOS (Bantuan Operasional Sekolah)</option>
                                     </select>
                                 </div>

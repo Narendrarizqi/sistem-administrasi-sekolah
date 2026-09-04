@@ -225,6 +225,32 @@ class RekapController extends Controller
             })
             ->values();
 
+        $sort = $request->query('sort', 'nama');
+        $direction = strtolower($request->query('direction', 'asc')) === 'desc' ? 'desc' : 'asc';
+        if (!in_array($sort, ['nis', 'nama', 'kelas', 'target', 'terbawa', 'total_tagihan', 'terbayar', 'sisa'])) {
+            $sort = 'nama';
+            $direction = 'asc';
+        }
+
+        if ($sort === 'nis') {
+            $students = $direction === 'desc'
+                ? $students->sortByDesc(fn ($s) => $s['siswa']->nis ?? '', SORT_NATURAL)
+                : $students->sortBy(fn ($s) => $s['siswa']->nis ?? '', SORT_NATURAL);
+        } elseif ($sort === 'nama') {
+            $students = $direction === 'desc'
+                ? $students->sortByDesc(fn ($s) => strtolower($s['siswa']->nama ?? ''), SORT_NATURAL)
+                : $students->sortBy(fn ($s) => strtolower($s['siswa']->nama ?? ''), SORT_NATURAL);
+        } elseif ($sort === 'kelas') {
+            $students = $direction === 'desc'
+                ? $students->sortByDesc(fn ($s) => strtolower($s['siswa']->kelas ?? ''), SORT_NATURAL)
+                : $students->sortBy(fn ($s) => strtolower($s['siswa']->kelas ?? ''), SORT_NATURAL);
+        } elseif (in_array($sort, ['target', 'terbawa', 'total_tagihan', 'terbayar', 'sisa'])) {
+            $students = $direction === 'desc'
+                ? $students->sortByDesc(fn ($s) => (float) ($s['jenis']['Total'][$sort] ?? 0))
+                : $students->sortBy(fn ($s) => (float) ($s['jenis']['Total'][$sort] ?? 0));
+        }
+        $students = $students->values();
+
         // Paginasi 25 siswa per halaman
         $perPage = 25;
         $currentPage = \Illuminate\Pagination\Paginator::resolveCurrentPage() ?: 1;
@@ -246,7 +272,9 @@ class RekapController extends Controller
             'daftarTahunAjaran',
             'selectedTa',
             'tahunAjaranId',
-            'tahunAjaranNama'
+            'tahunAjaranNama',
+            'sort',
+            'direction'
         ));
     }
 
@@ -703,13 +731,144 @@ class RekapController extends Controller
             ];
         }
 
-        // 5. REKAPITULASI TAGIHAN TERBAWA TAHUN LALU (JIKA ADA)
+        // 5. DATA EKSTRAKURIKULER
+        $ekskulModel = $pembayarans->first(fn ($p) => $p->jenisPembayaran && $p->jenisPembayaran->nama === 'Ekstrakurikuler');
+        $ekskulData = [
+            'has_data'      => false,
+            'target'        => 0,
+            'terbawa'       => 0,
+            'total_tagihan' => 0,
+            'terbayar'      => 0,
+            'sisa'          => 0,
+            'status'        => 'Belum Ada Tagihan',
+            'komponen'      => [],
+            'riwayat'       => collect(),
+        ];
+
+        if ($ekskulModel) {
+            $ekskulModel->loadMissing(['itemsEkskul', 'detailPembayaran']);
+            $totalTargetEkskul = (float) $ekskulModel->target;
+            $terbawaEkskul = (float) ($ekskulModel->belum_lunas ?? 0);
+            $totalTagihanEkskul = $totalTargetEkskul + $terbawaEkskul;
+            $totalTerbayarEkskul = (float) $ekskulModel->detailPembayaran->sum('nominal');
+            $sisaEkskul = max($totalTagihanEkskul - $totalTerbayarEkskul, 0);
+
+            $statusEkskul = 'Belum Ada Tagihan';
+            if ($totalTagihanEkskul > 0) {
+                if ($sisaEkskul <= 0) {
+                    $statusEkskul = 'Lunas';
+                } elseif ($totalTerbayarEkskul > 0) {
+                    $statusEkskul = 'Sebagian';
+                } else {
+                    $statusEkskul = 'Belum Lunas';
+                }
+            }
+
+            $itemsE = $ekskulModel->itemsEkskul;
+            $kategoriListE = [];
+            foreach ($itemsE as $it) {
+                $terbayarItem = (float) $ekskulModel->detailPembayaran->where('kategori', $it->nama_ekskul)->sum('nominal');
+                $sisaItem = max((float)$it->nominal - $terbayarItem, 0);
+                $kategoriListE[] = [
+                    'nama'     => $it->nama_ekskul,
+                    'kode'     => $it->nama_ekskul,
+                    'tagihan'  => (float) $it->nominal,
+                    'terbayar' => $terbayarItem,
+                    'sisa'     => $sisaItem,
+                    'status'   => ((float)$it->nominal <= 0 ? '-' : ($sisaItem <= 0 ? 'Lunas' : ($terbayarItem > 0 ? 'Sebagian' : 'Belum Lunas'))),
+                    'riwayat'  => $ekskulModel->detailPembayaran->where('kategori', $it->nama_ekskul),
+                ];
+            }
+
+            $ekskulData = [
+                'has_data'      => true,
+                'target'        => $totalTargetEkskul,
+                'terbawa'       => $terbawaEkskul,
+                'total_tagihan' => $totalTagihanEkskul,
+                'terbayar'      => $totalTerbayarEkskul,
+                'sisa'          => $sisaEkskul,
+                'status'        => $statusEkskul,
+                'komponen'      => $kategoriListE,
+                'riwayat'       => $ekskulModel->detailPembayaran,
+            ];
+        }
+
+        // 6. DATA KOKURIKULER
+        $kokurikulerModel = $pembayarans->first(fn ($p) => $p->jenisPembayaran && $p->jenisPembayaran->nama === 'Kokurikuler');
+        $kokurikulerData = [
+            'has_data'      => false,
+            'target'        => 0,
+            'terbawa'       => 0,
+            'total_tagihan' => 0,
+            'terbayar'      => 0,
+            'sisa'          => 0,
+            'status'        => 'Belum Ada Tagihan',
+            'komponen'      => [],
+            'riwayat'       => collect(),
+        ];
+
+        if ($kokurikulerModel) {
+            $kokurikulerModel->loadMissing(['itemsKokurikuler', 'detailPembayaran']);
+            $totalTargetKoku = (float) $kokurikulerModel->target;
+            $terbawaKoku = (float) ($kokurikulerModel->belum_lunas ?? 0);
+            $totalTagihanKoku = $totalTargetKoku + $terbawaKoku;
+            $totalTerbayarKoku = (float) $kokurikulerModel->detailPembayaran->sum('nominal');
+            $sisaKoku = max($totalTagihanKoku - $totalTerbayarKoku, 0);
+
+            $statusKoku = 'Belum Ada Tagihan';
+            if ($totalTagihanKoku > 0) {
+                if ($sisaKoku <= 0) {
+                    $statusKoku = 'Lunas';
+                } elseif ($totalTerbayarKoku > 0) {
+                    $statusKoku = 'Sebagian';
+                } else {
+                    $statusKoku = 'Belum Lunas';
+                }
+            }
+
+            $itemsK = $kokurikulerModel->itemsKokurikuler;
+            $kategoriListK = [];
+            foreach ($itemsK as $it) {
+                $terbayarItem = (float) $kokurikulerModel->detailPembayaran->where('kategori', $it->nama_kegiatan)->sum('nominal');
+                $sisaItem = max((float)$it->nominal - $terbayarItem, 0);
+                $kategoriListK[] = [
+                    'nama'     => $it->nama_kegiatan,
+                    'kode'     => $it->nama_kegiatan,
+                    'tagihan'  => (float) $it->nominal,
+                    'terbayar' => $terbayarItem,
+                    'sisa'     => $sisaItem,
+                    'status'   => ((float)$it->nominal <= 0 ? '-' : ($sisaItem <= 0 ? 'Lunas' : ($terbayarItem > 0 ? 'Sebagian' : 'Belum Lunas'))),
+                    'riwayat'  => $kokurikulerModel->detailPembayaran->where('kategori', $it->nama_kegiatan),
+                ];
+            }
+
+            $kokurikulerData = [
+                'has_data'      => true,
+                'target'        => $totalTargetKoku,
+                'terbawa'       => $terbawaKoku,
+                'total_tagihan' => $totalTagihanKoku,
+                'terbayar'      => $totalTerbayarKoku,
+                'sisa'          => $sisaKoku,
+                'status'        => $statusKoku,
+                'komponen'      => $kategoriListK,
+                'riwayat'       => $kokurikulerModel->detailPembayaran,
+            ];
+        }
+
+        // 7. REKAPITULASI TAGIHAN TERBAWA TAHUN LALU (JIKA ADA)
         $terbawaSummary = [];
         $totalTerbawaSemua = 0;
         $totalTerbayarTerbawa = 0;
         $totalSisaTerbawa = 0;
 
-        foreach (['IPP' => $ippData, 'Daftar Ulang' => $duData, 'Sarana & Prasarana' => $sarprasData, 'Asesmen' => $kiData] as $jenisLabel => $d) {
+        foreach ([
+            'IPP'             => $ippData,
+            'Daftar Ulang'    => $duData,
+            'Sarana & Prasarana' => $sarprasData,
+            'Asesmen'         => $kiData,
+            'Ekstrakurikuler' => $ekskulData,
+            'Kokurikuler'     => $kokurikulerData,
+        ] as $jenisLabel => $d) {
             if ($d['terbawa'] > 0) {
                 $terbayarUntukTerbawa = min($d['terbawa'], $d['terbayar']);
                 $sisaTerbawa = max($d['terbawa'] - $terbayarUntukTerbawa, 0);
@@ -775,6 +934,28 @@ class RekapController extends Controller
                 'sisa'          => $kiData['sisa'],
                 'status'        => $kiData['status'],
             ],
+            [
+                'no'            => 5,
+                'jenis'         => 'Ekstrakurikuler',
+                'target'        => $ekskulData['target'],
+                'potongan'      => $ekskulData['potongan'] ?? 0,
+                'terbawa'       => $ekskulData['terbawa'],
+                'total_tagihan' => $ekskulData['total_tagihan'],
+                'terbayar'      => $ekskulData['terbayar'],
+                'sisa'          => $ekskulData['sisa'],
+                'status'        => $ekskulData['status'],
+            ],
+            [
+                'no'            => 6,
+                'jenis'         => 'Kokurikuler',
+                'target'        => $kokurikulerData['target'],
+                'potongan'      => $kokurikulerData['potongan'] ?? 0,
+                'terbawa'       => $kokurikulerData['terbawa'],
+                'total_tagihan' => $kokurikulerData['total_tagihan'],
+                'terbayar'      => $kokurikulerData['terbayar'],
+                'sisa'          => $kokurikulerData['sisa'],
+                'status'        => $kokurikulerData['status'],
+            ],
         ];
 
         $grandTotal = [
@@ -809,6 +990,8 @@ class RekapController extends Controller
             'kiData'            => $kiData,
             'duData'            => $duData,
             'sarprasData'       => $sarprasData,
+            'ekskulData'        => $ekskulData,
+            'kokurikulerData'   => $kokurikulerData,
             'terbawaSummary'       => $terbawaSummary,
             'totalTerbawaSemua'    => $totalTerbawaSemua,
             'totalTerbayarTerbawa' => $totalTerbayarTerbawa,

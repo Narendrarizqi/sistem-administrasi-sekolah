@@ -25,29 +25,48 @@ class SarprasController extends Controller
         $tahunAjaranId = $selectedTa?->id;
         $tahunAjaranNama = $selectedTa?->nama;
 
-        $data = Pembayaran::with(['siswa', 'detailPembayaran', 'tahunAjaran', 'jenisPembayaran'])
+        $sort = $request->query('sort', 'nama');
+        $direction = strtolower($request->query('direction', 'asc')) === 'desc' ? 'desc' : 'asc';
+        if (!in_array($sort, ['nis', 'nama', 'sisa'])) {
+            $sort = 'nama';
+            $direction = 'asc';
+        }
+
+        $query = Pembayaran::with(['siswa', 'detailPembayaran', 'tahunAjaran', 'jenisPembayaran'])
+            ->leftJoin('siswa', 'pembayaran.siswa_id', '=', 'siswa.id')
+            ->select('pembayaran.*')
             ->whereHas('jenisPembayaran', function ($q) {
                 $q->where('nama', 'Sarpras');
             })
             ->when($tahunAjaranId, function ($q) use ($tahunAjaranId, $tahunAjaranNama) {
                 $q->where(function ($sub) use ($tahunAjaranId, $tahunAjaranNama) {
-                    $sub->where('tahun_ajaran_id', $tahunAjaranId)
+                    $sub->where('pembayaran.tahun_ajaran_id', $tahunAjaranId)
                         ->orWhere(function ($s2) use ($tahunAjaranNama) {
-                            $s2->whereNull('tahun_ajaran_id')
-                               ->where('tahun_ajaran', $tahunAjaranNama);
+                            $s2->whereNull('pembayaran.tahun_ajaran_id')
+                               ->where('pembayaran.tahun_ajaran', $tahunAjaranNama);
                         });
                 });
-            })
-            ->latest('id')
-            ->paginate(25)
-            ->withQueryString();
+            });
+
+        if ($sort === 'nis') {
+            $query->orderBy('siswa.nis', $direction)->orderBy('siswa.nama', 'asc');
+        } elseif ($sort === 'nama') {
+            $query->orderBy('siswa.nama', $direction)->orderBy('siswa.nis', 'asc');
+        } elseif ($sort === 'sisa') {
+            $query->orderByRaw("(COALESCE(pembayaran.target, 0) + COALESCE(pembayaran.belum_lunas, 0) - COALESCE((SELECT SUM(nominal) FROM detail_pembayaran WHERE detail_pembayaran.pembayaran_id = pembayaran.id), 0)) {$direction}")
+                  ->orderBy('siswa.nama', 'asc');
+        }
+
+        $data = $query->paginate(25)->withQueryString();
 
         return view('sarpras.index', compact(
             'data',
             'daftarTahunAjaran',
             'selectedTa',
             'tahunAjaranId',
-            'tahunAjaranNama'
+            'tahunAjaranNama',
+            'sort',
+            'direction'
         ));
     }
 
@@ -219,5 +238,75 @@ class SarprasController extends Controller
 
         return redirect()->route('sarpras.index')
             ->with('success', 'Data berhasil dihapus.');
+    }
+
+    /**
+     * Terapkan tagihan Sarpras secara massal ke seluruh siswa aktif.
+     * Sarpras hanya punya 1 tagihan per siswa per tahun ajaran, jadi tidak perlu pilih jenis iuran.
+     */
+    public function terapkanMassal(Request $request)
+    {
+        $request->validate([
+            'nominal' => 'required|numeric|min:1',
+        ]);
+
+        $jenis = JenisPembayaran::where('nama', 'Sarpras')->firstOrFail();
+        $tahunAktif = $request->filled('tahun_ajaran_id')
+            ? TahunAjaran::find($request->tahun_ajaran_id)
+            : $this->getTahunAjaranAktif();
+
+        if (!$tahunAktif) {
+            $tahunAktif = TahunAjaran::where('is_active', true)->first() ?? TahunAjaran::first();
+        }
+
+        $tahunAjaranId   = $tahunAktif?->id;
+        $tahunAjaranNama = $tahunAktif?->nama;
+
+        $nominal = (float) $request->nominal;
+        $allSiswa = Siswa::all();
+        $createdCount = 0;
+        $skippedCount = 0;
+
+        foreach ($allSiswa as $siswa) {
+            // Cek apakah siswa sudah punya tagihan Sarpras di tahun ajaran ini
+            $pembayaran = Pembayaran::where('siswa_id', $siswa->id)
+                ->where('jenis_id', $jenis->id)
+                ->where(function ($q) use ($tahunAjaranId, $tahunAjaranNama) {
+                    if ($tahunAjaranId) {
+                        $q->where('tahun_ajaran_id', $tahunAjaranId)
+                          ->orWhere('tahun_ajaran', $tahunAjaranNama);
+                    }
+                })
+                ->first();
+
+            if ($pembayaran) {
+                if ($pembayaran->target > 0) {
+                    $skippedCount++;
+                    continue;
+                }
+                // Jika sudah ada record tapi target masih 0 (misal carryover), update targetnya
+                $pembayaran->target = $nominal;
+                $pembayaran->save();
+                $createdCount++;
+                continue;
+            }
+
+            Pembayaran::create([
+                'siswa_id'        => $siswa->id,
+                'jenis_id'        => $jenis->id,
+                'tahun_ajaran_id' => $tahunAjaranId,
+                'tahun_ajaran'    => $tahunAjaranNama,
+                'target'          => $nominal,
+                'belum_lunas'     => 0,
+                'status'          => 'Belum Lunas',
+            ]);
+
+            $createdCount++;
+        }
+
+        return redirect()->route('sarpras.index', array_filter(['tahun_ajaran_id' => $tahunAjaranId]))->with(
+            'success',
+            "Tagihan Sarana & Prasarana sebesar Rp " . number_format($nominal, 0, ',', '.') . " berhasil diterapkan ke {$createdCount} siswa. ({$skippedCount} siswa dilewati karena sudah memiliki tagihan)."
+        );
     }
 }

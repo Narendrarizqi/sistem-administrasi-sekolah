@@ -628,7 +628,7 @@
                         <th style="width: 50px;" class="text-center">No</th>
                         <th style="width: 120px;">Tanggal</th>
                         <th style="width: 100px;" class="text-center">Tahap</th>
-                        <th>Keterangan / Keperluan Pengambilan</th>
+                        <th>Keterangan</th>
                         <th style="width: 180px;" class="text-right">Nominal Ditarik (Rp)</th>
                         <th style="width: 90px;" class="text-center">Aksi</th>
                     </tr>

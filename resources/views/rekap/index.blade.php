@@ -252,12 +252,27 @@
         }
 
         #rekapTable th.sortable {
-            cursor: pointer;
+            padding: 0 !important;
             user-select: none;
             transition: background-color 0.15s ease, color 0.15s ease;
         }
 
-        #rekapTable th.sortable:hover {
+        #rekapTable th.sortable .sort-header-link {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+            padding: 7px 4px;
+            color: inherit !important;
+            font-size: inherit;
+            font-weight: inherit;
+            letter-spacing: inherit;
+            text-decoration: none !important;
+            cursor: pointer;
+            transition: background-color 0.15s ease, color 0.15s ease;
+        }
+
+        #rekapTable th.sortable:hover .sort-header-link {
             background-color: #e6f9ed !important;
             color: #0f172a !important;
         }
@@ -268,13 +283,14 @@
             opacity: 0.45;
         }
 
-        #rekapTable th.sort-active,
-        #rekapTable .sortable.active {
+        #rekapTable th.sort-active .sort-header-link,
+        #rekapTable th.sortable.active .sort-header-link {
             color: #15803d !important;
+            background-color: #e6f9ed !important;
         }
 
         #rekapTable th.sort-active .sort-icon,
-        #rekapTable .sortable.active .sort-icon {
+        #rekapTable th.sortable.active .sort-icon {
             opacity: 1;
             color: #15803d;
         }
@@ -668,6 +684,15 @@
             @endif
         </div>
 
+        @php
+            $currentSort = $sort ?? request('sort', 'nama');
+            $currentDir = $direction ?? request('direction', 'asc');
+            $sortUrl = function($column) use ($currentSort, $currentDir) {
+                $nextDir = ($currentSort === $column && $currentDir === 'asc') ? 'desc' : 'asc';
+                return request()->fullUrlWithQuery(['sort' => $column, 'direction' => $nextDir, 'page' => 1]);
+            };
+        @endphp
+
         @if($students->count() > 0)
             {{-- Table Container with Native Smooth Horizontal Scroll --}}
             <div class="rekap-table-responsive">
@@ -675,38 +700,94 @@
                     <thead>
                         <tr>
                             <th width="35" class="text-center col-no">No</th>
-                                <th class="sortable col-nis" data-sort="nis" onclick="sortTable('nis')" title="Klik untuk mengurutkan berdasarkan NIS">
-                                    NIS <i class="fas fa-sort sort-icon"></i>
-                                </th>
-                                <th class="sortable col-nama" data-sort="nama" onclick="sortTable('nama')" title="Klik untuk mengurutkan berdasarkan Nama">
-                                    Nama Siswa <i class="fas fa-sort sort-icon"></i>
-                                </th>
-                                <th class="sortable col-kelas" data-sort="kelas" onclick="sortTable('kelas')" title="Klik untuk mengurutkan berdasarkan Kelas">
-                                    Kelas <i class="fas fa-sort sort-icon"></i>
-                                </th>
-                                <th class="col-jenis">Jenis Tagihan</th>
-                                <th class="sortable col-uang" data-sort="target" onclick="sortTable('target')" title="Klik untuk mengurutkan berdasarkan Target">
-                                    Target (Rp) <i class="fas fa-sort sort-icon"></i>
-                                </th>
-                                <th class="sortable col-uang" data-sort="terbawa" onclick="sortTable('terbawa')" title="Klik untuk mengurutkan berdasarkan Terbawa">
-                                    Terbawa (Rp) <i class="fas fa-sort sort-icon"></i>
-                                </th>
-                                <th class="sortable col-uang" data-sort="total_tagihan" onclick="sortTable('total_tagihan')" title="Klik untuk mengurutkan berdasarkan Total Tagihan">
-                                    Total Tagihan (Rp) <i class="fas fa-sort sort-icon"></i>
-                                </th>
-                                <th class="sortable col-uang" data-sort="terbayar" onclick="sortTable('terbayar')" title="Klik untuk mengurutkan berdasarkan Terbayar">
-                                    Terbayar (Rp) <i class="fas fa-sort sort-icon"></i>
-                                </th>
-                                <th class="sortable col-uang" data-sort="sisa" onclick="sortTable('sisa')" title="Klik untuk mengurutkan berdasarkan Sisa">
-                                    Sisa (Rp) <i class="fas fa-sort sort-icon"></i>
-                                </th>
-                                <th class="col-bulan text-center">
-                                    <i class="fas fa-bell mr-1 text-warning"></i> Pengingat Bulan Ini
-                                </th>
-                                <th class="col-status">Status</th>
-                                <th class="text-center col-aksi">Aksi</th>
-                            </tr>
-                        </thead>
+                            <th class="sortable col-nis {{ $currentSort === 'nis' ? 'sort-active' : '' }}" data-sort="nis">
+                                <a href="{{ $sortUrl('nis') }}" class="sort-header-link" title="Klik untuk mengurutkan berdasarkan NIS ({{ $currentSort === 'nis' && $currentDir === 'asc' ? 'Terbesar ke Terkecil' : 'Terkecil ke Terbesar' }})">
+                                    <span>NIS</span>
+                                    @if($currentSort === 'nis')
+                                        <i class="fas fa-sort-{{ $currentDir === 'asc' ? 'up' : 'down' }} sort-icon"></i>
+                                    @else
+                                        <i class="fas fa-sort sort-icon"></i>
+                                    @endif
+                                </a>
+                            </th>
+                            <th class="sortable col-nama {{ $currentSort === 'nama' ? 'sort-active' : '' }}" data-sort="nama">
+                                <a href="{{ $sortUrl('nama') }}" class="sort-header-link" title="Klik untuk mengurutkan berdasarkan Nama ({{ $currentSort === 'nama' && $currentDir === 'asc' ? 'Z ke A' : 'A ke Z' }})">
+                                    <span>Nama Siswa</span>
+                                    @if($currentSort === 'nama')
+                                        <i class="fas fa-sort-{{ $currentDir === 'asc' ? 'up' : 'down' }} sort-icon"></i>
+                                    @else
+                                        <i class="fas fa-sort sort-icon"></i>
+                                    @endif
+                                </a>
+                            </th>
+                            <th class="sortable col-kelas {{ $currentSort === 'kelas' ? 'sort-active' : '' }}" data-sort="kelas">
+                                <a href="{{ $sortUrl('kelas') }}" class="sort-header-link" title="Klik untuk mengurutkan berdasarkan Kelas ({{ $currentSort === 'kelas' && $currentDir === 'asc' ? 'Z ke A' : 'A ke Z' }})">
+                                    <span>Kelas</span>
+                                    @if($currentSort === 'kelas')
+                                        <i class="fas fa-sort-{{ $currentDir === 'asc' ? 'up' : 'down' }} sort-icon"></i>
+                                    @else
+                                        <i class="fas fa-sort sort-icon"></i>
+                                    @endif
+                                </a>
+                            </th>
+                            <th class="col-jenis">Jenis Tagihan</th>
+                            <th class="sortable col-uang {{ $currentSort === 'target' ? 'sort-active' : '' }}" data-sort="target">
+                                <a href="{{ $sortUrl('target') }}" class="sort-header-link justify-content-end text-right" title="Klik untuk mengurutkan berdasarkan Target">
+                                    <span>Target (Rp)</span>
+                                    @if($currentSort === 'target')
+                                        <i class="fas fa-sort-{{ $currentDir === 'asc' ? 'up' : 'down' }} sort-icon"></i>
+                                    @else
+                                        <i class="fas fa-sort sort-icon"></i>
+                                    @endif
+                                </a>
+                            </th>
+                            <th class="sortable col-uang {{ $currentSort === 'terbawa' ? 'sort-active' : '' }}" data-sort="terbawa">
+                                <a href="{{ $sortUrl('terbawa') }}" class="sort-header-link justify-content-end text-right" title="Klik untuk mengurutkan berdasarkan Terbawa">
+                                    <span>Terbawa (Rp)</span>
+                                    @if($currentSort === 'terbawa')
+                                        <i class="fas fa-sort-{{ $currentDir === 'asc' ? 'up' : 'down' }} sort-icon"></i>
+                                    @else
+                                        <i class="fas fa-sort sort-icon"></i>
+                                    @endif
+                                </a>
+                            </th>
+                            <th class="sortable col-uang {{ $currentSort === 'total_tagihan' ? 'sort-active' : '' }}" data-sort="total_tagihan">
+                                <a href="{{ $sortUrl('total_tagihan') }}" class="sort-header-link justify-content-end text-right" title="Klik untuk mengurutkan berdasarkan Total Tagihan">
+                                    <span>Total Tagihan (Rp)</span>
+                                    @if($currentSort === 'total_tagihan')
+                                        <i class="fas fa-sort-{{ $currentDir === 'asc' ? 'up' : 'down' }} sort-icon"></i>
+                                    @else
+                                        <i class="fas fa-sort sort-icon"></i>
+                                    @endif
+                                </a>
+                            </th>
+                            <th class="sortable col-uang {{ $currentSort === 'terbayar' ? 'sort-active' : '' }}" data-sort="terbayar">
+                                <a href="{{ $sortUrl('terbayar') }}" class="sort-header-link justify-content-end text-right" title="Klik untuk mengurutkan berdasarkan Terbayar">
+                                    <span>Terbayar (Rp)</span>
+                                    @if($currentSort === 'terbayar')
+                                        <i class="fas fa-sort-{{ $currentDir === 'asc' ? 'up' : 'down' }} sort-icon"></i>
+                                    @else
+                                        <i class="fas fa-sort sort-icon"></i>
+                                    @endif
+                                </a>
+                            </th>
+                            <th class="sortable col-uang {{ $currentSort === 'sisa' ? 'sort-active' : '' }}" data-sort="sisa">
+                                <a href="{{ $sortUrl('sisa') }}" class="sort-header-link justify-content-end text-right" title="Klik untuk mengurutkan berdasarkan Sisa">
+                                    <span>Sisa (Rp)</span>
+                                    @if($currentSort === 'sisa')
+                                        <i class="fas fa-sort-{{ $currentDir === 'asc' ? 'up' : 'down' }} sort-icon"></i>
+                                    @else
+                                        <i class="fas fa-sort sort-icon"></i>
+                                    @endif
+                                </a>
+                            </th>
+                            <th class="col-bulan text-center">
+                                <i class="fas fa-bell mr-1 text-warning"></i> Pengingat Bulan Ini
+                            </th>
+                            <th class="col-status">Status</th>
+                            <th class="text-center col-aksi">Aksi</th>
+                        </tr>
+                    </thead>
 
                         <tbody>
                             @foreach($students as $student)
@@ -1057,102 +1138,7 @@
                 updateNumbering();
             });
         }
-
-        // Default sort by Nama
-        sortTable('nama');
     });
-
-    let currentSort = {
-        column: 'nama',
-        direction: 'asc'
-    };
-
-    function sortTable(column) {
-        const table = document.getElementById('rekapTable');
-        if (!table) return;
-
-        const tbody = table.querySelector('tbody');
-        const rows = Array.from(tbody.querySelectorAll('tr'));
-
-        if (currentSort.column === column) {
-            currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
-        } else {
-            currentSort.column = column;
-            currentSort.direction = 'asc';
-        }
-
-        rows.sort(function (a, b) {
-            let valueA;
-            let valueB;
-
-            if (column === 'nis') {
-                valueA = a.dataset.nis || '';
-                valueB = b.dataset.nis || '';
-                const numberA = Number(valueA);
-                const numberB = Number(valueB);
-                if (!isNaN(numberA) && !isNaN(numberB)) {
-                    valueA = numberA;
-                    valueB = numberB;
-                }
-            } else if (column === 'nama') {
-                valueA = a.dataset.nama || '';
-                valueB = b.dataset.nama || '';
-            } else if (column === 'kelas') {
-                valueA = a.dataset.kelas || '';
-                valueB = b.dataset.kelas || '';
-            } else if (column === 'sisa') {
-                valueA = Number(a.querySelector('.sisa-cell')?.dataset.sisa || 0);
-                valueB = Number(b.querySelector('.sisa-cell')?.dataset.sisa || 0);
-            } else if (column === 'target') {
-                valueA = Number(a.querySelector('.target-cell')?.textContent.replace(/[^0-9]/g, '') || 0);
-                valueB = Number(b.querySelector('.target-cell')?.textContent.replace(/[^0-9]/g, '') || 0);
-            } else if (column === 'terbawa') {
-                valueA = Number(a.querySelector('.terbawa-cell')?.textContent.replace(/[^0-9]/g, '') || 0);
-                valueB = Number(b.querySelector('.terbawa-cell')?.textContent.replace(/[^0-9]/g, '') || 0);
-            } else if (column === 'total_tagihan') {
-                valueA = Number(a.querySelector('.total-tagihan-cell')?.textContent.replace(/[^0-9]/g, '') || 0);
-                valueB = Number(b.querySelector('.total-tagihan-cell')?.textContent.replace(/[^0-9]/g, '') || 0);
-            } else if (column === 'terbayar') {
-                valueA = Number(a.querySelector('.terbayar-cell')?.textContent.replace(/[^0-9]/g, '') || 0);
-                valueB = Number(b.querySelector('.terbayar-cell')?.textContent.replace(/[^0-9]/g, '') || 0);
-            }
-
-            let comparison = 0;
-            if (typeof valueA === 'number') {
-                comparison = valueA - valueB;
-            } else {
-                comparison = String(valueA).localeCompare(String(valueB), 'id', { numeric: true, sensitivity: 'base' });
-            }
-
-            return currentSort.direction === 'asc' ? comparison : -comparison;
-        });
-
-        rows.forEach(function (row) {
-            tbody.appendChild(row);
-        });
-
-        updateSortIcons(column);
-        updateNumbering();
-    }
-
-    function updateSortIcons(activeColumn) {
-        document.querySelectorAll('.sortable').forEach(function (header) {
-            const icon = header.querySelector('.sort-icon');
-            header.classList.remove('active');
-            if (icon) {
-                icon.className = 'fas fa-sort sort-icon';
-            }
-        });
-
-        const activeHeader = document.querySelector(`.sortable[data-sort="${activeColumn}"]`);
-        if (!activeHeader) return;
-
-        const icon = activeHeader.querySelector('.sort-icon');
-        activeHeader.classList.add('active');
-        if (icon) {
-            icon.className = currentSort.direction === 'asc' ? 'fas fa-sort-up sort-icon' : 'fas fa-sort-down sort-icon';
-        }
-    }
 
     function updateNumbering() {
         const rows = document.querySelectorAll('#rekapTable tbody tr');

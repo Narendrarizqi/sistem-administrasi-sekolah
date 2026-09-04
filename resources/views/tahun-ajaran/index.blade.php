@@ -280,26 +280,28 @@
             background: #eff6ff;
             border: 1px solid #bfdbfe;
             color: #1d4ed8;
-            font-size: 11.5px;
+            font-size: 10.5px;
             font-weight: 600;
-            padding: 4px 10px;
-            border-radius: 7px;
+            padding: 2.5px 7px;
+            border-radius: 6px;
             display: inline-flex;
             align-items: center;
-            gap: 5px;
+            white-space: nowrap !important;
+            gap: 4px;
         }
 
         .badge-pill-siswa {
             background: #f0fdf4;
             border: 1px solid #bbf7d0;
             color: #15803d;
-            font-size: 11.5px;
+            font-size: 10.5px;
             font-weight: 600;
-            padding: 4px 10px;
-            border-radius: 7px;
+            padding: 2.5px 7px;
+            border-radius: 6px;
             display: inline-flex;
             align-items: center;
-            gap: 5px;
+            white-space: nowrap !important;
+            gap: 4px;
         }
 
         /* 5. Tombol Aksi Tabel */
@@ -514,9 +516,9 @@
                         <th style="width: 50px;" class="text-center">No</th>
                         <th>Tahun Ajaran</th>
                         <th>Periode</th>
-                        <th class="text-center" style="width: 140px;">Status</th>
-                        <th class="text-center" style="width: 210px;">Data Terkait</th>
-                        <th class="text-center" style="width: 190px;">Aksi</th>
+                        <th class="text-center" style="width: 130px; white-space: nowrap;">Status</th>
+                        <th class="text-center" style="width: 220px; white-space: nowrap;">Data Terkait</th>
+                        <th class="text-center" style="width: 190px; white-space: nowrap;">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -553,13 +555,15 @@
                                 </span>
                             @endif
                         </td>
-                        <td class="text-center">
-                            <span class="badge-pill-tagihan mr-1" title="Jumlah Tagihan Terdaftar">
-                                <i class="fas fa-receipt text-primary"></i> {{ $item->pembayaran_count }} Tagihan
-                            </span>
-                            <span class="badge-pill-siswa" title="Jumlah Siswa Terdaftar">
-                                <i class="fas fa-user-graduate text-success"></i> {{ $item->siswa_count }} Siswa
-                            </span>
+                        <td class="text-center" style="white-space: nowrap;">
+                            <div class="d-inline-flex align-items-center justify-content-center" style="gap: 4px; flex-wrap: nowrap; white-space: nowrap;">
+                                <span class="badge-pill-tagihan" title="Jumlah Tagihan Terdaftar">
+                                    <i class="fas fa-receipt text-primary" style="font-size: 9.5px;"></i> {{ $item->pembayaran_count }} Tagihan
+                                </span>
+                                <span class="badge-pill-siswa" title="Jumlah Siswa Terdaftar">
+                                    <i class="fas fa-user-graduate text-success" style="font-size: 9.5px;"></i> {{ $item->siswa_count }} Siswa
+                                </span>
+                            </div>
                         </td>
                         <td class="text-center">
                             <div class="d-inline-flex align-items-center" style="gap: 6px;">

@@ -50,6 +50,16 @@ class Pembayaran extends Model
         return $this->hasMany(ItemPembayaranKi::class, 'pembayaran_id');
     }
 
+    public function itemsEkskul(): HasMany
+    {
+        return $this->hasMany(ItemPembayaranEkstrakurikuler::class, 'pembayaran_id');
+    }
+
+    public function itemsKokurikuler(): HasMany
+    {
+        return $this->hasMany(ItemPembayaranKokurikuler::class, 'pembayaran_id');
+    }
+
     /**
      * Relasi ke pembayaran asal (untuk tracking histori carryover)
      */
@@ -387,6 +397,114 @@ class Pembayaran extends Model
                     'badge_class' => $isLunas ? 'badge-status-lunas' : 'badge-status-belum',
                 ];
             }
+        }
+
+        return $results;
+    }
+
+    /**
+     * Pembayaran nominal per sub-kategori Ekstrakurikuler
+     */
+    public function terbayarEkskulKategori(string $kategori): float
+    {
+        if ($this->relationLoaded('detailPembayaran')) {
+            return (float) $this->detailPembayaran->where('kategori', $kategori)->sum('nominal');
+        }
+        return (float) $this->detailPembayaran()->where('kategori', $kategori)->sum('nominal');
+    }
+
+    /**
+     * Sisa tagihan per sub-kategori Ekstrakurikuler
+     */
+    public function sisaEkskulKategori(string $kategori): float
+    {
+        $item = $this->relationLoaded('itemsEkskul')
+            ? $this->itemsEkskul->firstWhere('nama_ekskul', $kategori)
+            : $this->itemsEkskul()->where('nama_ekskul', $kategori)->first();
+
+        $target = $item ? (float) $item->nominal : 0;
+        $terbayar = $this->terbayarEkskulKategori($kategori);
+        return max($target - $terbayar, 0);
+    }
+
+    /**
+     * Status sub-tagihan Ekstrakurikuler dinamis
+     */
+    public function statusEkskulSubtagihan(): array
+    {
+        $results = [];
+        $items = $this->relationLoaded('itemsEkskul') ? $this->itemsEkskul : $this->itemsEkskul()->get();
+
+        foreach ($items as $item) {
+            $kat = $item->nama_ekskul;
+            $target = (float) $item->nominal;
+            $terbayar = $this->terbayarEkskulKategori($kat);
+            $sisa = max($target - $terbayar, 0);
+            $isLunas = ($target > 0 && $sisa <= 0);
+
+            $results[$kat] = [
+                'kategori'    => $kat,
+                'target'      => $target,
+                'terbayar'    => $terbayar,
+                'sisa'        => $sisa,
+                'is_lunas'    => $isLunas,
+                'status_text' => $isLunas ? 'Lunas' : ($terbayar > 0 ? 'Sebagian' : 'Belum Lunas'),
+                'badge_class' => $isLunas ? 'badge-status-lunas' : 'badge-status-belum',
+            ];
+        }
+
+        return $results;
+    }
+
+    /**
+     * Pembayaran nominal per sub-kategori Kokurikuler
+     */
+    public function terbayarKokurikulerKategori(string $kategori): float
+    {
+        if ($this->relationLoaded('detailPembayaran')) {
+            return (float) $this->detailPembayaran->where('kategori', $kategori)->sum('nominal');
+        }
+        return (float) $this->detailPembayaran()->where('kategori', $kategori)->sum('nominal');
+    }
+
+    /**
+     * Sisa tagihan per sub-kategori Kokurikuler
+     */
+    public function sisaKokurikulerKategori(string $kategori): float
+    {
+        $item = $this->relationLoaded('itemsKokurikuler')
+            ? $this->itemsKokurikuler->firstWhere('nama_kegiatan', $kategori)
+            : $this->itemsKokurikuler()->where('nama_kegiatan', $kategori)->first();
+
+        $target = $item ? (float) $item->nominal : 0;
+        $terbayar = $this->terbayarKokurikulerKategori($kategori);
+        return max($target - $terbayar, 0);
+    }
+
+    /**
+     * Status sub-tagihan Kokurikuler dinamis
+     */
+    public function statusKokurikulerSubtagihan(): array
+    {
+        $results = [];
+        $items = $this->relationLoaded('itemsKokurikuler') ? $this->itemsKokurikuler : $this->itemsKokurikuler()->get();
+
+        foreach ($items as $item) {
+            $kat = $item->nama_kegiatan;
+            $target = (float) $item->nominal;
+            $terbayar = $this->terbayarKokurikulerKategori($kat);
+            $sisa = max($target - $terbayar, 0);
+            $isLunas = ($target > 0 && $sisa <= 0);
+
+            $results[$kat] = [
+                'kategori'    => $kat,
+                'target'      => $target,
+                'terbayar'    => $terbayar,
+                'sisa'        => $sisa,
+                'is_lunas'    => $isLunas,
+                'status_text' => $isLunas ? 'Lunas' : ($terbayar > 0 ? 'Sebagian' : 'Belum Lunas'),
+                'badge_class' => $isLunas ? 'badge-status-lunas' : 'badge-status-belum',
+            ];
         }
 
         return $results;

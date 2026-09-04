@@ -25,59 +25,59 @@ class IppController extends Controller
         $tahunAjaranId = $selectedTa?->id;
         $tahunAjaranNama = $selectedTa?->nama;
 
-        $data = Pembayaran::with([
+        $sort = $request->query('sort', 'nama');
+        $direction = strtolower($request->query('direction', 'asc')) === 'desc' ? 'desc' : 'asc';
+        if (!in_array($sort, ['nis', 'nama', 'sisa'])) {
+            $sort = 'nama';
+            $direction = 'asc';
+        }
+
+        $query = Pembayaran::with([
             'siswa',
             'detailPembayaran',
             'jenisPembayaran',
             'tahunAjaran'
         ])
+            ->leftJoin('siswa', 'pembayaran.siswa_id', '=', 'siswa.id')
+            ->select('pembayaran.*')
             ->whereHas('jenisPembayaran', function ($q) {
                 $q->where('nama', 'IPP');
             })
             ->when($tahunAjaranId, function ($q) use ($tahunAjaranId, $tahunAjaranNama) {
                 $q->where(function ($sub) use ($tahunAjaranId, $tahunAjaranNama) {
-                    $sub->where('tahun_ajaran_id', $tahunAjaranId)
+                    $sub->where('pembayaran.tahun_ajaran_id', $tahunAjaranId)
                         ->orWhere(function ($s2) use ($tahunAjaranNama) {
-                            $s2->whereNull('tahun_ajaran_id')
-                               ->where('tahun_ajaran', $tahunAjaranNama);
+                            $s2->whereNull('pembayaran.tahun_ajaran_id')
+                               ->where('pembayaran.tahun_ajaran', $tahunAjaranNama);
                         });
                 });
-            })
-            ->latest('id')
-            ->paginate(25)
-            ->withQueryString();
+            });
+
+        if ($sort === 'nis') {
+            $query->orderBy('siswa.nis', $direction)->orderBy('siswa.nama', 'asc');
+        } elseif ($sort === 'nama') {
+            $query->orderBy('siswa.nama', $direction)->orderBy('siswa.nis', 'asc');
+        } elseif ($sort === 'sisa') {
+            $query->orderByRaw("(COALESCE(pembayaran.target, 0) + COALESCE(pembayaran.belum_lunas, 0) - COALESCE((SELECT SUM(nominal) FROM detail_pembayaran WHERE detail_pembayaran.pembayaran_id = pembayaran.id), 0)) {$direction}")
+                  ->orderBy('siswa.nama', 'asc');
+        }
+
+        $data = $query->paginate(25)->withQueryString();
 
         return view('ipp.index', compact(
             'data',
             'daftarTahunAjaran',
             'selectedTa',
             'tahunAjaranId',
-            'tahunAjaranNama'
+            'tahunAjaranNama',
+            'sort',
+            'direction'
         ));
     }
 
     public function create()
     {
-        $siswa = Siswa::orderBy('nama')->get();
-        $jenis = JenisPembayaran::where('nama', 'IPP')->first();
-        $tahunAktif = $this->getTahunAjaranAktif();
-        $tahunAjaranId = $tahunAktif?->id;
-        $tahunAjaranNama = $tahunAktif?->nama;
-
-        $existingSiswaIds = Pembayaran::where('jenis_id', $jenis?->id)
-            ->when($tahunAjaranId, function ($q) use ($tahunAjaranId, $tahunAjaranNama) {
-                $q->where(function ($sub) use ($tahunAjaranId, $tahunAjaranNama) {
-                    $sub->where('tahun_ajaran_id', $tahunAjaranId)
-                        ->orWhere(function ($s2) use ($tahunAjaranNama) {
-                            $s2->whereNull('tahun_ajaran_id')
-                               ->where('tahun_ajaran', $tahunAjaranNama);
-                        });
-                });
-            })
-            ->pluck('siswa_id')
-            ->toArray();
-
-        return view('ipp.create', compact('siswa', 'existingSiswaIds'));
+        return redirect()->route('ipp.index');
     }
 
     public function store(Request $request)
@@ -132,27 +132,12 @@ class IppController extends Controller
 
     public function show($id)
     {
-        $pembayaran = Pembayaran::with([
-            'siswa',
-            'detailPembayaran',
-            'jenisPembayaran',
-            'tahunAjaran'
-        ])->findOrFail($id);
-
-        return view('ipp.bayar', compact('pembayaran'));
+        return redirect()->route('ipp.index');
     }
 
     public function edit($id)
     {
-        $pembayaran = Pembayaran::with([
-            'siswa',
-            'jenisPembayaran',
-            'tahunAjaran'
-        ])->findOrFail($id);
-
-        $siswa = Siswa::orderBy('nama')->get();
-
-        return view('ipp.edit', compact('pembayaran', 'siswa'));
+        return redirect()->route('ipp.index');
     }
 
     public function update(Request $request, $id)

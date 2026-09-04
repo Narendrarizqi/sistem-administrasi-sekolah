@@ -822,7 +822,7 @@
                         name="search"
                         id="siswaSearchInput"
                         class="siswa-search-input"
-                        placeholder="Cari NIS, nama, atau kelas... (Tekan Enter)"
+                        placeholder="Cari NIS, nama, atau kelas..."
                         value="{{ request('search') }}"
                         autocomplete="off"
                     >

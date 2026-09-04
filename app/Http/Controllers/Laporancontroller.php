@@ -17,11 +17,13 @@ class LaporanController extends Controller
     private function kategoriSumberDana(): array
     {
         return [
-            'IPP'     => ['IPP'],
-            'DU'      => ['DU'],
-            'Sarpras' => ['Sarpras', 'SARPAS'],
-            'Asesmen' => ['KI', 'Asesmen'],
-            'BOS'     => ['BOS'],
+            'IPP'             => ['IPP'],
+            'DU'              => ['DU'],
+            'Sarpras'         => ['Sarpras', 'SARPAS'],
+            'Asesmen'         => ['KI', 'Asesmen'],
+            'Ekstrakurikuler' => ['Ekstrakurikuler'],
+            'Kokurikuler'     => ['Kokurikuler'],
+            'BOS'             => ['BOS'],
         ];
     }
 

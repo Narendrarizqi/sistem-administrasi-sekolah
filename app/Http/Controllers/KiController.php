@@ -28,22 +28,39 @@ class KiController extends Controller
         $tahunAjaranId = $selectedTa?->id;
         $tahunAjaranNama = $selectedTa?->nama;
 
-        $data = Pembayaran::with(['siswa', 'detailPembayaran', 'tahunAjaran', 'jenisPembayaran', 'itemsKi.jenisIuran'])
+        $sort = $request->query('sort', 'nama');
+        $direction = strtolower($request->query('direction', 'asc')) === 'desc' ? 'desc' : 'asc';
+        if (!in_array($sort, ['nis', 'nama', 'sisa'])) {
+            $sort = 'nama';
+            $direction = 'asc';
+        }
+
+        $query = Pembayaran::with(['siswa', 'detailPembayaran', 'tahunAjaran', 'jenisPembayaran', 'itemsKi.jenisIuran'])
+            ->leftJoin('siswa', 'pembayaran.siswa_id', '=', 'siswa.id')
+            ->select('pembayaran.*')
             ->whereHas('jenisPembayaran', function ($q) {
                 $q->where('nama', 'KI');
             })
             ->when($tahunAjaranId, function ($q) use ($tahunAjaranId, $tahunAjaranNama) {
                 $q->where(function ($sub) use ($tahunAjaranId, $tahunAjaranNama) {
-                    $sub->where('tahun_ajaran_id', $tahunAjaranId)
+                    $sub->where('pembayaran.tahun_ajaran_id', $tahunAjaranId)
                         ->orWhere(function ($s2) use ($tahunAjaranNama) {
-                            $s2->whereNull('tahun_ajaran_id')
-                               ->where('tahun_ajaran', $tahunAjaranNama);
+                            $s2->whereNull('pembayaran.tahun_ajaran_id')
+                               ->where('pembayaran.tahun_ajaran', $tahunAjaranNama);
                         });
                 });
-            })
-            ->latest('id')
-            ->paginate(25)
-            ->withQueryString();
+            });
+
+        if ($sort === 'nis') {
+            $query->orderBy('siswa.nis', $direction)->orderBy('siswa.nama', 'asc');
+        } elseif ($sort === 'nama') {
+            $query->orderBy('siswa.nama', $direction)->orderBy('siswa.nis', 'asc');
+        } elseif ($sort === 'sisa') {
+            $query->orderByRaw("(COALESCE(pembayaran.target, 0) + COALESCE(pembayaran.belum_lunas, 0) - COALESCE((SELECT SUM(nominal) FROM detail_pembayaran WHERE detail_pembayaran.pembayaran_id = pembayaran.id), 0)) {$direction}")
+                  ->orderBy('siswa.nama', 'asc');
+        }
+
+        $data = $query->paginate(25)->withQueryString();
 
         // Master jenis iuran untuk modal manajemen & form tambah
         $daftarJenisIuran = JenisIuranKi::withCount('items')->orderBy('id')->get();
@@ -58,21 +75,15 @@ class KiController extends Controller
             'tahunAjaranNama',
             'daftarJenisIuran',
             'jenisIuranAktif',
-            'siswaList'
+            'siswaList',
+            'sort',
+            'direction'
         ));
     }
 
     public function create()
     {
-        $siswa = Siswa::orderBy('nama')->get();
-        $jenis = JenisPembayaran::where('nama', 'KI')->first();
-        $tahunAktif = $this->getTahunAjaranAktif();
-        $tahunAjaranId = $tahunAktif?->id;
-        $tahunAjaranNama = $tahunAktif?->nama;
-
-        $jenisIuranAktif = JenisIuranKi::where('is_active', true)->orderBy('id')->get();
-
-        return view('ki.create', compact('siswa', 'jenisIuranAktif', 'tahunAktif'));
+        return redirect()->route('ki.index');
     }
 
     public function store(Request $request)
@@ -222,15 +233,7 @@ class KiController extends Controller
 
     public function show($id)
     {
-        $pembayaran = Pembayaran::with([
-            'siswa',
-            'detailPembayaran',
-            'jenisPembayaran',
-            'tahunAjaran',
-            'itemsKi.jenisIuran'
-        ])->findOrFail($id);
-
-        return view('ki.bayar', compact('pembayaran'));
+        return redirect()->route('ki.index');
     }
 
     public function bayar(Request $request, $id)
@@ -297,17 +300,7 @@ class KiController extends Controller
 
     public function edit($id)
     {
-        $pembayaran = Pembayaran::with([
-            'siswa',
-            'jenisPembayaran',
-            'tahunAjaran',
-            'itemsKi.jenisIuran'
-        ])->findOrFail($id);
-
-        $siswa = Siswa::orderBy('nama')->get();
-        $jenisIuranAktif = JenisIuranKi::where('is_active', true)->orderBy('id')->get();
-
-        return view('ki.edit', compact('pembayaran', 'siswa', 'jenisIuranAktif'));
+        return redirect()->route('ki.index');
     }
 
     public function update(Request $request, $id)

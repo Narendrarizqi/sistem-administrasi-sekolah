@@ -391,17 +391,28 @@
 
         .db-legend-item {
             display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 10px;
-            font-size: 13px;
+            align-items: flex-start;
+            gap: 8px;
+            margin-bottom: 8px;
+            font-size: 12.5px;
         }
 
         .db-legend-dot {
-            width: 10px;
-            height: 10px;
+            width: 8px;
+            height: 8px;
             border-radius: 50%;
             flex-shrink: 0;
+            margin-top: 4px;
+        }
+
+        .db-legend-wrapper {
+            padding-left: 0;
+        }
+
+        @media (min-width: 576px) {
+            .db-legend-wrapper {
+                padding-left: 36px;
+            }
         }
 
         /* Modern Table */
@@ -772,7 +783,7 @@
             <div class="panel-card-body d-flex flex-column justify-content-center">
                 <div class="row align-items-center g-3 my-auto">
                     {{-- Donut Chart --}}
-                    <div class="col-sm-5 col-12 text-center">
+                    <div class="col-sm-4 col-12 text-center">
                         <div class="db-chart-container">
                             <canvas id="chartProgressPembayaran"></canvas>
                             <div class="db-chart-center-text">
@@ -782,8 +793,8 @@
                         </div>
                     </div>
 
-                    {{-- Legend & Summary --}}
-                    <div class="col-sm-7 col-12">
+                    {{-- Legend & Summary (3 dan 3 Sejajar) --}}
+                    <div class="col-sm-8 col-12 db-legend-wrapper">
                         <div id="chartLegendContainer">
                             {{-- Legend populated by JS --}}
                         </div>
@@ -1041,20 +1052,35 @@
         }
 
         function buildLegendAll() {
-            let html = '';
-            jenisData.forEach(function(j) {
-                const persen = j.target > 0 ? ((j.dibayar / j.target) * 100).toFixed(1) : 0;
-                html += '<div class="db-legend-item">' +
-                    '<div class="db-legend-dot" style="background:' + j._color + ';"></div>' +
-                    '<div class="flex-grow-1 min-w-0">' +
-                        '<div class="text-secondary text-truncate" style="font-size:12px;">' + j.nama + '</div>' +
-                        '<div class="font-weight-bold" style="color:var(--color-text); font-size:13px;">' +
-                            formatRupiah(j.dibayar) +
-                            ' <span class="badge ms-1" style="font-size:10px; background:' + j._color + '22; color:' + j._color + ';">' + persen + '%</span>' +
+            if (!jenisData || jenisData.length === 0) {
+                document.getElementById('chartLegendContainer').innerHTML = '<div class="text-muted small">Tidak ada data.</div>';
+                return;
+            }
+
+            const mid = Math.ceil(jenisData.length / 2);
+            const col1 = jenisData.slice(0, mid);
+            const col2 = jenisData.slice(mid);
+
+            function renderCol(items) {
+                let colHtml = '<div class="col-6 d-flex flex-column">';
+                items.forEach(function(j) {
+                    const persen = j.target > 0 ? ((j.dibayar / j.target) * 100).toFixed(1) : 0;
+                    colHtml += '<div class="db-legend-item mb-2">' +
+                        '<div class="db-legend-dot" style="background:' + j._color + ';"></div>' +
+                        '<div class="flex-grow-1 min-w-0">' +
+                            '<div class="text-secondary text-truncate" style="font-size:11.5px; font-weight:500;" title="' + j.nama + '">' + j.nama + '</div>' +
+                            '<div class="font-weight-bold d-flex align-items-center flex-wrap" style="color:var(--color-text); font-size:12.5px; gap:4px;">' +
+                                '<span>' + formatRupiah(j.dibayar) + '</span>' +
+                                '<span class="badge" style="font-size:9.5px; padding:2px 5px; background:' + j._color + '22; color:' + j._color + ';">' + persen + '%</span>' +
+                            '</div>' +
                         '</div>' +
-                    '</div>' +
-                '</div>';
-            });
+                    '</div>';
+                });
+                colHtml += '</div>';
+                return colHtml;
+            }
+
+            let html = '<div class="row g-2">' + renderCol(col1) + renderCol(col2) + '</div>';
             document.getElementById('chartLegendContainer').innerHTML = html;
         }
 
@@ -1063,24 +1089,29 @@
             const persen = j.target > 0 ? ((j.dibayar / j.target) * 100).toFixed(1) : 0;
             const persenSisa = j.target > 0 ? (100 - parseFloat(persen)).toFixed(1) : 0;
 
-            let html = '<div class="db-legend-item">' +
-                '<div class="db-legend-dot" style="background:' + j._color + ';"></div>' +
-                '<div class="flex-grow-1">' +
-                    '<div class="text-secondary" style="font-size:12px;">Sudah Dibayar</div>' +
-                    '<div class="font-weight-bold" style="color:var(--color-text); font-size:13px;">' +
-                        formatRupiah(j.dibayar) +
-                        ' <span class="badge ms-1" style="font-size:10px; background:' + j._color + '22; color:' + j._color + ';">' + persen + '%</span>' +
+            let html = '<div class="row g-2">' +
+                '<div class="col-6">' +
+                    '<div class="db-legend-item mb-2">' +
+                        '<div class="db-legend-dot" style="background:' + j._color + ';"></div>' +
+                        '<div class="flex-grow-1 min-w-0">' +
+                            '<div class="text-secondary text-truncate" style="font-size:11.5px; font-weight:500;">Sudah Dibayar</div>' +
+                            '<div class="font-weight-bold d-flex align-items-center flex-wrap" style="color:var(--color-text); font-size:12.5px; gap:4px;">' +
+                                '<span>' + formatRupiah(j.dibayar) + '</span>' +
+                                '<span class="badge" style="font-size:9.5px; padding:2px 5px; background:' + j._color + '22; color:' + j._color + ';">' + persen + '%</span>' +
+                            '</div>' +
+                        '</div>' +
                     '</div>' +
                 '</div>' +
-            '</div>';
-
-            html += '<div class="db-legend-item">' +
-                '<div class="db-legend-dot" style="background:#e2e8f0;"></div>' +
-                '<div class="flex-grow-1">' +
-                    '<div class="text-secondary" style="font-size:12px;">Belum Dibayar</div>' +
-                    '<div class="font-weight-bold" style="color:var(--color-text); font-size:13px;">' +
-                        formatRupiah(sisa) +
-                        ' <span class="badge bg-secondary-subtle text-secondary ms-1" style="font-size:10px;">' + persenSisa + '%</span>' +
+                '<div class="col-6">' +
+                    '<div class="db-legend-item mb-2">' +
+                        '<div class="db-legend-dot" style="background:#e2e8f0;"></div>' +
+                        '<div class="flex-grow-1 min-w-0">' +
+                            '<div class="text-secondary text-truncate" style="font-size:11.5px; font-weight:500;">Belum Dibayar</div>' +
+                            '<div class="font-weight-bold d-flex align-items-center flex-wrap" style="color:var(--color-text); font-size:12.5px; gap:4px;">' +
+                                '<span>' + formatRupiah(sisa) + '</span>' +
+                                '<span class="badge bg-secondary-subtle text-secondary" style="font-size:9.5px; padding:2px 5px;">' + persenSisa + '%</span>' +
+                            '</div>' +
+                        '</div>' +
                     '</div>' +
                 '</div>' +
             '</div>';
