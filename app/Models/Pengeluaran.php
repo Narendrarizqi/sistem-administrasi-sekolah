@@ -13,5 +13,11 @@ class Pengeluaran extends Model
         'sumber_dana',
         'keterangan',
         'nominal',
+        'user_id',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 }

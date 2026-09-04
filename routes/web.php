@@ -124,6 +124,7 @@ Route::middleware('auth')->group(function () {
 
     // Bantuan Operasional Sekolah (BOS)
     Route::get('/bos', [BosController::class, 'index'])->name('bos.index');
+    Route::get('/bos/cetak', [BosController::class, 'cetakPdf'])->name('bos.cetak');
     Route::post('/bos', [BosController::class, 'store'])->name('bos.store');
     Route::put('/bos/{bo}', [BosController::class, 'update'])->name('bos.update');
     Route::delete('/bos/{bo}', [BosController::class, 'destroy'])->name('bos.destroy');

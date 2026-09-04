@@ -35,24 +35,23 @@
         }
 
         .pengeluaran-title-icon {
-            width: 34px;
-            height: 34px;
+            width: 32px;
+            height: 32px;
             border-radius: 8px;
-            background: #ef4444;
-            color: #ffffff;
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            color: #15803d;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            font-size: 15px;
+            font-size: 14.5px;
             flex-shrink: 0;
-            box-shadow: 0 2px 5px rgba(239, 68, 68, 0.25);
         }
 
         .pengeluaran-desc {
-            font-size: 13px;
+            font-size: 12.5px;
             color: #64748b;
             margin: 0;
-            padding-left: 44px;
         }
 
         /* 2. Stat Cards Grid (4 Cards) */
@@ -132,6 +131,7 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            color: #0f172a !important;
         }
 
         .stat-card-sub {
@@ -701,20 +701,20 @@
         </p>
     </div>
 
-    {{-- 2. STAT CARDS (4 Summary Cards Sesuai Desain Sistem) --}}
+    {{-- 2. STAT CARDS (3 Summary Cards Sesuai Desain Sistem) --}}
     <div class="row mb-4">
         {{-- Card 1: Total Pengeluaran --}}
-        <div class="col-12 col-sm-6 col-lg-3 mb-3 mb-lg-0">
+        <div class="col-12 col-md-4 mb-3">
             <div class="stat-card-clean">
                 <div class="stat-card-icon-circle icon-circle-red">
                     <i class="fas fa-wallet"></i>
                 </div>
                 <div class="stat-card-info">
                     <div class="stat-card-label">Total Pengeluaran</div>
-                    <div class="stat-card-value text-danger font-num">
+                    <div class="stat-card-value font-num" style="color: #0f172a;">
                         Rp {{ number_format($totalPengeluaran, 0, ',', '.') }}
                     </div>
-                    <div class="stat-card-sub text-danger opacity-75">
+                    <div class="stat-card-sub text-muted">
                         Akumulasi seluruh pengeluaran
                     </div>
                 </div>
@@ -722,14 +722,14 @@
         </div>
 
         {{-- Card 2: Pengeluaran Bulan Ini --}}
-        <div class="col-12 col-sm-6 col-lg-3 mb-3 mb-lg-0">
+        <div class="col-12 col-md-4 mb-3">
             <div class="stat-card-clean">
                 <div class="stat-card-icon-circle icon-circle-gray">
                     <i class="far fa-calendar-alt"></i>
                 </div>
                 <div class="stat-card-info">
                     <div class="stat-card-label">Pengeluaran Bulan Ini</div>
-                    <div class="stat-card-value text-dark font-num">
+                    <div class="stat-card-value font-num" style="color: #0f172a;">
                         Rp {{ number_format($totalBulanIni, 0, ',', '.') }}
                     </div>
                     <div class="stat-card-sub text-muted">
@@ -739,37 +739,23 @@
             </div>
         </div>
 
-        {{-- Card 3: Jumlah Transaksi --}}
-        <div class="col-12 col-sm-6 col-lg-3 mb-3 mb-sm-0">
-            <div class="stat-card-clean">
-                <div class="stat-card-icon-circle icon-circle-green">
-                    <i class="far fa-file-alt"></i>
-                </div>
-                <div class="stat-card-info">
-                    <div class="stat-card-label">Jumlah Transaksi</div>
-                    <div class="stat-card-value text-success font-num">
-                        {{ $jumlahTransaksi }} Transaksi
-                    </div>
-                    <div class="stat-card-sub text-muted">
-                        Seluruh pengeluaran tercatat
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        {{-- Card 4: Pengeluaran Terbesar --}}
-        <div class="col-12 col-sm-6 col-lg-3">
+        {{-- Card 3: Pengeluaran Terbesar Berdasarkan Kategori --}}
+        <div class="col-12 col-md-4 mb-3">
             <div class="stat-card-clean">
                 <div class="stat-card-icon-circle icon-circle-orange">
-                    <i class="fas fa-chart-line"></i>
+                    <i class="fas fa-chart-pie"></i>
                 </div>
                 <div class="stat-card-info">
-                    <div class="stat-card-label">Pengeluaran Terbesar</div>
-                    <div class="stat-card-value font-num" style="color: #f97316;">
-                        Rp {{ number_format($nominalTerbesar, 0, ',', '.') }}
+                    <div class="stat-card-label">Pengeluaran Berdasarkan Kategori</div>
+                    <div class="stat-card-value font-num" style="color: #0f172a;">
+                        Rp {{ number_format($nominalKategoriTerbesar, 0, ',', '.') }}
                     </div>
-                    <div class="stat-card-sub text-muted" title="{{ $tanggalTerbesar }} - {{ $keteranganTerbesar }}">
-                        {{ $tanggalTerbesar }} &bull; {{ Str::limit($keteranganTerbesar, 12) }}
+                    <div class="stat-card-sub text-muted">
+                        @if($nominalKategoriTerbesar > 0)
+                            {{ $namaKategoriTerbesar }} &bull; {{ $persenKategoriTerbesar }}% dari total
+                        @else
+                            Belum ada transaksi
+                        @endif
                     </div>
                 </div>
             </div>
@@ -853,6 +839,10 @@
                             Keterangan
                             <i class="fas fa-sort sort-icon"></i>
                         </th>
+                        <th style="width: 140px;" class="sortable" data-sort="user" title="Urutkan Dicatat Oleh">
+                            Dicatat Oleh
+                            <i class="fas fa-sort sort-icon"></i>
+                        </th>
                         <th class="text-right text-end sortable" data-sort="nominal" style="width: 145px;" title="Urutkan Nominal">
                             Nominal (Rp)
                             <i class="fas fa-sort sort-icon"></i>
@@ -887,6 +877,7 @@
                             data-tahun="{{ $parsedDate->format('Y') }}"
                             data-sumber="{{ $item->sumber_dana }}"
                             data-keterangan="{{ strtolower($item->keterangan ?? '') }}"
+                            data-user="{{ strtolower($item->user?->name ?? '') }}"
                             data-nominal="{{ (float)$item->nominal }}"
                         >
                             {{-- 1. No --}}
@@ -913,7 +904,18 @@
                                 </div>
                             </td>
 
-                            {{-- 5. Nominal (Rp) --}}
+                            {{-- 5. Dicatat Oleh --}}
+                            <td>
+                                @if($item->user)
+                                    <span class="badge badge-light border text-dark font-weight-normal py-1 px-2" style="border-radius: 6px;">
+                                        <i class="fas fa-user-circle text-primary mr-1"></i>{{ $item->user->name }}
+                                    </span>
+                                @else
+                                    <span class="text-muted small">&ndash;</span>
+                                @endif
+                            </td>
+
+                            {{-- 6. Nominal (Rp) --}}
                             <td class="text-right text-end font-num val-nominal-cell">
                                 Rp {{ number_format($item->nominal, 0, ',', '.') }}
                             </td>
@@ -941,7 +943,7 @@
                         </tr>
                     @empty
                         <tr id="emptyStateRowOriginal">
-                            <td colspan="6" class="text-center py-5">
+                            <td colspan="7" class="text-center py-5">
                                 <i class="fas fa-folder-open fa-2x mb-2 text-muted opacity-50 d-block"></i>
                                 <h6 class="font-weight-bold text-dark mb-1">Belum ada data pengeluaran</h6>
                                 <p class="text-muted small mb-0">Klik "Tambah Pengeluaran" untuk menambahkan data.</p>
@@ -1323,11 +1325,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
         return getAllRows().filter(function (row) {
             const rowKet = (row.dataset.keterangan || '').toLowerCase();
+            const rowUser = (row.dataset.user || '').toLowerCase();
             const rowSumber = row.dataset.sumber || '';
             const rowBulan = row.dataset.bulan || '';
             const rowTahun = row.dataset.tahun || '';
 
-            const matchQuery = !query || rowKet.includes(query);
+            const matchQuery = !query || rowKet.includes(query) || rowUser.includes(query);
             const matchSumber = !sumber || rowSumber === sumber;
             const matchBulan = !bulan || rowBulan === bulan;
             const matchTahun = !tahun || rowTahun === tahun;
@@ -1356,6 +1359,11 @@ document.addEventListener('DOMContentLoaded', function () {
             if (sortColumn === 'keterangan') {
                 valA = a.dataset.keterangan || '';
                 valB = b.dataset.keterangan || '';
+                return sortDirection === 'asc' ? valA.localeCompare(valB, 'id') : valB.localeCompare(valA, 'id');
+            }
+            if (sortColumn === 'user') {
+                valA = a.dataset.user || '';
+                valB = b.dataset.user || '';
                 return sortDirection === 'asc' ? valA.localeCompare(valB, 'id') : valB.localeCompare(valA, 'id');
             }
             if (sortColumn === 'nominal') {

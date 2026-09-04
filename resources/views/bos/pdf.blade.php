@@ -124,47 +124,80 @@
         <p style="font-size: 11px; color: #334155; font-weight: bold;">Tahun Anggaran {{ $tahunAnggaran }}</p>
     </div>
 
-    {{-- BAGIAN 1: PEMASUKAN DANA BOS --}}
-    <div class="section-title">I. PEMASUKAN DANA BOS</div>
+    {{-- BAGIAN 1: DETAIL PENGAMBILAN DANA BOS --}}
+    <div class="section-title">I. DETAIL PENGAMBILAN DANA BOS (TAHUN {{ $tahunAnggaran }})</div>
     <table>
         <thead>
             <tr>
                 <th style="width: 35px;">No</th>
-                <th style="width: 100px;">Tahap</th>
-                <th style="width: 110px;">Tanggal Diterima</th>
-                <th>Keterangan / Catatan</th>
+                <th style="width: 90px;">Tanggal</th>
+                <th style="width: 80px;">Tahap</th>
+                <th>Keterangan / Keperluan Penarikan</th>
                 <th style="width: 140px;" class="right">Nominal (Rp)</th>
             </tr>
         </thead>
         <tbody>
-            <tr>
-                <td class="center">1</td>
-                <td class="font-bold">Tahap 1</td>
-                <td class="center">
-                    {{ $tahap1 ? \Carbon\Carbon::parse($tahap1->tanggal)->format('d/m/Y') : '-' }}
-                </td>
-                <td>{{ $tahap1?->keterangan ?? 'Penerimaan BOS Tahap 1' }}</td>
-                <td class="right font-bold text-success">
-                    {{ $tahap1 ? number_format($tahap1->nominal, 0, ',', '.') : '-' }}
+            {{-- GRUP TAHAP 1 --}}
+            <tr style="background-color: #f1f5f9;">
+                <td colspan="5" class="font-bold" style="padding: 5px 8px; color: #334155;">
+                    A. DAFTAR PENGAMBILAN TAHAP 1 ({{ $pengambilanTahap1->count() }} Transaksi)
                 </td>
             </tr>
-            <tr>
-                <td class="center">2</td>
-                <td class="font-bold">Tahap 2</td>
-                <td class="center">
-                    {{ $tahap2 ? \Carbon\Carbon::parse($tahap2->tanggal)->format('d/m/Y') : '-' }}
+            @forelse($pengambilanTahap1 as $item)
+                <tr>
+                    <td class="center">{{ $loop->iteration }}</td>
+                    <td class="center">{{ \Carbon\Carbon::parse($item->tanggal)->format('d/m/Y') }}</td>
+                    <td class="center">Tahap 1</td>
+                    <td>{{ $item->keterangan ?: 'Pencairan Dana BOS Tahap 1' }}</td>
+                    <td class="right font-bold text-success">{{ number_format($item->nominal, 0, ',', '.') }}</td>
+                </tr>
+            @empty
+                <tr>
+                    <td colspan="5" class="center text-muted" style="padding: 8px; color: #94a3b8;">
+                        Belum ada pengambilan dana pada Tahap 1
+                    </td>
+                </tr>
+            @endforelse
+            <tr style="background-color: #f8fafc; font-weight: bold;">
+                <td colspan="4" class="right">SUBTOTAL PENGAMBILAN TAHAP 1</td>
+                <td class="right font-bold text-success" style="font-size: 11.5px;">
+                    Rp {{ number_format($subtotalTahap1, 0, ',', '.') }}
                 </td>
-                <td>{{ $tahap2?->keterangan ?? 'Penerimaan BOS Tahap 2' }}</td>
-                <td class="right font-bold text-success">
-                    {{ $tahap2 ? number_format($tahap2->nominal, 0, ',', '.') : '-' }}
+            </tr>
+
+            {{-- GRUP TAHAP 2 --}}
+            <tr style="background-color: #f1f5f9;">
+                <td colspan="5" class="font-bold" style="padding: 5px 8px; color: #334155;">
+                    B. DAFTAR PENGAMBILAN TAHAP 2 ({{ $pengambilanTahap2->count() }} Transaksi)
+                </td>
+            </tr>
+            @forelse($pengambilanTahap2 as $item)
+                <tr>
+                    <td class="center">{{ $loop->iteration }}</td>
+                    <td class="center">{{ \Carbon\Carbon::parse($item->tanggal)->format('d/m/Y') }}</td>
+                    <td class="center">Tahap 2</td>
+                    <td>{{ $item->keterangan ?: 'Pencairan Dana BOS Tahap 2' }}</td>
+                    <td class="right font-bold text-success">{{ number_format($item->nominal, 0, ',', '.') }}</td>
+                </tr>
+            @empty
+                <tr>
+                    <td colspan="5" class="center text-muted" style="padding: 8px; color: #94a3b8;">
+                        Belum ada pengambilan dana pada Tahap 2
+                    </td>
+                </tr>
+            @endforelse
+            <tr style="background-color: #f8fafc; font-weight: bold;">
+                <td colspan="4" class="right">SUBTOTAL PENGAMBILAN TAHAP 2</td>
+                <td class="right font-bold text-success" style="font-size: 11.5px;">
+                    Rp {{ number_format($subtotalTahap2, 0, ',', '.') }}
                 </td>
             </tr>
         </tbody>
         <tfoot>
-            <tr style="background-color: #f8fafc;">
-                <th colspan="4" class="right">TOTAL DANA BOS MASUK</th>
-                <th class="right text-success" style="font-size: 12px;">
-                    Rp {{ number_format($totalPemasukanBos, 0, ',', '.') }}
+            <tr style="background-color: #e2e8f0;">
+                <th colspan="4" class="right font-bold">TOTAL PENGAMBILAN DANA BOS (TAHAP 1 + TAHAP 2)</th>
+                <th class="right font-bold text-success" style="font-size: 12px;">
+                    Rp {{ number_format($totalPengambilanBos, 0, ',', '.') }}
                 </th>
             </tr>
         </tfoot>
@@ -176,9 +209,10 @@
         <thead>
             <tr>
                 <th style="width: 35px;">No</th>
-                <th style="width: 100px;">Tanggal</th>
+                <th style="width: 90px;">Tanggal</th>
                 <th>Uraian / Keperluan Pengeluaran</th>
-                <th style="width: 140px;" class="right">Nominal (Rp)</th>
+                <th style="width: 110px;">Dicatat Oleh</th>
+                <th style="width: 130px;" class="right">Nominal (Rp)</th>
             </tr>
         </thead>
         <tbody>
@@ -189,13 +223,16 @@
                         {{ \Carbon\Carbon::parse($item->tanggal)->format('d/m/Y') }}
                     </td>
                     <td>{{ $item->keterangan }}</td>
+                    <td class="center">
+                        {{ $item->user ? $item->user->name : '-' }}
+                    </td>
                     <td class="right text-danger">
                         {{ number_format($item->nominal, 0, ',', '.') }}
                     </td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="4" class="center" style="padding: 12px; color: #94a3b8;">
+                    <td colspan="5" class="center" style="padding: 12px; color: #94a3b8;">
                         Belum ada data pengeluaran dari Dana BOS pada periode ini.
                     </td>
                 </tr>
@@ -203,7 +240,7 @@
         </tbody>
         <tfoot>
             <tr style="background-color: #f8fafc;">
-                <th colspan="3" class="right">TOTAL PENGELUARAN BOS</th>
+                <th colspan="4" class="right">TOTAL PENGELUARAN BOS</th>
                 <th class="right text-danger" style="font-size: 12px;">
                     Rp {{ number_format($totalPengeluaranBos, 0, ',', '.') }}
                 </th>
@@ -216,14 +253,14 @@
         <table class="summary-table">
             <thead>
                 <tr>
-                    <th colspan="2" class="center">REKAPITULASI SALDO DANA BOS</th>
+                    <th colspan="2" class="center">REKAPITULASI SALDO KAS BOS</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td>Total Dana BOS Masuk</td>
+                    <td>Total Pengambilan Dana BOS</td>
                     <td class="right font-bold text-success">
-                        Rp {{ number_format($totalPemasukanBos, 0, ',', '.') }}
+                        Rp {{ number_format($totalPengambilanBos, 0, ',', '.') }}
                     </td>
                 </tr>
                 <tr>
@@ -233,7 +270,7 @@
                     </td>
                 </tr>
                 <tr style="background-color: #f1f5f9;">
-                    <td class="font-bold">SISA SALDO DANA BOS</td>
+                    <td class="font-bold">SISA SALDO KAS BOS</td>
                     <td class="right font-bold" style="font-size: 12px; {{ $sisaSaldoBos >= 0 ? 'color: #0d9488;' : 'color: #b91c1c;' }}">
                         Rp {{ number_format($sisaSaldoBos, 0, ',', '.') }}
                     </td>

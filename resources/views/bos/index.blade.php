@@ -40,24 +40,23 @@
         }
 
         .bos-title-icon {
-            width: 34px;
-            height: 34px;
+            width: 32px;
+            height: 32px;
             border-radius: 8px;
-            background: #0284c7;
-            color: #ffffff;
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            color: #15803d;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            font-size: 15px;
+            font-size: 14.5px;
             flex-shrink: 0;
-            box-shadow: 0 2px 5px rgba(2, 132, 199, 0.25);
         }
 
         .bos-desc {
-            font-size: 13px;
+            font-size: 12.5px;
             color: #64748b;
             margin: 0;
-            padding-left: 44px;
         }
 
         .bos-header-actions {
@@ -82,13 +81,13 @@
         }
 
         .bos-select-tahun:focus {
-            border-color: #0284c7;
+            border-color: #16a34a;
         }
 
         .btn-cetak-bos {
             height: 38px;
-            background: #0284c7;
-            border: 1.5px solid #0284c7;
+            background: #16a34a;
+            border: 1.5px solid #16a34a;
             color: #ffffff !important;
             font-size: 13px;
             font-weight: 600;
@@ -104,8 +103,8 @@
         }
 
         .btn-cetak-bos:hover {
-            background: #0369a1;
-            border-color: #0369a1;
+            background: #15803d;
+            border-color: #15803d;
             transform: translateY(-1px);
         }
 
@@ -190,6 +189,7 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            color: #0f172a !important;
         }
 
         .stat-card-sub {
@@ -460,7 +460,7 @@
 
         /* Modal Styles */
         .modal-header-clean {
-            background: #0284c7 !important;
+            background: #16a34a !important;
             color: #ffffff !important;
             border-top-left-radius: 14px !important;
             border-top-right-radius: 14px !important;
@@ -531,7 +531,7 @@
                 Bantuan Operasional Sekolah (BOS)
             </h1>
             <p class="bos-desc">
-                Pencatatan Pemasukan Tahap 1 & 2 dan Pengeluaran Dana BOS &bull; Tahun Anggaran {{ $tahunAnggaran }}
+                Pencatatan Pengambilan Dana BOS dan Realisasi Pengeluaran &bull; Tahun Anggaran {{ $tahunAnggaran }}
             </p>
         </div>
 
@@ -546,199 +546,209 @@
                     @endforeach
                 </select>
             </form>
+
+            <a href="{{ route('bos.cetak', ['tahun_anggaran' => $tahunAnggaran]) }}" target="_blank" class="btn-cetak-bos">
+                <i class="fas fa-print"></i>
+                <span>Cetak Laporan</span>
+            </a>
         </div>
     </div>
 
-    {{-- 2. 5 STAT CARDS GRID --}}
-    <div class="row g-3 mb-4">
-        {{-- Card 1: Total Dana BOS Masuk --}}
-        <div class="col-12 col-sm-6 col-lg-3">
+    {{-- 2. STAT CARDS: RINGKASAN & RINCIAN DANA BOS --}}
+    <div class="row g-3 mb-3">
+        {{-- Card 1: Total Pengambilan Dana BOS --}}
+        <div class="col-12 col-md-4 mb-3">
             <div class="stat-card-clean">
                 <div class="stat-card-icon-circle icon-circle-emerald">
-                    <i class="fas fa-coins"></i>
+                    <i class="fas fa-hand-holding-usd"></i>
                 </div>
                 <div class="stat-card-info">
-                    <div class="stat-card-label">Total Dana BOS Masuk</div>
-                    <div class="stat-card-value font-num text-success">
-                        Rp {{ number_format($totalPemasukanBos, 0, ',', '.') }}
+                    <div class="stat-card-label">Total Pengambilan Dana BOS</div>
+                    <div class="stat-card-value font-num" style="color: #0f172a;">
+                        Rp {{ number_format($totalPengambilanBos, 0, ',', '.') }}
                     </div>
                     <div class="stat-card-sub text-muted">Tahap 1 + Tahap 2</div>
                 </div>
             </div>
         </div>
 
-        {{-- Card 2: Pemasukan Tahap 1 --}}
-        <div class="col-12 col-sm-6 col-lg-3">
+        {{-- Card 2: Total Pengeluaran BOS --}}
+        <div class="col-12 col-md-4 mb-3">
             <div class="stat-card-clean">
-                <div class="stat-card-icon-circle icon-circle-indigo">
-                    <i class="fas fa-calendar-check"></i>
+                <div class="stat-card-icon-circle icon-circle-red">
+                    <i class="fas fa-receipt"></i>
                 </div>
                 <div class="stat-card-info">
-                    <div class="stat-card-label">Dana BOS Tahap 1</div>
-                    <div class="stat-card-value font-num" style="color: #4338ca;">
-                        Rp {{ number_format($nominalTahap1, 0, ',', '.') }}
+                    <div class="stat-card-label">Total Pengeluaran BOS</div>
+                    <div class="stat-card-value font-num" style="color: #0f172a;">
+                        Rp {{ number_format($totalPengeluaranBos, 0, ',', '.') }}
                     </div>
-                    <div class="stat-card-sub text-muted">
-                        {{ $tahap1 ? \Carbon\Carbon::parse($tahap1->tanggal)->translatedFormat('d M Y') : 'Belum diisi' }}
-                    </div>
+                    <div class="stat-card-sub text-muted">{{ $pengeluaranBos->total() }} Transaksi Pengeluaran</div>
                 </div>
             </div>
         </div>
 
-        {{-- Card 3: Pemasukan Tahap 2 --}}
-        <div class="col-12 col-sm-6 col-lg-3">
-            <div class="stat-card-clean">
-                <div class="stat-card-icon-circle icon-circle-blue">
-                    <i class="fas fa-calendar-check"></i>
-                </div>
-                <div class="stat-card-info">
-                    <div class="stat-card-label">Dana BOS Tahap 2</div>
-                    <div class="stat-card-value font-num" style="color: #0284c7;">
-                        Rp {{ number_format($nominalTahap2, 0, ',', '.') }}
-                    </div>
-                    <div class="stat-card-sub text-muted">
-                        {{ $tahap2 ? \Carbon\Carbon::parse($tahap2->tanggal)->translatedFormat('d M Y') : 'Belum diisi' }}
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        {{-- Card 4: Sisa Saldo BOS --}}
-        <div class="col-12 col-sm-6 col-lg-3">
+        {{-- Card 3: Sisa Saldo Kas BOS --}}
+        <div class="col-12 col-md-4 mb-3">
             <div class="stat-card-clean">
                 <div class="stat-card-icon-circle icon-circle-teal">
                     <i class="fas fa-wallet"></i>
                 </div>
                 <div class="stat-card-info">
-                    <div class="stat-card-label">Sisa Saldo BOS</div>
-                    <div class="stat-card-value font-num {{ $sisaSaldoBos >= 0 ? 'text-teal' : 'text-danger' }}" style="{{ $sisaSaldoBos >= 0 ? 'color: #0d9488;' : '' }}">
+                    <div class="stat-card-label">Sisa Saldo Kas BOS</div>
+                    <div class="stat-card-value font-num" style="color: #0f172a;">
                         Rp {{ number_format($sisaSaldoBos, 0, ',', '.') }}
                     </div>
                     <div class="stat-card-sub text-muted">
-                        {{ $sisaSaldoBos >= 0 ? 'Tersedia' : 'Defisit' }}
+                        {{ $sisaSaldoBos >= 0 ? 'Tersedia di Kas Sekolah' : 'Defisit' }}
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    {{-- 3. CARD 1: TABEL PEMASUKAN DANA BOS (LANGSUNG TAHAP 1 & TAHAP 2) --}}
+    {{-- 3. CARD 1: TABEL DETAIL PENGAMBILAN DANA BOS --}}
     <div class="bos-card">
         <div class="bos-card-header">
             <h5 class="bos-card-title">
-                <i class="fas fa-list-alt text-primary mr-1"></i>
-                Data Pemasukan Dana BOS Tahun {{ $tahunAnggaran }}
+                <i class="fas fa-hand-holding-usd text-primary mr-1"></i>
+                Detail Pengambilan Dana BOS (Tahun {{ $tahunAnggaran }})
             </h5>
+
+            <button type="button" class="btn-tambah-hijau" data-toggle="modal" data-target="#modalTambahPengambilanBos">
+                <i class="fas fa-plus"></i>
+                <span>Tambah Pengambilan Dana BOS</span>
+            </button>
         </div>
 
         <div class="table-responsive">
-            <table class="table table-bos">
+            <table class="table table-bos" id="tablePengambilanBos">
                 <thead>
                     <tr>
-                        <th style="width: 130px;">Tahap BOS</th>
-                        <th style="width: 140px;">Tanggal Penerimaan</th>
-                        <th style="width: 200px;" class="text-right">Nominal Masuk (Rp)</th>
-                        <th>Keterangan / Catatan</th>
-                        <th style="width: 130px;" class="text-center">Status</th>
-                        <th style="width: 150px;" class="text-center">Aksi</th>
+                        <th style="width: 50px;" class="text-center">No</th>
+                        <th style="width: 120px;">Tanggal</th>
+                        <th style="width: 100px;" class="text-center">Tahap</th>
+                        <th>Keterangan / Keperluan Pengambilan</th>
+                        <th style="width: 180px;" class="text-right">Nominal Ditarik (Rp)</th>
+                        <th style="width: 90px;" class="text-center">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {{-- Row 1: Tahap 1 --}}
-                    <tr>
-                        <td>
-                            <span class="badge badge-tahap-1">Tahap 1</span>
-                        </td>
-                        <td class="font-num">
-                            {{ $tahap1 ? \Carbon\Carbon::parse($tahap1->tanggal)->format('d-m-Y') : '-' }}
-                        </td>
-                        <td class="text-right font-weight-bold font-num" style="color: #16a34a; font-size: 14.5px;">
-                            {{ $tahap1 ? 'Rp ' . number_format($tahap1->nominal, 0, ',', '.') : '-' }}
-                        </td>
-                        <td>
-                            {{ $tahap1?->keterangan ?? 'Penerimaan BOS Tahap 1' }}
-                        </td>
-                        <td class="text-center">
-                            @if($tahap1)
-                                <span class="badge badge-status-ada">
-                                    <i class="fas fa-check-circle mr-1"></i> Sudah Diterima
-                                </span>
-                            @else
-                                <span class="badge badge-status-kosong">
-                                    <i class="fas fa-minus-circle mr-1"></i> Belum Diisi
-                                </span>
-                            @endif
-                        </td>
-                        <td class="text-center" style="white-space: nowrap;">
-                            @if($tahap1)
-                                <div class="bos-action-group">
-                                    <button type="button" class="btn-act-edit" title="Edit Data Tahap 1" data-toggle="modal" data-target="#modalInputTahap1">
-                                        <i class="fas fa-pen"></i>
-                                    </button>
-                                    <button type="button" class="btn-act-hapus" title="Hapus Data Tahap 1" data-toggle="modal" data-target="#modalHapusTahap1">
-                                        <i class="fas fa-trash-alt"></i>
-                                    </button>
+                    @if($pengambilanTahap1->isEmpty() && $pengambilanTahap2->isEmpty())
+                        <tr>
+                            <td colspan="6" class="text-center py-5">
+                                <i class="fas fa-folder-open fa-2x mb-2 text-muted opacity-50 d-block"></i>
+                                <h6 class="font-weight-bold text-dark mb-1">Belum ada transaksi pengambilan dana BOS di Tahun {{ $tahunAnggaran }}</h6>
+                                <p class="text-muted small mb-0">Klik tombol "+ Tambah Pengambilan Dana BOS" untuk mencatat penarikan dana dari rekening BOS.</p>
+                            </td>
+                        </tr>
+                    @else
+                        {{-- GRUP TAHAP 1 --}}
+                        <tr style="background-color: #f5f7ff; border-top: 2px solid #e0e7ff; border-bottom: 1px solid #c7d2fe;">
+                            <td colspan="6" class="py-2 px-3">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <div>
+                                        <span class="badge badge-tahap-1 mr-2"><i class="fas fa-layer-group mr-1"></i>Tahap 1</span>
+                                        <strong class="text-dark" style="font-size: 13px;">Daftar Transaksi Pengambilan Tahap 1</strong>
+                                    </div>
+                                    <span class="text-muted small"><strong>{{ $pengambilanTahap1->count() }}</strong> transaksi</span>
                                 </div>
-                            @else
-                                <button type="button" class="btn-input-tahap" data-toggle="modal" data-target="#modalInputTahap1">
-                                    <i class="fas fa-plus"></i>
-                                    <span>Input Tahap 1</span>
-                                </button>
-                            @endif
-                        </td>
-                    </tr>
+                            </td>
+                        </tr>
+                        @forelse($pengambilanTahap1 as $item)
+                            <tr>
+                                <td class="text-center font-num text-muted">{{ $loop->iteration }}</td>
+                                <td class="font-num">{{ \Carbon\Carbon::parse($item->tanggal)->format('d-m-Y') }}</td>
+                                <td class="text-center"><span class="badge badge-tahap-1">Tahap 1</span></td>
+                                <td><div class="font-weight-600 text-dark">{{ $item->keterangan ?: 'Pencairan Dana BOS Tahap 1' }}</div></td>
+                                <td class="text-right font-weight-bold font-num" style="color: #4338ca; font-size: 14px;">
+                                    Rp {{ number_format($item->nominal, 0, ',', '.') }}
+                                </td>
+                                <td class="text-center">
+                                    <div class="bos-action-group">
+                                        <button type="button" class="btn-act-edit" title="Edit Transaksi" data-toggle="modal" data-target="#modalEditPengambilan{{ $item->id }}">
+                                            <i class="fas fa-pen"></i>
+                                        </button>
+                                        <button type="button" class="btn-act-hapus" title="Hapus Transaksi" data-toggle="modal" data-target="#modalHapusPengambilan{{ $item->id }}">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="6" class="text-center text-muted py-2 small font-italic bg-white">
+                                    Belum ada pengambilan dana pada Tahap 1
+                                </td>
+                            </tr>
+                        @endforelse
+                        <tr style="background: #f8fafc; font-weight: bold; border-top: 1px solid #e2e8f0; border-bottom: 2px solid #cbd5e1;">
+                            <td colspan="4" class="text-right text-uppercase" style="font-size: 12px; color: #4338ca; letter-spacing: 0.02em;">
+                                <i class="fas fa-calculator mr-1"></i> Subtotal Pengambilan Tahap 1
+                            </td>
+                            <td class="text-right font-num font-weight-bold" style="font-size: 14.5px; color: #4338ca;">
+                                Rp {{ number_format($subtotalTahap1, 0, ',', '.') }}
+                            </td>
+                            <td></td>
+                        </tr>
 
-                    {{-- Row 2: Tahap 2 --}}
-                    <tr>
-                        <td>
-                            <span class="badge badge-tahap-2">Tahap 2</span>
-                        </td>
-                        <td class="font-num">
-                            {{ $tahap2 ? \Carbon\Carbon::parse($tahap2->tanggal)->format('d-m-Y') : '-' }}
-                        </td>
-                        <td class="text-right font-weight-bold font-num" style="color: #0284c7; font-size: 14.5px;">
-                            {{ $tahap2 ? 'Rp ' . number_format($tahap2->nominal, 0, ',', '.') : '-' }}
-                        </td>
-                        <td>
-                            {{ $tahap2?->keterangan ?? 'Penerimaan BOS Tahap 2' }}
-                        </td>
-                        <td class="text-center">
-                            @if($tahap2)
-                                <span class="badge badge-status-ada">
-                                    <i class="fas fa-check-circle mr-1"></i> Sudah Diterima
-                                </span>
-                            @else
-                                <span class="badge badge-status-kosong">
-                                    <i class="fas fa-minus-circle mr-1"></i> Belum Diisi
-                                </span>
-                            @endif
-                        </td>
-                        <td class="text-center" style="white-space: nowrap;">
-                            @if($tahap2)
-                                <div class="bos-action-group">
-                                    <button type="button" class="btn-act-edit" title="Edit Data Tahap 2" data-toggle="modal" data-target="#modalInputTahap2">
-                                        <i class="fas fa-pen"></i>
-                                    </button>
-                                    <button type="button" class="btn-act-hapus" title="Hapus Data Tahap 2" data-toggle="modal" data-target="#modalHapusTahap2">
-                                        <i class="fas fa-trash-alt"></i>
-                                    </button>
+                        {{-- GRUP TAHAP 2 --}}
+                        <tr style="background-color: #f0f9ff; border-top: 2px solid #e0f2fe; border-bottom: 1px solid #bae6fd;">
+                            <td colspan="6" class="py-2 px-3">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <div>
+                                        <span class="badge badge-tahap-2 mr-2"><i class="fas fa-layer-group mr-1"></i>Tahap 2</span>
+                                        <strong class="text-dark" style="font-size: 13px;">Daftar Transaksi Pengambilan Tahap 2</strong>
+                                    </div>
+                                    <span class="text-muted small"><strong>{{ $pengambilanTahap2->count() }}</strong> transaksi</span>
                                 </div>
-                            @else
-                                <button type="button" class="btn-input-tahap" data-toggle="modal" data-target="#modalInputTahap2">
-                                    <i class="fas fa-plus"></i>
-                                    <span>Input Tahap 2</span>
-                                </button>
-                            @endif
-                        </td>
-                    </tr>
+                            </td>
+                        </tr>
+                        @forelse($pengambilanTahap2 as $item)
+                            <tr>
+                                <td class="text-center font-num text-muted">{{ $loop->iteration }}</td>
+                                <td class="font-num">{{ \Carbon\Carbon::parse($item->tanggal)->format('d-m-Y') }}</td>
+                                <td class="text-center"><span class="badge badge-tahap-2">Tahap 2</span></td>
+                                <td><div class="font-weight-600 text-dark">{{ $item->keterangan ?: 'Pencairan Dana BOS Tahap 2' }}</div></td>
+                                <td class="text-right font-weight-bold font-num" style="color: #0284c7; font-size: 14px;">
+                                    Rp {{ number_format($item->nominal, 0, ',', '.') }}
+                                </td>
+                                <td class="text-center">
+                                    <div class="bos-action-group">
+                                        <button type="button" class="btn-act-edit" title="Edit Transaksi" data-toggle="modal" data-target="#modalEditPengambilan{{ $item->id }}">
+                                            <i class="fas fa-pen"></i>
+                                        </button>
+                                        <button type="button" class="btn-act-hapus" title="Hapus Transaksi" data-toggle="modal" data-target="#modalHapusPengambilan{{ $item->id }}">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="6" class="text-center text-muted py-2 small font-italic bg-white">
+                                    Belum ada pengambilan dana pada Tahap 2
+                                </td>
+                            </tr>
+                        @endforelse
+                        <tr style="background: #f8fafc; font-weight: bold; border-top: 1px solid #e2e8f0; border-bottom: 2px solid #cbd5e1;">
+                            <td colspan="4" class="text-right text-uppercase" style="font-size: 12px; color: #0284c7; letter-spacing: 0.02em;">
+                                <i class="fas fa-calculator mr-1"></i> Subtotal Pengambilan Tahap 2
+                            </td>
+                            <td class="text-right font-num font-weight-bold" style="font-size: 14.5px; color: #0284c7;">
+                                Rp {{ number_format($subtotalTahap2, 0, ',', '.') }}
+                            </td>
+                            <td></td>
+                        </tr>
+                    @endif
                 </tbody>
                 <tfoot>
-                    <tr>
-                        <th colspan="2" class="text-uppercase">Total Dana Masuk BOS (Tahap 1 + Tahap 2)</th>
-                        <th class="text-right font-num text-success" style="font-size: 15px;">
-                            Rp {{ number_format($totalPemasukanBos, 0, ',', '.') }}
+                    <tr style="background: #f1f5f9;">
+                        <th colspan="4" class="text-uppercase font-weight-bold">Total Pengambilan Dana BOS (Tahap 1 + Tahap 2)</th>
+                        <th class="text-right font-num font-weight-bold text-success" style="font-size: 15.5px;">
+                            Rp {{ number_format($totalPengambilanBos, 0, ',', '.') }}
                         </th>
-                        <th colspan="3"></th>
+                        <th></th>
                     </tr>
                 </tfoot>
             </table>
@@ -764,8 +774,9 @@
                 <thead>
                     <tr>
                         <th style="width: 50px;" class="text-center">No</th>
-                        <th style="width: 130px;">Tanggal</th>
+                        <th style="width: 120px;">Tanggal</th>
                         <th>Keterangan / Keperluan Pengeluaran</th>
+                        <th style="width: 140px;">Dicatat Oleh</th>
                         <th style="width: 180px;" class="text-right">Nominal Keluar (Rp)</th>
                         <th style="width: 90px;" class="text-center">Aksi</th>
                     </tr>
@@ -779,6 +790,15 @@
                             </td>
                             <td>
                                 <div class="font-weight-600 text-dark">{{ $item->keterangan }}</div>
+                            </td>
+                            <td>
+                                @if($item->user)
+                                    <span class="badge badge-light border text-dark font-weight-normal py-1 px-2" style="border-radius: 6px;">
+                                        <i class="fas fa-user-circle text-primary mr-1"></i>{{ $item->user->name }}
+                                    </span>
+                                @else
+                                    <span class="text-muted small">&ndash;</span>
+                                @endif
                             </td>
                             <td class="text-right font-weight-bold font-num text-danger" style="font-size: 14px;">
                                 Rp {{ number_format($item->nominal, 0, ',', '.') }}
@@ -805,7 +825,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="text-center py-5">
+                            <td colspan="6" class="text-center py-5">
                                 <i class="fas fa-folder-open fa-2x mb-2 text-muted opacity-50 d-block"></i>
                                 <h6 class="font-weight-bold text-dark mb-1">Belum ada pengeluaran dari Dana BOS</h6>
                                 <p class="text-muted small mb-0">Klik tombol "+ Tambah Pengeluaran BOS" untuk mencatat pengeluaran baru.</p>
@@ -816,7 +836,7 @@
                 @if($pengeluaranBos->isNotEmpty())
                     <tfoot>
                         <tr>
-                            <th colspan="3" class="text-uppercase">Total Pengeluaran Dana BOS</th>
+                            <th colspan="4" class="text-uppercase">Total Pengeluaran Dana BOS</th>
                             <th class="text-right font-num text-danger" style="font-size: 15px;">
                                 Rp {{ number_format($totalPengeluaranBos, 0, ',', '.') }}
                             </th>
@@ -842,17 +862,17 @@
 
 
     {{-- ===============================================================
-         MODALS UNTUK PEMASUKAN TAHAP 1 & TAHAP 2
+         MODALS UNTUK PENGAMBILAN DANA BOS
          =============================================================== --}}
 
-    {{-- MODAL INPUT/EDIT TAHAP 1 --}}
-    <div class="modal fade" id="modalInputTahap1" tabindex="-1" role="dialog" aria-hidden="true">
+    {{-- MODAL TAMBAH PENGAMBILAN DANA BOS --}}
+    <div class="modal fade" id="modalTambahPengambilanBos" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content border-0 shadow" style="border-radius: 14px; overflow: hidden;">
                 <div class="modal-header modal-header-clean">
                     <h5 class="modal-title font-weight-bold">
-                        <i class="fas fa-coins mr-2"></i>
-                        {{ $tahap1 ? 'Edit Pemasukan BOS Tahap 1' : 'Input Pemasukan BOS Tahap 1' }}
+                        <i class="fas fa-hand-holding-usd mr-2"></i>
+                        Tambah Pengambilan Dana BOS
                     </h5>
                     <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
@@ -862,31 +882,42 @@
                 <form action="{{ route('bos.store') }}" method="POST">
                     @csrf
                     <input type="hidden" name="tahun_anggaran" value="{{ $tahunAnggaran }}">
-                    <input type="hidden" name="tahap" value="Tahap 1">
 
                     <div class="modal-body p-4">
-                        <div class="form-group mb-3">
-                            <label class="form-label font-weight-bold">
-                                Tahun Anggaran
-                            </label>
-                            <input type="text" class="form-control bg-light font-weight-bold" value="{{ $tahunAnggaran }}" readonly style="border-radius: 8px;">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label font-weight-bold">
+                                    Tahun Anggaran
+                                </label>
+                                <input type="text" class="form-control bg-light font-weight-bold" value="{{ $tahunAnggaran }}" readonly style="border-radius: 8px;">
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label font-weight-bold">
+                                    Tahap BOS <span class="text-danger">*</span>
+                                </label>
+                                <select name="tahap" class="form-control font-weight-bold" style="border-radius: 8px;" required>
+                                    <option value="Tahap 1" selected>Tahap 1</option>
+                                    <option value="Tahap 2">Tahap 2</option>
+                                </select>
+                            </div>
                         </div>
 
                         <div class="form-group mb-3">
                             <label class="form-label font-weight-bold">
-                                Tanggal Penerimaan <span class="text-danger">*</span>
+                                Tanggal Pengambilan <span class="text-danger">*</span>
                             </label>
                             <input type="date"
                                    name="tanggal"
                                    class="form-control"
                                    style="border-radius: 8px;"
-                                   value="{{ old('tanggal', $tahap1 ? \Carbon\Carbon::parse($tahap1->tanggal)->format('Y-m-d') : date('Y-m-d')) }}"
+                                   value="{{ date('Y-m-d') }}"
                                    required>
                         </div>
 
                         <div class="form-group mb-3">
                             <label class="form-label font-weight-bold">
-                                Nominal Dana Tahap 1 (Rp) <span class="text-danger">*</span>
+                                Nominal Pengambilan (Rp) <span class="text-danger">*</span>
                             </label>
                             <div class="input-group">
                                 <div class="input-group-prepend">
@@ -895,10 +926,9 @@
                                 <input type="number"
                                        name="nominal"
                                        class="form-control font-weight-bold text-success font-num"
-                                       placeholder="Contoh: 50000000"
+                                       placeholder="Contoh: 20000000"
                                        min="1"
                                        step="1"
-                                       value="{{ old('nominal', $tahap1 ? (int)$tahap1->nominal : '') }}"
                                        style="border-radius: 0 8px 8px 0;"
                                        required>
                             </div>
@@ -906,14 +936,14 @@
 
                         <div class="form-group mb-0">
                             <label class="form-label font-weight-bold">
-                                Keterangan / Catatan
+                                Keterangan / Keperluan Penarikan
                             </label>
                             <textarea name="keterangan"
                                       rows="2"
                                       class="form-control"
                                       style="border-radius: 8px;"
-                                      placeholder="Penerimaan BOS Reguler Tahap 1..."
-                                      maxlength="500">{{ old('keterangan', $tahap1?->keterangan) }}</textarea>
+                                      placeholder="Contoh: Penarikan tunai dari rekening BOS untuk operasional sekolah..."
+                                      maxlength="500"></textarea>
                         </div>
                     </div>
 
@@ -923,7 +953,7 @@
                         </button>
                         <button type="submit" class="btn btn-success px-4 font-weight-bold" style="border-radius: 8px; height: 38px;">
                             <i class="fas fa-save mr-1"></i>
-                            Simpan Data
+                            Simpan Pengambilan
                         </button>
                     </div>
                 </form>
@@ -931,101 +961,111 @@
         </div>
     </div>
 
-    {{-- MODAL INPUT/EDIT TAHAP 2 --}}
-    <div class="modal fade" id="modalInputTahap2" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content border-0 shadow" style="border-radius: 14px; overflow: hidden;">
-                <div class="modal-header modal-header-clean">
-                    <h5 class="modal-title font-weight-bold">
-                        <i class="fas fa-coins mr-2"></i>
-                        {{ $tahap2 ? 'Edit Pemasukan BOS Tahap 2' : 'Input Pemasukan BOS Tahap 2' }}
-                    </h5>
-                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+    {{-- MODAL EDIT & HAPUS PENGAMBILAN DANA BOS --}}
+    @foreach($pengambilanTahap1->concat($pengambilanTahap2) as $item)
+        {{-- MODAL EDIT --}}
+        <div class="modal fade" id="modalEditPengambilan{{ $item->id }}" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content border-0 shadow" style="border-radius: 14px; overflow: hidden;">
+                    <div class="modal-header modal-header-clean">
+                        <h5 class="modal-title font-weight-bold">
+                            <i class="fas fa-edit mr-2"></i>
+                            Edit Pengambilan Dana BOS
+                        </h5>
+                        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+
+                    <form action="{{ route('bos.update', $item->id) }}" method="POST">
+                        @csrf
+                        @method('PUT')
+
+                        <div class="modal-body p-4">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label font-weight-bold">
+                                        Tahun Anggaran
+                                    </label>
+                                    <input type="text" class="form-control bg-light font-weight-bold" value="{{ $item->tahun_anggaran }}" readonly style="border-radius: 8px;">
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label font-weight-bold">
+                                        Tahap BOS <span class="text-danger">*</span>
+                                    </label>
+                                    <select name="tahap" class="form-control font-weight-bold" style="border-radius: 8px;" required>
+                                        <option value="Tahap 1" {{ $item->tahap === 'Tahap 1' ? 'selected' : '' }}>Tahap 1</option>
+                                        <option value="Tahap 2" {{ $item->tahap === 'Tahap 2' ? 'selected' : '' }}>Tahap 2</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group mb-3">
+                                <label class="form-label font-weight-bold">
+                                    Tanggal Pengambilan <span class="text-danger">*</span>
+                                </label>
+                                <input type="date"
+                                       name="tanggal"
+                                       class="form-control"
+                                       style="border-radius: 8px;"
+                                       value="{{ \Carbon\Carbon::parse($item->tanggal)->format('Y-m-d') }}"
+                                       required>
+                            </div>
+
+                            <div class="form-group mb-3">
+                                <label class="form-label font-weight-bold">
+                                    Nominal Pengambilan (Rp) <span class="text-danger">*</span>
+                                </label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text font-weight-bold bg-white">Rp</span>
+                                    </div>
+                                    <input type="number"
+                                           name="nominal"
+                                           class="form-control font-weight-bold text-success font-num"
+                                           min="1"
+                                           step="1"
+                                           value="{{ (int)$item->nominal }}"
+                                           style="border-radius: 0 8px 8px 0;"
+                                           required>
+                                </div>
+                            </div>
+
+                            <div class="form-group mb-0">
+                                <label class="form-label font-weight-bold">
+                                    Keterangan / Catatan
+                                </label>
+                                <textarea name="keterangan"
+                                          rows="2"
+                                          class="form-control"
+                                          style="border-radius: 8px;"
+                                          maxlength="500">{{ $item->keterangan }}</textarea>
+                            </div>
+                        </div>
+
+                        <div class="modal-footer bg-light py-2 px-4 justify-content-end">
+                            <button type="button" class="btn btn-batal-merah px-4 mr-2" data-dismiss="modal">
+                                Batal
+                            </button>
+                            <button type="submit" class="btn btn-success px-4 font-weight-bold" style="border-radius: 8px; height: 38px;">
+                                <i class="fas fa-save mr-1"></i>
+                                Simpan Perubahan
+                            </button>
+                        </div>
+                    </form>
                 </div>
-
-                <form action="{{ route('bos.store') }}" method="POST">
-                    @csrf
-                    <input type="hidden" name="tahun_anggaran" value="{{ $tahunAnggaran }}">
-                    <input type="hidden" name="tahap" value="Tahap 2">
-
-                    <div class="modal-body p-4">
-                        <div class="form-group mb-3">
-                            <label class="form-label font-weight-bold">
-                                Tahun Anggaran
-                            </label>
-                            <input type="text" class="form-control bg-light font-weight-bold" value="{{ $tahunAnggaran }}" readonly style="border-radius: 8px;">
-                        </div>
-
-                        <div class="form-group mb-3">
-                            <label class="form-label font-weight-bold">
-                                Tanggal Penerimaan <span class="text-danger">*</span>
-                            </label>
-                            <input type="date"
-                                   name="tanggal"
-                                   class="form-control"
-                                   style="border-radius: 8px;"
-                                   value="{{ old('tanggal', $tahap2 ? \Carbon\Carbon::parse($tahap2->tanggal)->format('Y-m-d') : date('Y-m-d')) }}"
-                                   required>
-                        </div>
-
-                        <div class="form-group mb-3">
-                            <label class="form-label font-weight-bold">
-                                Nominal Dana Tahap 2 (Rp) <span class="text-danger">*</span>
-                            </label>
-                            <div class="input-group">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text font-weight-bold bg-white">Rp</span>
-                                </div>
-                                <input type="number"
-                                       name="nominal"
-                                       class="form-control font-weight-bold text-success font-num"
-                                       placeholder="Contoh: 50000000"
-                                       min="1"
-                                       step="1"
-                                       value="{{ old('nominal', $tahap2 ? (int)$tahap2->nominal : '') }}"
-                                       style="border-radius: 0 8px 8px 0;"
-                                       required>
-                            </div>
-                        </div>
-
-                        <div class="form-group mb-0">
-                            <label class="form-label font-weight-bold">
-                                Keterangan / Catatan
-                            </label>
-                            <textarea name="keterangan"
-                                      rows="2"
-                                      class="form-control"
-                                      style="border-radius: 8px;"
-                                      placeholder="Penerimaan BOS Reguler Tahap 2..."
-                                      maxlength="500">{{ old('keterangan', $tahap2?->keterangan) }}</textarea>
-                        </div>
-                    </div>
-
-                    <div class="modal-footer bg-light py-2 px-4 justify-content-end">
-                        <button type="button" class="btn btn-batal-merah px-4 mr-2" data-dismiss="modal">
-                            Batal
-                        </button>
-                        <button type="submit" class="btn btn-success px-4 font-weight-bold" style="border-radius: 8px; height: 38px;">
-                            <i class="fas fa-save mr-1"></i>
-                            Simpan Data
-                        </button>
-                    </div>
-                </form>
             </div>
         </div>
-    </div>
 
-    {{-- MODAL HAPUS TAHAP 1 --}}
-    @if($tahap1)
-        <div class="modal fade" id="modalHapusTahap1" tabindex="-1" role="dialog" aria-hidden="true">
+        {{-- MODAL HAPUS --}}
+        <div class="modal fade" id="modalHapusPengambilan{{ $item->id }}" tabindex="-1" role="dialog" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content border-0 shadow" style="border-radius: 14px; overflow: hidden;">
                     <div class="modal-header modal-header-danger">
                         <h5 class="modal-title font-weight-bold">
                             <i class="fas fa-trash-alt mr-2"></i>
-                            Hapus Pemasukan BOS Tahap 1
+                            Konfirmasi Hapus Pengambilan Dana BOS
                         </h5>
                         <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
@@ -1033,23 +1073,23 @@
                     </div>
                     <div class="modal-body p-4">
                         <p class="mb-2 text-dark">
-                            Apakah Anda yakin ingin menghapus data penerimaan <strong>BOS Tahap 1</strong> sebesar:
+                            Apakah Anda yakin ingin menghapus transaksi pengambilan <strong>BOS {{ $item->tahap }}</strong> sebesar:
                         </p>
                         <div class="p-3 bg-light border rounded text-center mb-3" style="border-radius: 10px;">
                             <span class="text-success font-weight-bold font-num" style="font-size: 18px;">
-                                Rp {{ number_format($tahap1->nominal, 0, ',', '.') }}
+                                Rp {{ number_format($item->nominal, 0, ',', '.') }}
                             </span>
                             <div class="text-muted small mt-1">
-                                Tanggal: {{ \Carbon\Carbon::parse($tahap1->tanggal)->format('d-m-Y') }}
+                                Tanggal: {{ \Carbon\Carbon::parse($item->tanggal)->format('d-m-Y') }} &bull; {{ $item->keterangan ?: 'Tanpa keterangan' }}
                             </div>
                         </div>
                         <div class="alert alert-danger mb-0 small" style="border-radius: 8px;">
                             <i class="fas fa-exclamation-triangle mr-1"></i>
-                            Tindakan ini tidak dapat dibatalkan.
+                            Tindakan ini tidak dapat dibatalkan. Total tahap dan saldo akan otomatis dihitung ulang.
                         </div>
                     </div>
                     <div class="modal-footer bg-light py-2 px-4 justify-content-end">
-                        <form action="{{ route('bos.destroy', $tahap1->id) }}" method="POST">
+                        <form action="{{ route('bos.destroy', $item->id) }}" method="POST">
                             @csrf
                             @method('DELETE')
                             <button type="button" class="btn btn-secondary px-4 mr-2" data-dismiss="modal" style="border-radius: 8px; height: 38px;">
@@ -1064,56 +1104,7 @@
                 </div>
             </div>
         </div>
-    @endif
-
-    {{-- MODAL HAPUS TAHAP 2 --}}
-    @if($tahap2)
-        <div class="modal fade" id="modalHapusTahap2" tabindex="-1" role="dialog" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered" role="document">
-                <div class="modal-content border-0 shadow" style="border-radius: 14px; overflow: hidden;">
-                    <div class="modal-header modal-header-danger">
-                        <h5 class="modal-title font-weight-bold">
-                            <i class="fas fa-trash-alt mr-2"></i>
-                            Hapus Pemasukan BOS Tahap 2
-                        </h5>
-                        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body p-4">
-                        <p class="mb-2 text-dark">
-                            Apakah Anda yakin ingin menghapus data penerimaan <strong>BOS Tahap 2</strong> sebesar:
-                        </p>
-                        <div class="p-3 bg-light border rounded text-center mb-3" style="border-radius: 10px;">
-                            <span class="text-success font-weight-bold font-num" style="font-size: 18px;">
-                                Rp {{ number_format($tahap2->nominal, 0, ',', '.') }}
-                            </span>
-                            <div class="text-muted small mt-1">
-                                Tanggal: {{ \Carbon\Carbon::parse($tahap2->tanggal)->format('d-m-Y') }}
-                            </div>
-                        </div>
-                        <div class="alert alert-danger mb-0 small" style="border-radius: 8px;">
-                            <i class="fas fa-exclamation-triangle mr-1"></i>
-                            Tindakan ini tidak dapat dibatalkan.
-                        </div>
-                    </div>
-                    <div class="modal-footer bg-light py-2 px-4 justify-content-end">
-                        <form action="{{ route('bos.destroy', $tahap2->id) }}" method="POST">
-                            @csrf
-                            @method('DELETE')
-                            <button type="button" class="btn btn-secondary px-4 mr-2" data-dismiss="modal" style="border-radius: 8px; height: 38px;">
-                                Batal
-                            </button>
-                            <button type="submit" class="btn btn-danger px-4 font-weight-bold" style="border-radius: 8px; height: 38px;">
-                                <i class="fas fa-trash-alt mr-1"></i>
-                                Hapus
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-    @endif
+    @endforeach
 
 
     {{-- ===============================================================
@@ -1139,6 +1130,16 @@
                     <input type="hidden" name="tahun_anggaran" value="{{ $tahunAnggaran }}">
 
                     <div class="modal-body p-4">
+                        <div class="alert {{ $sisaSaldoBos > 0 ? 'alert-info' : 'alert-danger' }} py-2 px-3 mb-3 d-flex align-items-center justify-content-between" style="border-radius: 8px;">
+                            <div>
+                                <i class="fas {{ $sisaSaldoBos > 0 ? 'fa-info-circle' : 'fa-exclamation-triangle' }} mr-1"></i>
+                                <span>Sisa Dana BOS Tersedia (Tahun {{ $tahunAnggaran }}):</span>
+                            </div>
+                            <strong class="font-num font-weight-bold" style="font-size: 14px;">
+                                Rp {{ number_format($sisaSaldoBos, 0, ',', '.') }}
+                            </strong>
+                        </div>
+
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label class="form-label font-weight-bold">
@@ -1177,10 +1178,12 @@
                                        class="form-control font-weight-bold text-danger font-num"
                                        placeholder="Masukkan nominal..."
                                        min="1"
+                                       max="{{ max(0, (int)$sisaSaldoBos) }}"
                                        step="1"
                                        style="border-radius: 0 8px 8px 0;"
                                        required>
                             </div>
+                            <small class="text-muted">Maksimal pengeluaran yang diizinkan sesuai sisa saldo BOS: <strong>Rp {{ number_format(max(0, (int)$sisaSaldoBos), 0, ',', '.') }}</strong></small>
                         </div>
 
                         <div class="form-group mb-0">
@@ -1233,6 +1236,19 @@
                         <input type="hidden" name="sumber_dana" value="BOS">
 
                         <div class="modal-body p-4">
+                            @php
+                                $maksEdit = $sisaSaldoBos + $item->nominal;
+                            @endphp
+                            <div class="alert alert-info py-2 px-3 mb-3 d-flex align-items-center justify-content-between" style="border-radius: 8px;">
+                                <div>
+                                    <i class="fas fa-info-circle mr-1"></i>
+                                    <span>Batas Maksimal Pengeluaran:</span>
+                                </div>
+                                <strong class="font-num font-weight-bold" style="font-size: 14px;">
+                                    Rp {{ number_format($maksEdit, 0, ',', '.') }}
+                                </strong>
+                            </div>
+
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label font-weight-bold">
@@ -1270,11 +1286,13 @@
                                            name="nominal"
                                            class="form-control font-weight-bold text-danger font-num"
                                            min="1"
+                                           max="{{ (int)$maksEdit }}"
                                            step="1"
                                            value="{{ (int)$item->nominal }}"
                                            style="border-radius: 0 8px 8px 0;"
                                            required>
                                 </div>
+                                <small class="text-muted">Maksimal perubahan yang diizinkan: <strong>Rp {{ number_format($maksEdit, 0, ',', '.') }}</strong></small>
                             </div>
 
                             <div class="form-group mb-0">

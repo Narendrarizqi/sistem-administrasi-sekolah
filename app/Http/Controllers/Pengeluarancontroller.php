@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Bos;
 use App\Models\Pengeluaran;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 class PengeluaranController extends Controller
 {
@@ -53,6 +56,12 @@ class PengeluaranController extends Controller
             ];
         }
 
+        // Kategori Terbesar Berdasarkan Sumber Dana
+        $kategoriTerbesarItem = collect($ringkasanSumber)->sortByDesc('nominal')->first();
+        $namaKategoriTerbesar = ($kategoriTerbesarItem && $kategoriTerbesarItem['nominal'] > 0) ? $kategoriTerbesarItem['label'] : '-';
+        $nominalKategoriTerbesar = (float) ($kategoriTerbesarItem['nominal'] ?? 0);
+        $persenKategoriTerbesar = (float) ($kategoriTerbesarItem['persen'] ?? 0);
+
         // 5. Tren 6 Bulan Terakhir
         $tren6Bulan = [];
         for ($i = 5; $i >= 0; $i--) {
@@ -88,7 +97,8 @@ class PengeluaranController extends Controller
         }
 
         // Data Tabel Paginated (25 data per halaman)
-        $pengeluaran = Pengeluaran::orderByDesc('tanggal')
+        $pengeluaran = Pengeluaran::with('user')
+            ->orderByDesc('tanggal')
             ->orderByDesc('id')
             ->paginate(25)
             ->withQueryString();
@@ -103,6 +113,9 @@ class PengeluaranController extends Controller
             'nominalTerbesar',
             'tanggalTerbesar',
             'keteranganTerbesar',
+            'namaKategoriTerbesar',
+            'nominalKategoriTerbesar',
+            'persenKategoriTerbesar',
             'ringkasanSumber',
             'tren6Bulan',
             'tren12Bulan',
@@ -124,6 +137,23 @@ class PengeluaranController extends Controller
             'nominal'     => 'required|numeric|min:1',
         ]);
 
+        if ($validated['sumber_dana'] === 'BOS') {
+            $bosBudget = $this->getBosBudgetForDate($validated['tanggal']);
+
+            if ($bosBudget['total_pengambilan_bos'] <= 0) {
+                throw ValidationException::withMessages([
+                    'nominal' => 'Belum ada pengambilan dana BOS untuk Tahun Anggaran ' . $bosBudget['tahun_anggaran'] . '. Silakan catat pengambilan dana BOS terlebih dahulu.',
+                ]);
+            }
+
+            if ((float) $validated['nominal'] > $bosBudget['sisa_saldo_bos']) {
+                throw ValidationException::withMessages([
+                    'nominal' => 'Nominal pengeluaran (Rp ' . number_format($validated['nominal'], 0, ',', '.') . ') melebihi sisa kas dana BOS yang tersedia (Rp ' . number_format($bosBudget['sisa_saldo_bos'], 0, ',', '.') . ').',
+                ]);
+            }
+        }
+
+        $validated['user_id'] = auth()->id();
         Pengeluaran::create($validated);
 
         return redirect()
@@ -145,7 +175,32 @@ class PengeluaranController extends Controller
             'nominal'     => 'required|numeric|min:1',
         ]);
 
+        $targetTahunAnggaran = null;
+        if ($validated['sumber_dana'] === 'BOS') {
+            $bosBudget = $this->getBosBudgetForDate($validated['tanggal'], $pengeluaran->id);
+            $targetTahunAnggaran = $bosBudget['tahun_anggaran'];
+
+            if ($bosBudget['total_pengambilan_bos'] <= 0) {
+                throw ValidationException::withMessages([
+                    'nominal' => 'Belum ada pengambilan dana BOS untuk Tahun Anggaran ' . $bosBudget['tahun_anggaran'] . '.',
+                ]);
+            }
+
+            if ((float) $validated['nominal'] > $bosBudget['sisa_saldo_bos']) {
+                throw ValidationException::withMessages([
+                    'nominal' => 'Nominal pengeluaran (Rp ' . number_format($validated['nominal'], 0, ',', '.') . ') melebihi sisa dana BOS yang tersedia (Rp ' . number_format($bosBudget['sisa_saldo_bos'], 0, ',', '.') . ').',
+                ]);
+            }
+        }
+
+        $validated['user_id'] = auth()->id();
         $pengeluaran->update($validated);
+
+        if ($pengeluaran->sumber_dana === 'BOS' && str_contains(url()->previous(), '/bos')) {
+            $redirectYear = $targetTahunAnggaran ?: Carbon::parse($validated['tanggal'])->format('Y');
+            return redirect()->route('bos.index', ['tahun_anggaran' => $redirectYear])
+                ->with('success', 'Data pengeluaran Dana BOS berhasil diperbarui.');
+        }
 
         return redirect()
             ->route('pengeluaran.index')
@@ -154,10 +209,87 @@ class PengeluaranController extends Controller
 
     public function destroy(Pengeluaran $pengeluaran)
     {
+        $isBos = $pengeluaran->sumber_dana === 'BOS';
+        $bosBudget = $isBos ? $this->getBosBudgetForDate($pengeluaran->tanggal) : null;
         $pengeluaran->delete();
+
+        if ($isBos && str_contains(url()->previous(), '/bos')) {
+            $redirectYear = $bosBudget ? $bosBudget['tahun_anggaran'] : Carbon::parse($pengeluaran->tanggal)->format('Y');
+            return redirect()->route('bos.index', ['tahun_anggaran' => $redirectYear])
+                ->with('success', 'Data pengeluaran Dana BOS berhasil dihapus.');
+        }
 
         return redirect()
             ->route('pengeluaran.index')
             ->with('success', 'Data pengeluaran berhasil dihapus.');
+    }
+
+    /**
+     * Resolusi budget BOS dan sisa saldo yang fleksibel mendukung Tahun Kalender (2026) maupun Tahun Ajaran (2026/2027)
+     */
+    private function getBosBudgetForDate(string $tanggal, ?int $excludePengeluaranId = null): array
+    {
+        $date = Carbon::parse($tanggal);
+        $year = $date->format('Y');
+        $month = (int) $date->format('n');
+        $taTahun = $month >= 7 
+            ? $year . '/' . ((int)$year + 1) 
+            : ((int)$year - 1) . '/' . $year;
+        
+        $activeTa = \App\Models\TahunAjaran::where('is_active', true)->value('nama');
+
+        // Prioritas pencarian Tahun Anggaran BOS:
+        // 1. Tahun Ajaran berdasarkan tanggal (misal: 2026/2027)
+        // 2. Tahun Kalender berdasarkan tanggal (misal: 2026)
+        // 3. Tahun Ajaran Aktif di master data sekolah
+        // 4. Record BOS apapun yang relevan dengan tahun ini
+        $targetTahunAnggaran = null;
+        if (Bos::where('tahun_anggaran', $taTahun)->exists()) {
+            $targetTahunAnggaran = $taTahun;
+        } elseif (Bos::where('tahun_anggaran', $year)->exists()) {
+            $targetTahunAnggaran = $year;
+        } elseif ($activeTa && Bos::where('tahun_anggaran', $activeTa)->exists()) {
+            $targetTahunAnggaran = $activeTa;
+        } else {
+            $matchingBos = Bos::where('tahun_anggaran', 'LIKE', $year . '/%')
+                ->orWhere('tahun_anggaran', 'LIKE', '%/' . $year)
+                ->first();
+            if ($matchingBos) {
+                $targetTahunAnggaran = $matchingBos->tahun_anggaran;
+            } else {
+                $targetTahunAnggaran = $taTahun ?: $year;
+            }
+        }
+
+        // Ambil data pengambilan BOS khusus untuk target tahun anggaran ini
+        $bosRecords = Bos::where('tahun_anggaran', $targetTahunAnggaran)->get();
+        $totalPengambilanBos = (float) $bosRecords->sum('nominal');
+
+        // Filter pengeluaran yang sesuai periode tahun anggaran
+        $pengeluaranQuery = Pengeluaran::where('sumber_dana', 'BOS');
+        if ($excludePengeluaranId) {
+            $pengeluaranQuery->where('id', '!=', $excludePengeluaranId);
+        }
+
+        if (str_contains($targetTahunAnggaran, '/')) {
+            $parts = explode('/', $targetTahunAnggaran);
+            $startYear = trim($parts[0]);
+            $endYear = trim($parts[1]);
+            if (is_numeric($startYear) && is_numeric($endYear)) {
+                $pengeluaranQuery->whereBetween('tanggal', ["$startYear-07-01", "$endYear-06-30"]);
+            }
+        } elseif (is_numeric($targetTahunAnggaran) && strlen($targetTahunAnggaran) === 4) {
+            $pengeluaranQuery->whereYear('tanggal', $targetTahunAnggaran);
+        }
+
+        $totalPengeluaranBos = (float) $pengeluaranQuery->sum('nominal');
+        $sisaSaldoBos = $totalPengambilanBos - $totalPengeluaranBos;
+
+        return [
+            'tahun_anggaran'        => $targetTahunAnggaran,
+            'total_pengambilan_bos' => $totalPengambilanBos,
+            'total_pengeluaran_bos' => $totalPengeluaranBos,
+            'sisa_saldo_bos'        => $sisaSaldoBos,
+        ];
     }
 }

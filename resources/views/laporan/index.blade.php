@@ -35,24 +35,23 @@
         }
 
         .laporan-title-icon {
-            width: 34px;
-            height: 34px;
+            width: 32px;
+            height: 32px;
             border-radius: 8px;
-            background: #16a34a;
-            color: #ffffff;
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            color: #15803d;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            font-size: 15px;
+            font-size: 14.5px;
             flex-shrink: 0;
-            box-shadow: 0 2px 5px rgba(22, 163, 74, 0.25);
         }
 
         .laporan-desc {
-            font-size: 13px;
+            font-size: 12.5px;
             color: #64748b;
             margin: 0;
-            padding-left: 44px;
         }
 
         /* 2. Filter & Export Card */
