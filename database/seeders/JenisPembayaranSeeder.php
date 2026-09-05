@@ -29,7 +29,10 @@ class JenisPembayaranSeeder extends Seeder
         ];
 
         foreach ($data as $item) {
-            JenisPembayaran::create($item);
+            JenisPembayaran::firstOrCreate(
+                ['nama' => $item['nama']],
+                ['target' => $item['target']]
+            );
         }
     }
 }

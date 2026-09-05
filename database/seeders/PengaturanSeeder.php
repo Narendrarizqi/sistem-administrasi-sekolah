@@ -9,10 +9,12 @@ class PengaturanSeeder extends Seeder
 {
     public function run(): void
     {
-        Pengaturan::create([
-            'nama_sekolah' => 'SMK Muhammadiyah Margasari',
-            'nama_sistem' => 'Sistem Rekap Pembayaran',
-            'logo' => 'logo.png'
-        ]);
+        if (Pengaturan::count() === 0) {
+            Pengaturan::create([
+                'nama_sekolah' => 'SMK Muhammadiyah Margasari',
+                'nama_sistem' => 'Sistem Rekap Pembayaran',
+                'logo' => 'logo.png'
+            ]);
+        }
     }
 }
