@@ -969,6 +969,7 @@
                                                  <i class="fas fa-pen"></i>
                                              </button>
 
+                                             @if(auth()->user()->level !== 'TU')
                                              <button
                                                  type="button"
                                                  class="btn-act-hapus"
@@ -978,6 +979,7 @@
                                              >
                                                  <i class="fas fa-trash-alt"></i>
                                              </button>
+                                             @endif
                                          </div>
                                      </td>
                                 </tr>

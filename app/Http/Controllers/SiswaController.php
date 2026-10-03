@@ -262,6 +262,12 @@ class SiswaController extends Controller
 
     public function destroy(Siswa $siswa)
     {
+        if (auth()->user()->level === 'TU') {
+            return redirect()
+                ->route('siswa.index')
+                ->with('error', 'Anda tidak memiliki akses untuk menghapus data siswa.');
+        }
+
         $siswa->delete();
 
         return redirect()
