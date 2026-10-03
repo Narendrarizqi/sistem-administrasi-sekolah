@@ -16,7 +16,7 @@ class UserSeeder extends Seeder
             ['username' => 'kepsek'],
             [
                 'name' => 'kepala sekolah',
-                'email' => 'kepsek@smkmuhmargasari.sch.id',
+                'email' => 'bagusnarendra500@gmail.com',
                 'password' => 'kepsek123',
             ]
         );

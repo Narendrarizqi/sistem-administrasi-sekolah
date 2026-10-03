@@ -379,7 +379,7 @@ class EkstrakurikulerController extends Controller
             ? (float) $request->nominal
             : (float) $jenisEkskul->nominal_default;
 
-        $allSiswa = Siswa::all();
+        $allSiswa = Siswa::where('kelas', '!=', 'Lulus')->get();
         $createdCount = 0;
         $skippedCount = 0;
 

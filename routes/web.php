@@ -13,6 +13,7 @@ use App\Http\Controllers\EkstrakurikulerController;
 use App\Http\Controllers\KokurikulerController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ForgotPasswordController;
+use App\Http\Controllers\ResetPasswordController;
 use App\Http\Controllers\PengeluaranController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\BuktiPembayaranController;
@@ -158,6 +159,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/laporan', [LaporanController::class, 'index'])
         ->name('laporan.index');
 
+    Route::get('/laporan/cetak', [LaporanController::class, 'cetakPdf'])
+        ->name('laporan.cetak');
+        
+    Route::get('/laporan/cetak-rincian-saldo', [LaporanController::class, 'cetakRincianSaldo'])
+        ->name('laporan.cetak-rincian-saldo');
+
     Route::get('/bukti-pembayaran/{id}/cetak', [BuktiPembayaranController::class, 'cetak'])
         ->name('bukti.cetak');
 
@@ -172,6 +179,10 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/tahun-ajaran/{id}/activate', [TahunAjaranController::class, 'activate'])
         ->name('tahun-ajaran.activate');
+
+    // Logout
+    Route::post('/logout', [AuthController::class, 'logout'])
+        ->name('logout');
 });
 
     // Login
@@ -181,9 +192,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/login', [AuthController::class, 'login'])
         ->name('login.process');
 
-    // Logout
-    Route::post('/logout', [AuthController::class, 'logout'])
-        ->name('logout');
+
 
     Route::get('/forgot-password', [ForgotPasswordController::class, 'showLinkRequestForm'])
         ->middleware('guest')
@@ -193,11 +202,10 @@ Route::middleware('auth')->group(function () {
         ->middleware('guest')
         ->name('password.email');
 
-    Route::get('/laporan', [LaporanController::class, 'index'])
-        ->name('laporan.index');
+    Route::get('/reset-password/{token}', [ResetPasswordController::class, 'showResetForm'])
+        ->middleware('guest')
+        ->name('password.reset');
 
-    Route::get('/laporan/cetak', [LaporanController::class, 'cetakPdf'])
-        ->name('laporan.cetak');
-        
-    Route::get('/laporan/cetak-rincian-saldo', [LaporanController::class, 'cetakRincianSaldo'])
-    ->name('laporan.cetak-rincian-saldo');
+    Route::post('/reset-password', [ResetPasswordController::class, 'reset'])
+        ->middleware('guest')
+        ->name('password.update');

@@ -629,7 +629,7 @@
                             <input type="checkbox" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }}>
                             <span>Ingat saya</span>
                         </label>
-                        <a href="#" class="forgot-link" onclick="alert('Silakan hubungi Administrator untuk mereset kata sandi Anda.'); return false;">
+                        <a href="{{ route('password.request') }}" class="forgot-link">
                             Lupa password?
                         </a>
                     </div>

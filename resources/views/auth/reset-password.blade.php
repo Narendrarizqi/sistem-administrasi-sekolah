@@ -568,18 +568,11 @@
 
                 <div class="login-header">
                     <div class="avatar-badge">
-                        <i class="fas fa-key"></i>
+                        <i class="fas fa-lock"></i>
                     </div>
-                    <h2 class="login-title">Lupa Password</h2>
-                    <p class="login-subtitle">Masukkan email terdaftar Anda</p>
+                    <h2 class="login-title">Reset Password</h2>
+                    <p class="login-subtitle">Buat password baru Anda</p>
                 </div>
-
-                @if(session('success'))
-                    <div class="alert-error" style="background:#dcfce7; border:1px solid #bbf7d0; color:#15803d;">
-                        <i class="fas fa-check-circle"></i>
-                        <span>{{ session('success') }}</span>
-                    </div>
-                @endif
 
                 @if($errors->any())
                     <div class="alert-error">
@@ -588,26 +581,38 @@
                     </div>
                 @endif
 
-                <form action="{{ route('password.email') }}" method="POST">
+                <form action="{{ route('password.update') }}" method="POST">
                     @csrf
+                    <input type="hidden" name="token" value="{{ $token }}">
+
                     <div class="form-group">
                         <label class="form-label" for="email">Email</label>
                         <div class="input-group-wrap">
                             <i class="far fa-envelope input-icon-left"></i>
-                            <input type="email" name="email" id="email" class="form-control-input" placeholder="Masukkan email" value="{{ old('email') }}" required autofocus>
+                            <input type="email" name="email" id="email" class="form-control-input" value="{{ old('email', $email) }}" required readonly>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="password">Password Baru</label>
+                        <div class="input-group-wrap">
+                            <i class="fas fa-lock input-icon-left"></i>
+                            <input type="password" name="password" id="password" class="form-control-input" placeholder="Minimal 8 karakter" required autofocus>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="password_confirmation">Konfirmasi Password</label>
+                        <div class="input-group-wrap">
+                            <i class="fas fa-lock input-icon-left"></i>
+                            <input type="password" name="password_confirmation" id="password_confirmation" class="form-control-input" placeholder="Ketik ulang password baru" required>
                         </div>
                     </div>
 
                     <button type="submit" class="btn-masuk" style="margin-top:24px;">
-                        <span>Kirim Link Reset</span>
-                        <i class="fas fa-paper-plane"></i>
+                        <i class="fas fa-save"></i>
+                        <span style="margin-left:8px;">Simpan Password Baru</span>
                     </button>
-                    
-                    <div style="text-align:center; margin-top:16px;">
-                        <a href="{{ route('login') }}" class="forgot-link" style="font-size:13px;">
-                            <i class="fas fa-arrow-left"></i> Kembali ke Login
-                        </a>
-                    </div>
                 </form>
 
             </div>

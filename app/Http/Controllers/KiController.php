@@ -465,7 +465,7 @@ class KiController extends Controller
             ? (float) $request->nominal
             : (float) $jenisIuran->nominal_default;
 
-        $allSiswa = Siswa::all();
+        $allSiswa = Siswa::where('kelas', '!=', 'Lulus')->get();
         $createdCount = 0;
         $skippedCount = 0;
 

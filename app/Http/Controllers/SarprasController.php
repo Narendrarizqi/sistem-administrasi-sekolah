@@ -263,7 +263,7 @@ class SarprasController extends Controller
         $tahunAjaranNama = $tahunAktif?->nama;
 
         $nominal = (float) $request->nominal;
-        $allSiswa = Siswa::all();
+        $allSiswa = Siswa::where('kelas', '!=', 'Lulus')->get();
         $createdCount = 0;
         $skippedCount = 0;
 

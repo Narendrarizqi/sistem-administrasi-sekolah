@@ -272,7 +272,7 @@ class DaftarUlangController extends Controller
         $tahunAjaranNama = $tahunAktif?->nama;
 
         $nominal = (float) $request->nominal;
-        $allSiswa = Siswa::all();
+        $allSiswa = Siswa::where('kelas', 'LIKE', 'X %')->where('kelas', '!=', 'Lulus')->get();
         $createdCount = 0;
         $skippedCount = 0;
 

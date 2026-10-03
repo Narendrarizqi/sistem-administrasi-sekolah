@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Sistem Administrasi Pembayaran Sekolah | SMK Muhammadiyah Margasari</title>
+    <title>Login - Sistem Administrasi Keuangan Sekolah | SMK Muhammadiyah Margasari</title>
 
     <!-- Favicon -->
     <link rel="shortcut icon" href="{{ asset('images/logo.png') }}" type="image/png">
