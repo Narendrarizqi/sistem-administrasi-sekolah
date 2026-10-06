@@ -8,7 +8,7 @@ use App\Http\Controllers\PembayaranController;
 use App\Http\Controllers\IppController;
 use App\Http\Controllers\DaftarUlangController;
 use App\Http\Controllers\SarprasController;
-use App\Http\Controllers\KiController;
+use App\Http\Controllers\AsesmenController;
 use App\Http\Controllers\EkstrakurikulerController;
 use App\Http\Controllers\KokurikulerController;
 use App\Http\Controllers\AuthController;
@@ -70,13 +70,13 @@ Route::middleware('auth')->group(function () {
     Route::post('/ipp', [IppController::class, 'store'])->name('ipp.store');
     Route::post('/ipp/store', [IppController::class, 'store'])->name('ipp.store');
 
-    Route::resource('ki', KiController::class);
-    Route::post('/ki/{id}/bayar', [KiController::class,'bayar'])->name('ki.bayar');
-    Route::post('/ki/jenis-iuran', [KiController::class, 'storeJenisIuran'])->name('ki.jenis-iuran.store');
-    Route::put('/ki/jenis-iuran/{id}', [KiController::class, 'updateJenisIuran'])->name('ki.jenis-iuran.update');
-    Route::delete('/ki/jenis-iuran/{id}', [KiController::class, 'destroyJenisIuran'])->name('ki.jenis-iuran.destroy');
-    Route::post('/ki/jenis-iuran/{id}/toggle', [KiController::class, 'toggleJenisIuran'])->name('ki.jenis-iuran.toggle');
-    Route::post('/ki/terapkan-massal', [KiController::class, 'terapkanMassal'])->name('ki.terapkan-massal');
+    Route::resource('asesmen', AsesmenController::class);
+    Route::post('/asesmen/{id}/bayar', [AsesmenController::class,'bayar'])->name('asesmen.bayar');
+    Route::post('/asesmen/jenis-iuran', [AsesmenController::class, 'storeJenisIuran'])->name('asesmen.jenis-iuran.store');
+    Route::put('/asesmen/jenis-iuran/{id}', [AsesmenController::class, 'updateJenisIuran'])->name('asesmen.jenis-iuran.update');
+    Route::delete('/asesmen/jenis-iuran/{id}', [AsesmenController::class, 'destroyJenisIuran'])->name('asesmen.jenis-iuran.destroy');
+    Route::post('/asesmen/jenis-iuran/{id}/toggle', [AsesmenController::class, 'toggleJenisIuran'])->name('asesmen.jenis-iuran.toggle');
+    Route::post('/asesmen/terapkan-massal', [AsesmenController::class, 'terapkanMassal'])->name('asesmen.terapkan-massal');
 
     // Ekstrakurikuler
     Route::resource('ekstrakurikuler', EkstrakurikulerController::class);
@@ -209,3 +209,4 @@ Route::middleware('auth')->group(function () {
     Route::post('/reset-password', [ResetPasswordController::class, 'reset'])
         ->middleware('guest')
         ->name('password.update');
+Route::redirect('/ki', '/asesmen');

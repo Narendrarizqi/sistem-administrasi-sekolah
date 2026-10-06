@@ -439,7 +439,7 @@
                 if (!window.jQuery || typeof window.jQuery.fn.select2 !== 'function') return;
 
                 var $root = container ? window.jQuery(container) : window.jQuery(document);
-                $root.find('select.select2, select[name="siswa_id"], select[name="siswa_ids[]"], #modal_sarpras_siswa_id, #modal_ipp_siswa_id, #modal_du_siswa_id, #modal_ki_siswa_id, #modal_siswa_id, #siswa_id').each(function () {
+                $root.find('select.select2, select[name="siswa_id"], select[name="siswa_ids[]"], #modal_sarpras_siswa_id, #modal_ipp_siswa_id, #modal_du_siswa_id, #modal_asesmen_siswa_id, #modal_siswa_id, #siswa_id').each(function () {
                     var $select = window.jQuery(this);
                     if ($select.hasClass('select2-hidden-accessible')) {
                         return;

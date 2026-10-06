@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\DetailPembayaran;
-use App\Models\ItemPembayaranKi;
-use App\Models\JenisIuranKi;
+use App\Models\ItemPembayaranAsesmen;
+use App\Models\JenisIuranAsesmen;
 use App\Models\JenisPembayaran;
 use App\Models\Pembayaran;
 use App\Models\Siswa;
@@ -12,7 +12,7 @@ use App\Models\TahunAjaran;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 
-class KiController extends Controller
+class AsesmenController extends Controller
 {
     public function index(Request $request)
     {
@@ -35,11 +35,11 @@ class KiController extends Controller
             $direction = 'asc';
         }
 
-        $query = Pembayaran::with(['siswa', 'detailPembayaran', 'tahunAjaran', 'jenisPembayaran', 'itemsKi.jenisIuran'])
+        $query = Pembayaran::with(['siswa', 'detailPembayaran', 'tahunAjaran', 'jenisPembayaran', 'itemsAsesmen.jenisIuran'])
             ->leftJoin('siswa', 'pembayaran.siswa_id', '=', 'siswa.id')
             ->select('pembayaran.*')
             ->whereHas('jenisPembayaran', function ($q) {
-                $q->where('nama', 'KI');
+                $q->where('nama', 'Asesmen');
             })
             ->when($tahunAjaranId, function ($q) use ($tahunAjaranId, $tahunAjaranNama) {
                 $q->where(function ($sub) use ($tahunAjaranId, $tahunAjaranNama) {
@@ -63,11 +63,11 @@ class KiController extends Controller
         $data = $query->paginate(25)->withQueryString();
 
         // Master jenis iuran untuk modal manajemen & form tambah
-        $daftarJenisIuran = JenisIuranKi::withCount('items')->orderBy('id')->get();
-        $jenisIuranAktif  = JenisIuranKi::where('is_active', true)->orderBy('id')->get();
+        $daftarJenisIuran = JenisIuranAsesmen::withCount('items')->orderBy('id')->get();
+        $jenisIuranAktif  = JenisIuranAsesmen::where('is_active', true)->orderBy('id')->get();
         $siswaList        = Siswa::orderBy('nama')->get();
 
-        return view('ki.index', compact(
+        return view('asesmen.index', compact(
             'data',
             'daftarTahunAjaran',
             'selectedTa',
@@ -83,7 +83,7 @@ class KiController extends Controller
 
     public function create()
     {
-        return redirect()->route('ki.index');
+        return redirect()->route('asesmen.index');
     }
 
     public function store(Request $request)
@@ -91,11 +91,11 @@ class KiController extends Controller
         $request->validate([
             'siswa_id'       => 'required|exists:siswa,id',
             'iuran_ids'      => 'nullable|array',
-            'iuran_ids.*'    => 'exists:jenis_iuran_ki,id',
+            'iuran_ids.*'    => 'exists:jenis_iuran_asesmen,id',
             'nominals'       => 'nullable|array',
         ]);
 
-        $jenis = JenisPembayaran::where('nama', 'KI')->firstOrFail();
+        $jenis = JenisPembayaran::where('nama', 'Asesmen')->firstOrFail();
         $tahunAktif = $this->getTahunAjaranAktif();
         $tahunAjaranId = $tahunAktif?->id;
         $tahunAjaranNama = $tahunAktif?->nama;
@@ -129,11 +129,11 @@ class KiController extends Controller
 
         // 1. Proses input dinamis jika ada iuran_ids
         if ($request->has('iuran_ids') && is_array($request->iuran_ids)) {
-            $selectedMaster = JenisIuranKi::whereIn('id', $request->iuran_ids)->get();
+            $selectedMaster = JenisIuranAsesmen::whereIn('id', $request->iuran_ids)->get();
 
             foreach ($selectedMaster as $master) {
                 // Cek duplikasi pada pembayaran siswa ini
-                $exists = ItemPembayaranKi::where('pembayaran_id', $pembayaran->id)
+                $exists = ItemPembayaranAsesmen::where('pembayaran_id', $pembayaran->id)
                     ->where('nama_iuran', $master->nama)
                     ->exists();
 
@@ -144,9 +144,9 @@ class KiController extends Controller
 
                 $nominal = (float) ($request->nominals[$master->id] ?? $master->nominal_default);
 
-                ItemPembayaranKi::create([
+                ItemPembayaranAsesmen::create([
                     'pembayaran_id'     => $pembayaran->id,
-                    'jenis_iuran_ki_id' => $master->id,
+                    'jenis_iuran_asesmen_id' => $master->id,
                     'nama_iuran'        => $master->nama,
                     'nominal'           => $nominal,
                 ]);
@@ -168,7 +168,7 @@ class KiController extends Controller
         }
 
         // Update target pembayaran induk = total akumulasi item
-        $totalTarget = (float) $pembayaran->itemsKi()->sum('nominal');
+        $totalTarget = (float) $pembayaran->itemsAsesmen()->sum('nominal');
         $pembayaran->target = $totalTarget;
 
         $terbayarTotal = (float) $pembayaran->detailPembayaran()->sum('nominal');
@@ -181,12 +181,12 @@ class KiController extends Controller
             $successMsg .= ' (Beberapa item dilewati karena sudah ada: ' . implode(', ', $duplicates) . ')';
         }
 
-        return redirect()->route('ki.index')->with('success', $successMsg);
+        return redirect()->route('asesmen.index')->with('success', $successMsg);
     }
 
     public function show($id)
     {
-        return redirect()->route('ki.index');
+        return redirect()->route('asesmen.index');
     }
 
     public function bayar(Request $request, $id)
@@ -199,11 +199,11 @@ class KiController extends Controller
             'bukti'      => 'nullable|file|mimes:jpeg,png,jpg,webp,pdf|max:3072',
         ]);
 
-        $pembayaran = Pembayaran::with(['detailPembayaran', 'itemsKi'])->findOrFail($id);
+        $pembayaran = Pembayaran::with(['detailPembayaran', 'itemsAsesmen'])->findOrFail($id);
         $kategori   = trim($request->kategori);
         $nominal    = (float) $request->nominal;
 
-        $sisaKategori = $pembayaran->sisaKiKategori($kategori);
+        $sisaKategori = $pembayaran->sisaAsesmenKategori($kategori);
 
         if ($sisaKategori <= 0) {
             throw ValidationException::withMessages([
@@ -253,27 +253,27 @@ class KiController extends Controller
 
     public function edit($id)
     {
-        return redirect()->route('ki.index');
+        return redirect()->route('asesmen.index');
     }
 
     public function update(Request $request, $id)
     {
-        $pembayaran = Pembayaran::with('itemsKi')->findOrFail($id);
+        $pembayaran = Pembayaran::with('itemsAsesmen')->findOrFail($id);
 
         $request->validate([
             'items'            => 'nullable|array',
-            'items.*.id'       => 'nullable|exists:item_pembayaran_ki,id',
+            'items.*.id'       => 'nullable|exists:item_pembayaran_asesmen,id',
             'items.*.nominal'  => 'required|numeric|min:0',
             // Tambah item baru
             'new_iuran_ids'    => 'nullable|array',
-            'new_iuran_ids.*'  => 'exists:jenis_iuran_ki,id',
+            'new_iuran_ids.*'  => 'exists:jenis_iuran_asesmen,id',
             'new_nominals'     => 'nullable|array',
         ]);
 
         // 1. Update nominal item yang sudah ada
         if ($request->has('items') && is_array($request->items)) {
             foreach ($request->items as $itemId => $itemData) {
-                $item = ItemPembayaranKi::where('pembayaran_id', $pembayaran->id)->find($itemId);
+                $item = ItemPembayaranAsesmen::where('pembayaran_id', $pembayaran->id)->find($itemId);
                 if ($item) {
                     $item->nominal = (float) ($itemData['nominal'] ?? $item->nominal);
                     $item->save();
@@ -283,18 +283,18 @@ class KiController extends Controller
 
         // 2. Tambah item baru jika ada
         if ($request->has('new_iuran_ids') && is_array($request->new_iuran_ids)) {
-            $selectedMaster = JenisIuranKi::whereIn('id', $request->new_iuran_ids)->get();
+            $selectedMaster = JenisIuranAsesmen::whereIn('id', $request->new_iuran_ids)->get();
 
             foreach ($selectedMaster as $master) {
-                $exists = ItemPembayaranKi::where('pembayaran_id', $pembayaran->id)
+                $exists = ItemPembayaranAsesmen::where('pembayaran_id', $pembayaran->id)
                     ->where('nama_iuran', $master->nama)
                     ->exists();
 
                 if (!$exists) {
                     $nominal = (float) ($request->new_nominals[$master->id] ?? $master->nominal_default);
-                    ItemPembayaranKi::create([
+                    ItemPembayaranAsesmen::create([
                         'pembayaran_id'     => $pembayaran->id,
-                        'jenis_iuran_ki_id' => $master->id,
+                        'jenis_iuran_asesmen_id' => $master->id,
                         'nama_iuran'        => $master->nama,
                         'nominal'           => $nominal,
                     ]);
@@ -303,7 +303,7 @@ class KiController extends Controller
         }
 
         // Recalculate target
-        $totalTarget = (float) $pembayaran->itemsKi()->sum('nominal');
+        $totalTarget = (float) $pembayaran->itemsAsesmen()->sum('nominal');
         $pembayaran->target = $totalTarget;
 
         $terbayarTotal = (float) $pembayaran->detailPembayaran()->sum('nominal');
@@ -311,17 +311,17 @@ class KiController extends Controller
         $pembayaran->status = ($totalTagihan > 0 && $terbayarTotal >= $totalTagihan) ? 'Lunas' : 'Belum Lunas';
         $pembayaran->save();
 
-        return redirect()->route('ki.index')->with('success', 'Data tagihan Asesmen berhasil diperbarui.');
+        return redirect()->route('asesmen.index')->with('success', 'Data tagihan Asesmen berhasil diperbarui.');
     }
 
     public function destroy($id)
     {
         $pembayaran = Pembayaran::findOrFail($id);
         $pembayaran->detailPembayaran()->delete();
-        $pembayaran->itemsKi()->delete();
+        $pembayaran->itemsAsesmen()->delete();
         $pembayaran->delete();
 
-        return redirect()->route('ki.index')->with('success', 'Data tagihan berhasil dihapus.');
+        return redirect()->route('asesmen.index')->with('success', 'Data tagihan berhasil dihapus.');
     }
 
     // =========================================================================
@@ -331,13 +331,13 @@ class KiController extends Controller
     public function storeJenisIuran(Request $request)
     {
         $request->validate([
-            'nama'            => 'required|string|max:100|unique:jenis_iuran_ki,nama',
+            'nama'            => 'required|string|max:100|unique:jenis_iuran_asesmen,nama',
             'nominal_default' => 'nullable|numeric|min:0',
             'is_active'       => 'nullable|boolean',
             'keterangan'      => 'nullable|string|max:255',
         ]);
 
-        $item = JenisIuranKi::create([
+        $item = JenisIuranAsesmen::create([
             'nama'            => trim($request->nama),
             'nominal_default' => (float) ($request->nominal_default ?? 0),
             'is_active'       => $request->boolean('is_active', true),
@@ -349,10 +349,10 @@ class KiController extends Controller
 
     public function updateJenisIuran(Request $request, $id)
     {
-        $item = JenisIuranKi::findOrFail($id);
+        $item = JenisIuranAsesmen::findOrFail($id);
 
         $request->validate([
-            'nama'            => 'required|string|max:100|unique:jenis_iuran_ki,nama,' . $item->id,
+            'nama'            => 'required|string|max:100|unique:jenis_iuran_asesmen,nama,' . $item->id,
             'nominal_default' => 'nullable|numeric|min:0',
             'is_active'       => 'nullable|boolean',
             'keterangan'      => 'nullable|string|max:255',
@@ -370,7 +370,7 @@ class KiController extends Controller
 
     public function toggleJenisIuran($id)
     {
-        $item = JenisIuranKi::findOrFail($id);
+        $item = JenisIuranAsesmen::findOrFail($id);
         $item->is_active = !$item->is_active;
         $item->save();
 
@@ -380,7 +380,7 @@ class KiController extends Controller
 
     public function destroyJenisIuran($id)
     {
-        $item = JenisIuranKi::withCount('items')->findOrFail($id);
+        $item = JenisIuranAsesmen::withCount('items')->findOrFail($id);
 
         if ($item->items_count > 0) {
             // Lindungi histori: jangan hapus fisik jika sudah pernah digunakan
@@ -403,12 +403,12 @@ class KiController extends Controller
     public function terapkanMassal(Request $request)
     {
         $request->validate([
-            'jenis_iuran_id' => 'required|exists:jenis_iuran_ki,id',
+            'jenis_iuran_id' => 'required|exists:jenis_iuran_asesmen,id',
             'nominal'        => 'nullable|numeric|min:0',
         ]);
 
-        $jenisIuran = JenisIuranKi::findOrFail($request->jenis_iuran_id);
-        $jenisKi    = JenisPembayaran::where('nama', 'KI')->firstOrFail();
+        $jenisIuran = JenisIuranAsesmen::findOrFail($request->jenis_iuran_id);
+        $jenisAsesmen    = JenisPembayaran::where('nama', 'Asesmen')->firstOrFail();
 
         $tahunAktif      = $this->getTahunAjaranAktif();
         $tahunAjaranId   = $tahunAktif?->id;
@@ -427,7 +427,7 @@ class KiController extends Controller
             $pembayaran = Pembayaran::firstOrCreate(
                 [
                     'siswa_id'        => $siswa->id,
-                    'jenis_id'        => $jenisKi->id,
+                    'jenis_id'        => $jenisAsesmen->id,
                     'tahun_ajaran_id' => $tahunAjaranId,
                 ],
                 [
@@ -439,9 +439,9 @@ class KiController extends Controller
             );
 
             // Cek apakah siswa sudah punya tagihan ini
-            $exists = ItemPembayaranKi::where('pembayaran_id', $pembayaran->id)
+            $exists = ItemPembayaranAsesmen::where('pembayaran_id', $pembayaran->id)
                 ->where(function ($q) use ($jenisIuran) {
-                    $q->where('jenis_iuran_ki_id', $jenisIuran->id)
+                    $q->where('jenis_iuran_asesmen_id', $jenisIuran->id)
                       ->orWhere('nama_iuran', $jenisIuran->nama);
                 })
                 ->exists();
@@ -451,15 +451,15 @@ class KiController extends Controller
                 continue;
             }
 
-            ItemPembayaranKi::create([
+            ItemPembayaranAsesmen::create([
                 'pembayaran_id'     => $pembayaran->id,
-                'jenis_iuran_ki_id' => $jenisIuran->id,
+                'jenis_iuran_asesmen_id' => $jenisIuran->id,
                 'nama_iuran'        => $jenisIuran->nama,
                 'nominal'           => $nominal,
             ]);
 
             // Update target pembayaran induk
-            $totalTarget = (float) $pembayaran->itemsKi()->sum('nominal');
+            $totalTarget = (float) $pembayaran->itemsAsesmen()->sum('nominal');
             $pembayaran->target = $totalTarget;
             $terbayarTotal = (float) $pembayaran->detailPembayaran()->sum('nominal');
             $totalKewajiban = $totalTarget + (float) ($pembayaran->belum_lunas ?? 0);
@@ -469,7 +469,7 @@ class KiController extends Controller
             $createdCount++;
         }
 
-        return redirect()->route('ki.index')->with(
+        return redirect()->route('asesmen.index')->with(
             'success',
             "Tagihan '{$jenisIuran->nama}' sebesar Rp " . number_format($nominal, 0, ',', '.') . " berhasil diterapkan ke {$createdCount} siswa aktif. ({$skippedCount} siswa dilewati karena sudah memiliki tagihan ini)."
         );

@@ -146,9 +146,9 @@
             <td>
                 @php
                     $rawJenis = $pembayaran->jenisPembayaran->nama ?? '-';
-                    $namaJenis = ($rawJenis === 'KI' || $rawJenis === 'Kegiatan Intrakurikuler') ? 'Asesmen' : $rawJenis;
+                    $namaJenis = ($rawJenis === 'Asesmen' || $rawJenis === 'Kegiatan Intrakurikuler') ? 'Asesmen' : $rawJenis;
                     $rawKategori = $detail->kategori;
-                    $kategoriDisplay = ($rawKategori === 'KI' || $rawKategori === 'Kegiatan Intrakurikuler') ? 'Asesmen' : $rawKategori;
+                    $kategoriDisplay = ($rawKategori === 'Asesmen' || $rawKategori === 'Kegiatan Intrakurikuler') ? 'Asesmen' : $rawKategori;
                 @endphp
                 {{ $namaJenis }}{{ ($kategoriDisplay && $kategoriDisplay !== $namaJenis) ? " ({$kategoriDisplay})" : '' }}
             </td>

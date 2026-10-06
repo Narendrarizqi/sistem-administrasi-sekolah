@@ -5,9 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class JenisIuranKi extends Model
+class JenisIuranAsesmen extends Model
 {
-    protected $table = 'jenis_iuran_ki';
+    protected $table = 'jenis_iuran_asesmen';
 
     protected $fillable = [
         'nama',
@@ -23,7 +23,7 @@ class JenisIuranKi extends Model
 
     public function items(): HasMany
     {
-        return $this->hasMany(ItemPembayaranKi::class, 'jenis_iuran_ki_id');
+        return $this->hasMany(ItemPembayaranAsesmen::class, 'jenis_iuran_asesmen_id');
     }
 
     /**

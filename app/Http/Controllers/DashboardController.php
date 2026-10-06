@@ -79,7 +79,7 @@ class DashboardController extends Controller
 
             $breakdownJenis[] = [
                 'id' => $jenis->id,
-                'nama' => ($jenis->nama === 'KI' || $jenis->nama === 'Kegiatan Intrakurikuler') ? 'Asesmen' : $jenis->nama,
+                'nama' => ($jenis->nama === 'Asesmen' || $jenis->nama === 'Kegiatan Intrakurikuler') ? 'Asesmen' : $jenis->nama,
                 'target' => $targetPerJenis,
                 'dibayar' => $dibayarPerJenis,
             ];
@@ -120,7 +120,7 @@ class DashboardController extends Controller
                     }
 
                     $rawJenis = $row->jenisPembayaran ? $row->jenisPembayaran->nama : 'Tagihan';
-                    $namaJenis = ($rawJenis === 'KI' || $rawJenis === 'Kegiatan Intrakurikuler') ? 'Asesmen' : $rawJenis;
+                    $namaJenis = ($rawJenis === 'Asesmen' || $rawJenis === 'Kegiatan Intrakurikuler') ? 'Asesmen' : $rawJenis;
                     $siswaTerbawaGrouped[$sId]['tagihan'][] = [
                         'jenis' => $namaJenis,
                         'nominal' => $sisaTerbawaRow,

@@ -225,8 +225,8 @@ class TargetTahunanController extends Controller
             'SARPRAS' => 'Sarpras',
             'SARANA DAN PRASARANA' => 'Sarpras',
             'SARANA & PRASARANA' => 'Sarpras',
-            'KI' => 'KI',
-            'KEGIATAN INTRAKURIKULER' => 'KI',
+            'Asesmen' => 'Asesmen',
+            'KEGIATAN INTRAKURIKULER' => 'Asesmen',
         ];
 
         return $map[$key] ?? null;

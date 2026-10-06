@@ -415,7 +415,7 @@
             padding: 2.5px 8px !important;
         }
 
-        .badge-sumber-ki {
+        .badge-sumber-asesmen {
             background: #f0fdf4 !important;
             border: 1px solid #bbf7d0 !important;
             color: #15803d !important;
@@ -810,7 +810,7 @@
                     <option value="IPP">IPP</option>
                     <option value="DU">Daftar Ulang (DU)</option>
                     <option value="Sarpras">Sarana & Prasarana</option>
-                    <option value="KI">Asesmen</option>
+                    <option value="Asesmen">Asesmen</option>
                     <option value="Ekstrakurikuler">Ekstrakurikuler</option>
                     <option value="Kokurikuler">Kokurikuler</option>
                     <option value="BOS">Bantuan Operasional Sekolah (BOS)</option>
@@ -890,8 +890,8 @@
                             } elseif ($sumber === 'Sarpras') {
                                 $badgeClass = 'badge-sumber-sarpras';
                                 $sumberLabel = 'Sarpras';
-                            } elseif ($sumber === 'KI') {
-                                $badgeClass = 'badge-sumber-ki';
+                            } elseif ($sumber === 'Asesmen') {
+                                $badgeClass = 'badge-sumber-asesmen';
                                 $sumberLabel = 'Asesmen';
                             } elseif ($sumber === 'Ekstrakurikuler') {
                                 $badgeClass = 'badge-sumber-ekskul';
@@ -1024,7 +1024,7 @@
                             'IPP'     => 'IPP',
                             'DU'      => 'Daftar Ulang',
                             'Sarpras' => 'Sarana & Prasarana',
-                            'KI'      => 'Asesmen',
+                            'Asesmen'      => 'Asesmen',
                             'BOS'     => 'Dana BOS',
                         ];
                     @endphp
@@ -1123,7 +1123,7 @@
                                     <option value="IPP" {{ old('sumber_dana') === 'IPP' ? 'selected' : '' }}>IPP (Iuran Pembayaran Pendidikan)</option>
                                     <option value="DU" {{ old('sumber_dana') === 'DU' ? 'selected' : '' }}>DU (Daftar Ulang)</option>
                                     <option value="Sarpras" {{ old('sumber_dana') === 'Sarpras' ? 'selected' : '' }}>Sarpras (Sarana Prasarana)</option>
-                                    <option value="KI" {{ old('sumber_dana') === 'KI' ? 'selected' : '' }}>Asesmen</option>
+                                    <option value="Asesmen" {{ old('sumber_dana') === 'Asesmen' ? 'selected' : '' }}>Asesmen</option>
                                     <option value="Ekstrakurikuler" {{ old('sumber_dana') === 'Ekstrakurikuler' ? 'selected' : '' }}>Ekstrakurikuler</option>
                                     <option value="Kokurikuler" {{ old('sumber_dana') === 'Kokurikuler' ? 'selected' : '' }}>Kokurikuler</option>
                                     <option value="BOS" {{ old('sumber_dana') === 'BOS' ? 'selected' : '' }}>BOS (Bantuan Operasional Sekolah)</option>
@@ -1227,7 +1227,7 @@
                                         <option value="IPP" {{ old('sumber_dana', $item->sumber_dana) === 'IPP' ? 'selected' : '' }}>IPP (Iuran Pembayaran Pendidikan)</option>
                                         <option value="DU" {{ old('sumber_dana', $item->sumber_dana) === 'DU' ? 'selected' : '' }}>DU (Daftar Ulang)</option>
                                         <option value="Sarpras" {{ old('sumber_dana', $item->sumber_dana) === 'Sarpras' ? 'selected' : '' }}>Sarpras (Sarana Prasarana)</option>
-                                        <option value="KI" {{ old('sumber_dana', $item->sumber_dana) === 'KI' ? 'selected' : '' }}>Asesmen</option>
+                                        <option value="Asesmen" {{ old('sumber_dana', $item->sumber_dana) === 'Asesmen' ? 'selected' : '' }}>Asesmen</option>
                                         <option value="Ekstrakurikuler" {{ old('sumber_dana', $item->sumber_dana) === 'Ekstrakurikuler' ? 'selected' : '' }}>Ekstrakurikuler</option>
                                         <option value="Kokurikuler" {{ old('sumber_dana', $item->sumber_dana) === 'Kokurikuler' ? 'selected' : '' }}>Kokurikuler</option>
                                         <option value="BOS" {{ old('sumber_dana', $item->sumber_dana) === 'BOS' ? 'selected' : '' }}>BOS (Bantuan Operasional Sekolah)</option>
@@ -1304,7 +1304,7 @@
                             <div class="font-weight-bold text-dark" style="font-size: 14.5px;">{{ $item->keterangan }}</div>
                             <div class="text-muted small mt-1">
                                 Tanggal: {{ \Carbon\Carbon::parse($item->tanggal)->format('d/m/Y') }} &bull;
-                                Sumber: <span class="font-weight-bold text-dark">{{ $item->sumber_dana === 'KI' ? 'Asesmen' : $item->sumber_dana }}</span>
+                                Sumber: <span class="font-weight-bold text-dark">{{ $item->sumber_dana === 'Asesmen' ? 'Asesmen' : $item->sumber_dana }}</span>
                             </div>
                             <div class="text-danger font-weight-bold font-num mt-1" style="font-size: 14px;">
                                 Nominal: Rp {{ number_format($item->nominal, 0, ',', '.') }}

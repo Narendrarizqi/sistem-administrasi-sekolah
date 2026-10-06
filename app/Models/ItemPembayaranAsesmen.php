@@ -5,13 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class ItemPembayaranKi extends Model
+class ItemPembayaranAsesmen extends Model
 {
-    protected $table = 'item_pembayaran_ki';
+    protected $table = 'item_pembayaran_asesmen';
 
     protected $fillable = [
         'pembayaran_id',
-        'jenis_iuran_ki_id',
+        'jenis_iuran_asesmen_id',
         'nama_iuran',
         'nominal',
     ];
@@ -27,7 +27,7 @@ class ItemPembayaranKi extends Model
 
     public function jenisIuran(): BelongsTo
     {
-        return $this->belongsTo(JenisIuranKi::class, 'jenis_iuran_ki_id');
+        return $this->belongsTo(JenisIuranAsesmen::class, 'jenis_iuran_asesmen_id');
     }
 
     /**

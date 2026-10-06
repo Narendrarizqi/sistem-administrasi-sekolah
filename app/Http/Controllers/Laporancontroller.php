@@ -10,7 +10,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 class LaporanController extends Controller
 {
     /**
-     * Kategori sumber dana yang dipakai di seluruh Laporan (IPP, DU, Sarpras, KI, BOS).
+     * Kategori sumber dana yang dipakai di seluruh Laporan (IPP, DU, Sarpras, Asesmen, BOS).
      * 'aliases' menampung variasi penulisan yang mungkin ada di data lama
      * (misal 'SARPAS' vs 'Sarpras') supaya tetap terhitung dalam 1 baris.
      */
@@ -20,7 +20,7 @@ class LaporanController extends Controller
             'IPP'             => ['IPP'],
             'DU'              => ['DU'],
             'Sarpras'         => ['Sarpras', 'SARPAS'],
-            'Asesmen'         => ['KI', 'Asesmen'],
+            'Asesmen'         => ['Asesmen', 'Asesmen'],
             'Ekstrakurikuler' => ['Ekstrakurikuler'],
             'Kokurikuler'     => ['Kokurikuler'],
             'BOS'             => ['BOS'],
@@ -29,7 +29,7 @@ class LaporanController extends Controller
 
     /**
      * Hitung rincian Pemasukan, Pengeluaran, dan Saldo per sumber dana
-     * (IPP/DU/Sarpras/KI/BOS). Dipakai bareng oleh halaman Laporan dan PDF
+     * (IPP/DU/Sarpras/Asesmen/BOS). Dipakai bareng oleh halaman Laporan dan PDF
      * Rincian Saldo Akhir, supaya angkanya selalu konsisten.
      */
     private function hitungRincianSumberDana()
@@ -99,7 +99,7 @@ class LaporanController extends Controller
 
                 $rawJenis = $detail->pembayaran->jenisPembayaran->nama
                     ?? 'Pembayaran';
-                $jenis = ($rawJenis === 'KI' || $rawJenis === 'Kegiatan Intrakurikuler') ? 'Asesmen' : $rawJenis;
+                $jenis = ($rawJenis === 'Asesmen' || $rawJenis === 'Kegiatan Intrakurikuler') ? 'Asesmen' : $rawJenis;
 
                 $transaksi->push([
                     'tanggal' => $detail->tanggal,
@@ -137,7 +137,7 @@ class LaporanController extends Controller
         // Pengeluaran
         Pengeluaran::all()->each(function ($item) use ($transaksi) {
 
-                $sumberDanaDisplay = ($item->sumber_dana === 'KI' || $item->sumber_dana === 'Kegiatan Intrakurikuler') ? 'Asesmen' : $item->sumber_dana;
+                $sumberDanaDisplay = ($item->sumber_dana === 'Asesmen' || $item->sumber_dana === 'Kegiatan Intrakurikuler') ? 'Asesmen' : $item->sumber_dana;
 
                 $transaksi->push([
                     'tanggal' => $item->tanggal,
@@ -221,7 +221,7 @@ class LaporanController extends Controller
 
                 $rawJenis = $detail->pembayaran->jenisPembayaran->nama
                     ?? 'Pembayaran';
-                $jenis = ($rawJenis === 'KI' || $rawJenis === 'Kegiatan Intrakurikuler') ? 'Asesmen' : $rawJenis;
+                $jenis = ($rawJenis === 'Asesmen' || $rawJenis === 'Kegiatan Intrakurikuler') ? 'Asesmen' : $rawJenis;
 
                 $transaksi->push([
                     'tanggal' => $detail->tanggal,
@@ -262,7 +262,7 @@ class LaporanController extends Controller
 
         Pengeluaran::all()->each(function ($item) use ($transaksi) {
 
-                $sumberDanaDisplay = ($item->sumber_dana === 'KI' || $item->sumber_dana === 'Kegiatan Intrakurikuler') ? 'Asesmen' : $item->sumber_dana;
+                $sumberDanaDisplay = ($item->sumber_dana === 'Asesmen' || $item->sumber_dana === 'Kegiatan Intrakurikuler') ? 'Asesmen' : $item->sumber_dana;
 
                 $transaksi->push([
                     'tanggal' => $item->tanggal,
@@ -342,7 +342,7 @@ class LaporanController extends Controller
     }
 
     /**
-     * Cetak PDF Rincian Saldo Akhir (per sumber dana: IPP/DU/Sarpras/KI).
+     * Cetak PDF Rincian Saldo Akhir (per sumber dana: IPP/DU/Sarpras/Asesmen).
      * Ini tabel yang sama seperti dropdown "Rincian Saldo Akhir" di halaman
      * Laporan — dibuat method & PDF terpisah, tidak menyentuh cetakPdf()
      * (Buku Kas Umum) yang sudah ada.

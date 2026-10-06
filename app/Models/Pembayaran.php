@@ -45,9 +45,9 @@ class Pembayaran extends Model
         return $this->hasMany(DetailPembayaran::class);
     }
 
-    public function itemsKi(): HasMany
+    public function itemsAsesmen(): HasMany
     {
-        return $this->hasMany(ItemPembayaranKi::class, 'pembayaran_id');
+        return $this->hasMany(ItemPembayaranAsesmen::class, 'pembayaran_id');
     }
 
     public function itemsEkskul(): HasMany
@@ -339,9 +339,9 @@ class Pembayaran extends Model
     }
 
     /**
-     * Hitung nominal terbayar untuk sub-kategori KI (UTS, UAS, Ujian)
+     * Hitung nominal terbayar untuk sub-kategori Asesmen (UTS, UAS, Ujian)
      */
-    public function terbayarKiKategori(string $kategori): float
+    public function terbayarAsesmenKategori(string $kategori): float
     {
         if ($this->relationLoaded('detailPembayaran')) {
             return (float) $this->detailPembayaran->where('kategori', $kategori)->sum('nominal');
@@ -350,14 +350,14 @@ class Pembayaran extends Model
     }
 
     /**
-     * Sisa tagihan per sub-kategori KI / Asesmen
+     * Sisa tagihan per sub-kategori Asesmen / Asesmen
      */
-    public function sisaKiKategori(string $kategori): float
+    public function sisaAsesmenKategori(string $kategori): float
     {
         $target = 0;
-        $item = $this->relationLoaded('itemsKi')
-            ? $this->itemsKi->firstWhere('nama_iuran', $kategori)
-            : $this->itemsKi()->where('nama_iuran', $kategori)->first();
+        $item = $this->relationLoaded('itemsAsesmen')
+            ? $this->itemsAsesmen->firstWhere('nama_iuran', $kategori)
+            : $this->itemsAsesmen()->where('nama_iuran', $kategori)->first();
 
         if ($item) {
             $target = (float) $item->nominal;
@@ -372,23 +372,23 @@ class Pembayaran extends Model
             }
         }
 
-        $terbayar = $this->terbayarKiKategori($kategori);
+        $terbayar = $this->terbayarAsesmenKategori($kategori);
         return max($target - $terbayar, 0);
     }
 
     /**
-     * Status sub-tagihan KI / Asesmen dinamis
+     * Status sub-tagihan Asesmen / Asesmen dinamis
      */
-    public function statusKiSubtagihan(): array
+    public function statusAsesmenSubtagihan(): array
     {
         $results = [];
-        $items = $this->relationLoaded('itemsKi') ? $this->itemsKi : $this->itemsKi()->get();
+        $items = $this->relationLoaded('itemsAsesmen') ? $this->itemsAsesmen : $this->itemsAsesmen()->get();
 
         if ($items->isNotEmpty()) {
             foreach ($items as $item) {
                 $kat = $item->nama_iuran;
                 $target = (float) $item->nominal;
-                $terbayar = $this->terbayarKiKategori($kat);
+                $terbayar = $this->terbayarAsesmenKategori($kat);
                 $sisa = max($target - $terbayar, 0);
                 $isLunas = ($target > 0 && $sisa <= 0);
 
@@ -403,7 +403,7 @@ class Pembayaran extends Model
                 ];
             }
         } else {
-            // Fallback data legacy jika belum ada relasi itemsKi
+            // Fallback data legacy jika belum ada relasi itemsAsesmen
             $kategoriList = ['UTS', 'UAS', 'Ujian'];
             foreach ($kategoriList as $kat) {
                 $target = 0;
@@ -415,7 +415,7 @@ class Pembayaran extends Model
                     $target = (float) $this->target_ujian;
                 }
 
-                $terbayar = $this->terbayarKiKategori($kat);
+                $terbayar = $this->terbayarAsesmenKategori($kat);
                 $sisa = max($target - $terbayar, 0);
                 $isLunas = ($target > 0 && $sisa <= 0);
 

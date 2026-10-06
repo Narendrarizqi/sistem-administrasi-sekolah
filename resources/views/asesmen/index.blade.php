@@ -10,11 +10,11 @@
 
     <style>
         /* ===============================================================
-           SCOPED STYLES: HALAMAN PEMBAYARAN KEGIATAN INTRAKURIKULER (KI)
+           SCOPED STYLES: HALAMAN PEMBAYARAN KEGIATAN INTRAKURIKULER (Asesmen)
            =============================================================== */
 
         /* 1. Header Box */
-        .ki-page-header {
+        .asesmen-page-header {
             background: #ffffff;
             border: 1px solid #e2e8f0;
             border-radius: 12px;
@@ -23,7 +23,7 @@
             box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
         }
 
-        .ki-title-wrapper {
+        .asesmen-title-wrapper {
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -31,7 +31,7 @@
             gap: 12px;
         }
 
-        .ki-title {
+        .asesmen-title {
             font-size: 17.5px;
             font-weight: 700;
             color: #0f172a;
@@ -42,7 +42,7 @@
             gap: 8px;
         }
 
-        .ki-title-icon {
+        .asesmen-title-icon {
             width: 32px;
             height: 32px;
             border-radius: 8px;
@@ -56,20 +56,20 @@
             flex-shrink: 0;
         }
 
-        .ki-desc {
+        .asesmen-desc {
             font-size: 12.5px;
             color: #64748b;
             margin: 0;
         }
 
-        .ki-header-badges {
+        .asesmen-header-badges {
             display: flex;
             align-items: center;
             gap: 8px;
             flex-wrap: wrap;
         }
 
-        .ki-badge-ta {
+        .asesmen-badge-ta {
             background: #f0fdf4;
             border: 1px solid #bbf7d0;
             color: #15803d;
@@ -82,7 +82,7 @@
             gap: 5px;
         }
 
-        .ki-badge-total {
+        .asesmen-badge-total {
             background: #f8fafc;
             border: 1px solid #e2e8f0;
             color: #475569;
@@ -96,7 +96,7 @@
         }
 
         /* 2. Card Container & Toolbar */
-        .ki-card {
+        .asesmen-card {
             background: #ffffff;
             border: 1px solid #e2e8f0;
             border-radius: 12px;
@@ -105,13 +105,13 @@
             margin-bottom: 24px;
         }
 
-        .ki-card-header {
+        .asesmen-card-header {
             background: #ffffff;
             padding: 13px 18px;
             border-bottom: 1px solid #f1f5f9;
         }
 
-        .ki-toolbar {
+        .asesmen-toolbar {
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -119,7 +119,7 @@
             gap: 12px;
         }
 
-        .ki-toolbar-left {
+        .asesmen-toolbar-left {
             display: flex;
             align-items: center;
             gap: 10px;
@@ -127,13 +127,13 @@
             flex: 1;
         }
 
-        .ki-search-box {
+        .asesmen-search-box {
             position: relative;
             width: 290px;
             max-width: 100%;
         }
 
-        .ki-search-box i {
+        .asesmen-search-box i {
             position: absolute;
             left: 11px;
             top: 50%;
@@ -142,7 +142,7 @@
             font-size: 12.5px;
         }
 
-        .ki-search-input {
+        .asesmen-search-input {
             width: 100%;
             height: 38px;
             padding: 6px 12px 6px 34px;
@@ -155,13 +155,13 @@
             outline: none;
         }
 
-        .ki-search-input:focus {
+        .asesmen-search-input:focus {
             border-color: #16a34a;
             box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.12);
         }
 
         /* Toolbar Action Buttons (Matching Halaman Siswa Styling & Spacing) */
-        .ki-toolbar-actions {
+        .asesmen-toolbar-actions {
             display: flex;
             align-items: center;
             gap: 8px;
@@ -261,8 +261,8 @@
         }
 
         /* 3. Tambah Tagihan (Primary Solid Green matching Siswa) */
-        .btn-toolbar-tambah-ki,
-        .btn-ki-add {
+        .btn-toolbar-tambah-asesmen,
+        .btn-asesmen-add {
             height: 38px;
             padding: 0 16px;
             display: inline-flex;
@@ -282,15 +282,15 @@
             box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
         }
 
-        .btn-toolbar-tambah-ki i,
-        .btn-ki-add i {
+        .btn-toolbar-tambah-asesmen i,
+        .btn-asesmen-add i {
             color: #ffffff;
         }
 
-        .btn-toolbar-tambah-ki:hover,
-        .btn-toolbar-tambah-ki:focus,
-        .btn-ki-add:hover,
-        .btn-ki-add:focus {
+        .btn-toolbar-tambah-asesmen:hover,
+        .btn-toolbar-tambah-asesmen:focus,
+        .btn-asesmen-add:hover,
+        .btn-asesmen-add:focus {
             background: #15803d;
             border-color: #15803d;
             color: #ffffff !important;
@@ -298,13 +298,13 @@
             box-shadow: 0 2px 6px rgba(22, 163, 74, 0.25);
         }
 
-        .btn-toolbar-tambah-ki:active,
-        .btn-ki-add:active {
+        .btn-toolbar-tambah-asesmen:active,
+        .btn-asesmen-add:active {
             transform: translateY(1px);
         }
 
         @media (max-width: 768px) {
-            .ki-toolbar-actions {
+            .asesmen-toolbar-actions {
                 width: 100%;
                 justify-content: flex-start;
                 flex-wrap: wrap;
@@ -312,7 +312,7 @@
         }
 
         /* 3. Table Container */
-        .ki-table-responsive {
+        .asesmen-table-responsive {
             width: 100%;
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
@@ -320,21 +320,21 @@
             scrollbar-color: #cbd5e1 #f8fafc;
         }
 
-        .ki-table-responsive::-webkit-scrollbar {
+        .asesmen-table-responsive::-webkit-scrollbar {
             height: 6px;
         }
 
-        .ki-table-responsive::-webkit-scrollbar-track {
+        .asesmen-table-responsive::-webkit-scrollbar-track {
             background: #f8fafc;
             border-radius: 999px;
         }
 
-        .ki-table-responsive::-webkit-scrollbar-thumb {
+        .asesmen-table-responsive::-webkit-scrollbar-thumb {
             background: #cbd5e1;
             border-radius: 999px;
         }
 
-        .ki-table-responsive::-webkit-scrollbar-thumb:hover {
+        .asesmen-table-responsive::-webkit-scrollbar-thumb:hover {
             background: #94a3b8;
         }
 
@@ -565,7 +565,7 @@
             color: #b45309 !important;
         }
 
-        .ki-status-card {
+        .asesmen-status-card {
             display: flex;
             flex-direction: column;
             gap: 4px;
@@ -580,7 +580,7 @@
             box-sizing: border-box;
         }
 
-        .ki-status-row {
+        .asesmen-status-row {
             display: flex !important;
             align-items: center !important;
             justify-content: space-between !important;
@@ -589,12 +589,12 @@
             padding: 1.5px 0;
         }
 
-        .ki-status-row:not(:last-child) {
+        .asesmen-status-row:not(:last-child) {
             border-bottom: 1px solid #f1f5f9;
             padding-bottom: 3.5px;
         }
 
-        .ki-status-name {
+        .asesmen-status-name {
             font-size: 11px;
             font-weight: 600;
             color: #334155;
@@ -604,7 +604,7 @@
             line-height: 1.2;
         }
 
-        .ki-status-pill {
+        .asesmen-status-pill {
             display: inline-flex !important;
             align-items: center !important;
             justify-content: center !important;
@@ -622,7 +622,7 @@
         }
 
         /* 5. Action Buttons */
-        .ki-action-group {
+        .asesmen-action-group {
             display: inline-flex;
             align-items: center;
             justify-content: center;
@@ -941,9 +941,9 @@
         }
 
         /* =========================================================================
-           DEDICATED STYLES FOR MODAL PEMBAYARAN KI (Clean, Calm, School Admin)
+           DEDICATED STYLES FOR MODAL PEMBAYARAN Asesmen (Clean, Calm, School Admin)
            ========================================================================= */
-        .modal-bayar-ki .modal-content {
+        .modal-bayar-asesmen .modal-content {
             border: 1px solid #e2e8f0;
             border-radius: 14px;
             overflow: hidden;
@@ -952,7 +952,7 @@
         }
 
         /* 1. Light, Clean Header with Green Accent */
-        .modal-bayar-ki .modal-header {
+        .modal-bayar-asesmen .modal-header {
             background: #ffffff !important;
             border-bottom: 1px solid #e2e8f0 !important;
             padding: 16px 22px;
@@ -963,13 +963,13 @@
             border-top-right-radius: 14px !important;
         }
 
-        .modal-bayar-ki .header-title-wrap {
+        .modal-bayar-asesmen .header-title-wrap {
             display: flex;
             align-items: center;
             gap: 12px;
         }
 
-        .modal-bayar-ki .header-icon-badge {
+        .modal-bayar-asesmen .header-icon-badge {
             width: 38px;
             height: 38px;
             border-radius: 9px;
@@ -983,7 +983,7 @@
             flex-shrink: 0;
         }
 
-        .modal-bayar-ki .header-main-title {
+        .modal-bayar-asesmen .header-main-title {
             font-size: 16px;
             font-weight: 700;
             color: #0f172a !important;
@@ -991,7 +991,7 @@
             margin: 0;
         }
 
-        .modal-bayar-ki .header-sub-info {
+        .modal-bayar-asesmen .header-sub-info {
             font-size: 13px;
             color: #64748b !important;
             font-weight: 500;
@@ -1001,11 +1001,11 @@
             gap: 6px;
         }
 
-        .modal-bayar-ki .header-sub-info strong {
+        .modal-bayar-asesmen .header-sub-info strong {
             color: #1e293b !important;
         }
 
-        .modal-bayar-ki .modal-close-btn {
+        .modal-bayar-asesmen .modal-close-btn {
             width: 32px;
             height: 32px;
             border-radius: 8px;
@@ -1024,14 +1024,14 @@
             opacity: 1 !important;
         }
 
-        .modal-bayar-ki .modal-close-btn:hover {
+        .modal-bayar-asesmen .modal-close-btn:hover {
             background: #f1f5f9;
             color: #475569 !important;
             border-color: #e2e8f0;
         }
 
         /* 2. Ringkasan Tagihan 3 Sub-Kegiatan (Calm Unified Summary Box) */
-        .modal-bayar-ki .summary-container {
+        .modal-bayar-asesmen .summary-container {
             background: #f8fafc;
             border: 1px solid #e2e8f0;
             border-radius: 10px;
@@ -1039,14 +1039,14 @@
             margin-bottom: 18px;
         }
 
-        .modal-bayar-ki .summary-subtagihan-col {
+        .modal-bayar-asesmen .summary-subtagihan-col {
             display: flex;
             flex-direction: column;
             gap: 3px;
             padding: 0 8px;
         }
 
-        .modal-bayar-ki .summary-subtagihan-header {
+        .modal-bayar-asesmen .summary-subtagihan-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -1058,7 +1058,7 @@
             border-bottom: 1px solid #e2e8f0;
         }
 
-        .modal-bayar-ki .summary-sub-line {
+        .modal-bayar-asesmen .summary-sub-line {
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -1066,12 +1066,12 @@
             color: #64748b;
         }
 
-        .modal-bayar-ki .summary-sub-line strong {
+        .modal-bayar-asesmen .summary-sub-line strong {
             font-weight: 600;
         }
 
         /* 3. Dropdown Pilih Tagihan */
-        .modal-bayar-ki .kategori-select-container {
+        .modal-bayar-asesmen .kategori-select-container {
             background: #f0fdf4;
             border: 1px solid #bbf7d0;
             border-radius: 9px;
@@ -1079,7 +1079,7 @@
             margin-bottom: 18px;
         }
 
-        .modal-bayar-ki .kategori-select-container select {
+        .modal-bayar-asesmen .kategori-select-container select {
             border: 1px solid #86efac;
             background: #ffffff;
             border-radius: 7px;
@@ -1089,13 +1089,13 @@
             color: #166534;
         }
 
-        .modal-bayar-ki .kategori-select-container select:focus {
+        .modal-bayar-asesmen .kategori-select-container select:focus {
             border-color: #16a34a;
             box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.15);
         }
 
         /* 4. Form Controls */
-        .modal-bayar-ki .form-label-custom {
+        .modal-bayar-asesmen .form-label-custom {
             font-size: 13px;
             font-weight: 600;
             color: #334155;
@@ -1103,7 +1103,7 @@
             padding-top: 8px;
         }
 
-        .modal-bayar-ki .form-control-custom {
+        .modal-bayar-asesmen .form-control-custom {
             height: 38px;
             font-size: 13.5px;
             border-radius: 8px;
@@ -1113,12 +1113,12 @@
             transition: border-color 0.15s ease, box-shadow 0.15s ease;
         }
 
-        .modal-bayar-ki .form-control-custom:focus {
+        .modal-bayar-asesmen .form-control-custom:focus {
             border-color: #16a34a;
             box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.12);
         }
 
-        .modal-bayar-ki .nominal-input-group .input-group-text {
+        .modal-bayar-asesmen .nominal-input-group .input-group-text {
             background: #f1f5f9;
             border: 1px solid #cbd5e1;
             border-right: none;
@@ -1129,14 +1129,14 @@
             padding: 0 14px;
         }
 
-        .modal-bayar-ki .nominal-input-group .form-control-custom {
+        .modal-bayar-asesmen .nominal-input-group .form-control-custom {
             border-radius: 0 8px 8px 0;
             font-size: 15.5px;
             font-weight: 700;
             color: #15803d;
         }
 
-        .modal-bayar-ki .quick-fill-btn {
+        .modal-bayar-asesmen .quick-fill-btn {
             font-size: 11.5px;
             font-weight: 600;
             padding: 3px 9px;
@@ -1151,32 +1151,32 @@
             gap: 5px;
         }
 
-        .modal-bayar-ki .quick-fill-btn:hover {
+        .modal-bayar-asesmen .quick-fill-btn:hover {
             background: #f0fdf4;
             border-color: #86efac;
             color: #166534;
         }
 
         /* 5. Payment Methods Segmented */
-        .modal-bayar-ki .payment-methods-grid {
+        .modal-bayar-asesmen .payment-methods-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 8px;
         }
 
-        .modal-bayar-ki .method-radio-card {
+        .modal-bayar-asesmen .method-radio-card {
             position: relative;
             margin: 0;
             cursor: pointer;
         }
 
-        .modal-bayar-ki .method-radio-card input {
+        .modal-bayar-asesmen .method-radio-card input {
             position: absolute;
             opacity: 0;
             pointer-events: none;
         }
 
-        .modal-bayar-ki .method-card-box {
+        .modal-bayar-asesmen .method-card-box {
             display: flex;
             align-items: center;
             justify-content: center;
@@ -1193,19 +1193,19 @@
             white-space: nowrap;
         }
 
-        .modal-bayar-ki .method-radio-card input:checked + .method-card-box {
+        .modal-bayar-asesmen .method-radio-card input:checked + .method-card-box {
             background: #f0fdf4;
             border-color: #16a34a;
             color: #15803d;
             box-shadow: 0 0 0 1px #16a34a;
         }
 
-        .modal-bayar-ki .method-radio-card:hover .method-card-box {
+        .modal-bayar-asesmen .method-radio-card:hover .method-card-box {
             border-color: #94a3b8;
         }
 
         /* 6. Upload Bukti Box */
-        .modal-bayar-ki .compact-upload-box {
+        .modal-bayar-asesmen .compact-upload-box {
             border: 1px dashed #cbd5e1;
             border-radius: 8px;
             padding: 8px 12px;
@@ -1218,19 +1218,19 @@
             transition: all 0.15s ease;
         }
 
-        .modal-bayar-ki .compact-upload-box:hover {
+        .modal-bayar-asesmen .compact-upload-box:hover {
             border-color: #16a34a;
             background: #f0fdf4;
         }
 
         /* 7. Riwayat Accordion */
-        .modal-bayar-ki .riwayat-section {
+        .modal-bayar-asesmen .riwayat-section {
             margin-top: 18px;
             border-top: 1px solid #f1f5f9;
             padding-top: 14px;
         }
 
-        .modal-bayar-ki .btn-riwayat-toggle {
+        .modal-bayar-asesmen .btn-riwayat-toggle {
             background: #ffffff;
             border: 1px solid #e2e8f0;
             color: #334155;
@@ -1245,14 +1245,14 @@
             transition: all 0.15s ease;
         }
 
-        .modal-bayar-ki .btn-riwayat-toggle:hover {
+        .modal-bayar-asesmen .btn-riwayat-toggle:hover {
             background: #f8fafc;
             border-color: #cbd5e1;
             color: #0f172a;
         }
 
         /* 8. Footer Actions */
-        .modal-bayar-ki .modal-footer-custom {
+        .modal-bayar-asesmen .modal-footer-custom {
             background: #f8fafc;
             border-top: 1px solid #e2e8f0;
             padding: 12px 22px;
@@ -1262,7 +1262,7 @@
             gap: 10px;
         }
 
-        .modal-bayar-ki .btn-cancel-neutral {
+        .modal-bayar-asesmen .btn-cancel-neutral {
             height: 38px;
             padding: 0 18px;
             border-radius: 8px;
@@ -1278,13 +1278,13 @@
             justify-content: center;
         }
 
-        .modal-bayar-ki .btn-cancel-neutral:hover {
+        .modal-bayar-asesmen .btn-cancel-neutral:hover {
             background: #f1f5f9;
             color: #1e293b;
             border-color: #94a3b8;
         }
 
-        .modal-bayar-ki .btn-submit-pay {
+        .modal-bayar-asesmen .btn-submit-pay {
             height: 38px;
             padding: 0 20px;
             border-radius: 8px;
@@ -1301,14 +1301,14 @@
             gap: 6px;
         }
 
-        .modal-bayar-ki .btn-submit-pay:hover:not(:disabled) {
+        .modal-bayar-asesmen .btn-submit-pay:hover:not(:disabled) {
             background: #15803d;
             border-color: #15803d;
             box-shadow: 0 2px 6px rgba(22, 163, 74, 0.25);
             transform: translateY(-1px);
         }
 
-        .modal-bayar-ki .btn-submit-pay:disabled {
+        .modal-bayar-asesmen .btn-submit-pay:disabled {
             opacity: 0.55;
             cursor: not-allowed;
         }
@@ -1343,23 +1343,23 @@
     @endif
 
     {{-- 1. HEADER SECTION --}}
-    <div class="ki-page-header">
-        <div class="ki-title-wrapper">
+    <div class="asesmen-page-header">
+        <div class="asesmen-title-wrapper">
             <div>
-                <h1 class="ki-title">
-                    <span class="ki-title-icon"><i class="fas fa-book-open"></i></span>
+                <h1 class="asesmen-title">
+                    <span class="asesmen-title-icon"><i class="fas fa-book-open"></i></span>
                     Asesmen
                 </h1>
-                <p class="ki-desc">
+                <p class="asesmen-desc">
                     Kelola data tagihan Asesmen (STS Gasal, STS Genap, SAS, SAT, ASAJ, Prakerin, dll.), verifikasi pembayaran, serta status pelunasan siswa.
                 </p>
             </div>
-            <div class="ki-header-badges">
-                <span class="ki-badge-ta">
+            <div class="asesmen-header-badges">
+                <span class="asesmen-badge-ta">
                     <i class="far fa-calendar-alt text-success"></i>
                     Tahun Ajaran: {{ $selectedTa->nama ?? 'Aktif' }}
                 </span>
-                <span class="ki-badge-total">
+                <span class="asesmen-badge-total">
                     <i class="fas fa-users text-muted"></i>
                     Total: {{ method_exists($data, 'total') ? $data->total() : $data->count() }} Siswa
                 </span>
@@ -1368,22 +1368,22 @@
     </div>
 
     {{-- 2. MAIN CARD & TABLE --}}
-    <div class="ki-card">
-        <div class="ki-card-header">
-            <div class="ki-toolbar">
-                <div class="ki-toolbar-left">
-                    <div class="ki-search-box">
+    <div class="asesmen-card">
+        <div class="asesmen-card-header">
+            <div class="asesmen-toolbar">
+                <div class="asesmen-toolbar-left">
+                    <div class="asesmen-search-box">
                         <i class="fas fa-search"></i>
                         <input
                             type="text"
                             id="kiSearchInput"
-                            class="ki-search-input"
+                            class="asesmen-search-input"
                             placeholder="Cari NIS atau nama siswa..."
                         >
                     </div>
                 </div>
 
-                <div class="ki-toolbar-actions">
+                <div class="asesmen-toolbar-actions">
                     {{-- Tombol 1: Kelola Master Jenis Iuran --}}
                     <button
                         type="button"
@@ -1411,7 +1411,7 @@
                     {{-- Tombol 3: Tambah Tagihan Per Siswa --}}
                     <button
                         type="button"
-                        class="btn-toolbar-tambah-ki"
+                        class="btn-toolbar-tambah-asesmen"
                         data-toggle="modal"
                         data-target="#modalTambahKi"
                         title="Tambah Data Tagihan Asesmen Siswa"
@@ -1432,7 +1432,7 @@
             };
         @endphp
 
-        <div class="ki-table-responsive">
+        <div class="asesmen-table-responsive">
             <table class="table" id="kiTable">
                 <thead>
                     <tr>
@@ -1493,8 +1493,8 @@
                             $sisa = max($totalTagihan - $terbayar, 0);
                             $isLunasPenuh = ($sisa <= 0 && $totalTagihan > 0);
 
-                            // Sub-tagihan KI: UTS, UAS, Ujian
-                            $subStatus = $item->statusKiSubtagihan();
+                            // Sub-tagihan Asesmen: UTS, UAS, Ujian
+                            $subStatus = $item->statusAsesmenSubtagihan();
                         @endphp
                         <tr
                             data-nis="{{ $item->siswa->nis ?? '' }}"
@@ -1565,16 +1565,16 @@
 
                             {{-- 9. Status Asesmen Dinamis --}}
                             <td class="text-center" style="padding: 6px 8px; vertical-align: middle;">
-                                <div class="ki-status-card">
+                                <div class="asesmen-status-card">
                                     @forelse($subStatus as $katNama => $st)
-                                        <div class="ki-status-row">
-                                            <span class="ki-status-name" title="{{ $katNama }}">{{ $katNama }}</span>
+                                        <div class="asesmen-status-row">
+                                            <span class="asesmen-status-name" title="{{ $katNama }}">{{ $katNama }}</span>
                                             @if($st['is_lunas'])
-                                                <span class="badge badge-status-lunas ki-status-pill">Lunas</span>
+                                                <span class="badge badge-status-lunas asesmen-status-pill">Lunas</span>
                                             @elseif($st['terbayar'] > 0)
-                                                <span class="badge badge-status-sebagian ki-status-pill">Sebagian</span>
+                                                <span class="badge badge-status-sebagian asesmen-status-pill">Sebagian</span>
                                             @else
-                                                <span class="badge badge-status-belum ki-status-pill">Belum</span>
+                                                <span class="badge badge-status-belum asesmen-status-pill">Belum</span>
                                             @endif
                                         </div>
                                     @empty
@@ -1585,7 +1585,7 @@
 
                             {{-- 10. Aksi --}}
                             <td class="text-center">
-                                <div class="ki-action-group">
+                                <div class="asesmen-action-group">
                                     {{-- Tombol 1: Bayar (Hijau) --}}
                                     <button type="button"
                                             class="btn-act-bayar"
@@ -1665,7 +1665,7 @@
                             <h6 class="font-weight-bold text-dark mb-2" style="font-size: 13.5px;">
                                 <i class="fas fa-plus-circle text-success mr-1"></i> Tambah Jenis Iuran Baru
                             </h6>
-                            <form action="{{ route('ki.jenis-iuran.store') }}" method="POST">
+                            <form action="{{ route('asesmen.jenis-iuran.store') }}" method="POST">
                                 @csrf
                                 <div class="row align-items-end g-2">
                                     <div class="col-md-4 col-12 mb-2">
@@ -1732,7 +1732,7 @@
                                         <td class="text-center align-middle">
                                             <div class="act-group">
                                                 {{-- Toggle Aktif/Nonaktif --}}
-                                                <form action="{{ route('ki.jenis-iuran.toggle', $ji->id) }}" method="POST" class="d-inline">
+                                                <form action="{{ route('asesmen.jenis-iuran.toggle', $ji->id) }}" method="POST" class="d-inline">
                                                     @csrf
                                                     <button type="submit" class="{{ $ji->is_active ? 'btn-act-toggle-off' : 'btn-act-toggle-on' }}" title="{{ $ji->is_active ? 'Nonaktifkan Jenis Iuran' : 'Aktifkan Jenis Iuran' }}">
                                                         <i class="fas {{ $ji->is_active ? 'fa-ban' : 'fa-check' }}"></i>
@@ -1754,7 +1754,7 @@
                                     {{-- Collapse Edit Form --}}
                                     <tr class="collapse bg-light" id="editJiRow{{ $ji->id }}">
                                         <td colspan="6" class="p-3" style="background: #f8fafc; border-top: 1px dashed #cbd5e1; border-bottom: 1px dashed #cbd5e1;">
-                                            <form action="{{ route('ki.jenis-iuran.update', $ji->id) }}" method="POST">
+                                            <form action="{{ route('asesmen.jenis-iuran.update', $ji->id) }}" method="POST">
                                                 @csrf
                                                 @method('PUT')
                                                 <div class="row g-2 align-items-center">
@@ -1809,7 +1809,7 @@
                                                     </div>
                                                 </div>
                                                 <div class="modal-footer bg-light py-2 px-4 justify-content-end">
-                                                    <form action="{{ route('ki.jenis-iuran.destroy', $ji->id) }}" method="POST" class="d-inline">
+                                                    <form action="{{ route('asesmen.jenis-iuran.destroy', $ji->id) }}" method="POST" class="d-inline">
                                                         @csrf
                                                         @method('DELETE')
                                                         <button type="button" class="btn btn-batal-merah px-4 mr-2" data-dismiss="modal" style="height: 38px;">
@@ -1855,7 +1855,7 @@
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <form id="formTerapkanMassal" action="{{ route('ki.terapkan-massal') }}" method="POST">
+                <form id="formTerapkanMassal" action="{{ route('asesmen.terapkan-massal') }}" method="POST">
                     @csrf
 
                     {{-- STEP 1: FORM INPUT --}}
@@ -1953,7 +1953,7 @@
                     </button>
                 </div>
 
-                <form action="{{ route('ki.store') }}" method="POST" id="formModalTambahKi">
+                <form action="{{ route('asesmen.store') }}" method="POST" id="formModalTambahKi">
                     @csrf
                     <div class="modal-body p-4">
 
@@ -1966,12 +1966,12 @@
 
                         {{-- Pilih Siswa --}}
                         <div class="form-group row mb-3">
-                            <label for="modal_ki_siswa_id" class="col-sm-3 col-form-label font-weight-bold">
+                            <label for="modal_asesmen_siswa_id" class="col-sm-3 col-form-label font-weight-bold">
                                 Pilih Siswa <span class="text-danger">*</span>
                             </label>
                             <div class="col-sm-9">
                                 <select name="siswa_id"
-                                        id="modal_ki_siswa_id"
+                                        id="modal_asesmen_siswa_id"
                                         class="form-control @error('siswa_id') is-invalid @enderror"
                                         style="border-radius: 8px;"
                                         required>
@@ -2023,13 +2023,13 @@
                                     </thead>
                                     <tbody>
                                         @forelse($jenisIuranAktif as $iuran)
-                                            <tr class="ki-iuran-row">
+                                            <tr class="asesmen-iuran-row">
                                                 <td class="text-center align-middle">
                                                     <input type="checkbox"
                                                            name="iuran_ids[]"
                                                            value="{{ $iuran->id }}"
                                                            id="iuran_check_{{ $iuran->id }}"
-                                                           class="ki-iuran-checkbox"
+                                                           class="asesmen-iuran-checkbox"
                                                            data-id="{{ $iuran->id }}"
                                                            data-nama="{{ $iuran->nama }}"
                                                            data-default="{{ (int)$iuran->nominal_default }}"
@@ -2051,7 +2051,7 @@
                                                         <input type="number"
                                                                name="nominals[{{ $iuran->id }}]"
                                                                id="nominal_input_{{ $iuran->id }}"
-                                                               class="form-control font-weight-bold text-success font-num ki-nominal-input"
+                                                               class="form-control font-weight-bold text-success font-num asesmen-nominal-input"
                                                                value="{{ (int)$iuran->nominal_default }}"
                                                                min="0"
                                                                step="1000"
@@ -2115,7 +2115,7 @@
             $sisaTerbawaItem = max($terbawaItem - $terbayarItem, 0);
 
             // Sub-tagihan dinamis per iuran yang dimiliki siswa
-            $subtagihanMap = $item->statusKiSubtagihan();
+            $subtagihanMap = $item->statusAsesmenSubtagihan();
 
             // Default kategori aktif (prioritaskan yang belum lunas)
             $defaultKat = array_key_first($subtagihanMap) ?? '';
@@ -2130,7 +2130,7 @@
         @endphp
 
         {{-- MODAL BAYAR --}}
-        <div class="modal fade modal-bayar-ki" id="modalBayar{{ $item->id }}" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal fade modal-bayar-asesmen" id="modalBayar{{ $item->id }}" tabindex="-1" role="dialog" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
                 <div class="modal-content border-0 shadow" style="border-radius: 14px; overflow: hidden;">
                     
@@ -2156,7 +2156,7 @@
                         </button>
                     </div>
 
-                    <form action="{{ route('ki.bayar', $item->id) }}" method="POST" enctype="multipart/form-data">
+                    <form action="{{ route('asesmen.bayar', $item->id) }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         <div class="modal-body p-4">
 
@@ -2352,7 +2352,7 @@
                                                         <td class="font-num">{{ \Carbon\Carbon::parse($detail->tanggal)->format('d/m/Y') }}</td>
                                                         <td class="text-center">
                                                             <span class="badge badge-success px-2 py-1" style="font-size: 10px; border-radius: 6px;">
-                                                                {{ ($detail->kategori && $detail->kategori !== 'KI') ? $detail->kategori : 'Asesmen' }}
+                                                                {{ ($detail->kategori && $detail->kategori !== 'Asesmen') ? $detail->kategori : 'Asesmen' }}
                                                             </span>
                                                         </td>
                                                         <td class="font-weight-bold text-success font-num">{{ number_format($detail->nominal, 0, ',', '.') }}</td>
@@ -2414,7 +2414,7 @@
                         </button>
                     </div>
 
-                    <form action="{{ route('ki.update', $item->id) }}" method="POST" id="formModalEditKi{{ $item->id }}">
+                    <form action="{{ route('asesmen.update', $item->id) }}" method="POST" id="formModalEditKi{{ $item->id }}">
                         @csrf
                         @method('PUT')
 
@@ -2449,7 +2449,7 @@
                                     Nominal Item Tagihan Asesmen Siswa Ini:
                                 </div>
 
-                                @forelse($item->itemsKi as $itKi)
+                                @forelse($item->itemsAsesmen as $itKi)
                                     <div class="form-group row mb-2 align-items-center">
                                         <label class="col-sm-4 col-form-label font-weight-semibold">
                                             {{ $itKi->nama_iuran }} <span class="text-muted small">(Rp)</span>
@@ -2461,7 +2461,7 @@
                                                 </div>
                                                 <input type="number"
                                                        name="items[{{ $itKi->id }}][nominal]"
-                                                       class="form-control font-weight-bold text-success font-num ki-edit-item-input"
+                                                       class="form-control font-weight-bold text-success font-num asesmen-edit-item-input"
                                                        data-item-id="{{ $item->id }}"
                                                        value="{{ (int)$itKi->nominal }}"
                                                        min="0"
@@ -2475,7 +2475,7 @@
                                 @endforelse
 
                                 @php
-                                    $assignedNames = $item->itemsKi->pluck('nama_iuran')->toArray();
+                                    $assignedNames = $item->itemsAsesmen->pluck('nama_iuran')->toArray();
                                     $unassignedActive = $jenisIuranAktif->whereNotIn('nama', $assignedNames);
                                 @endphp
 
@@ -2580,7 +2580,7 @@
                         </div>
                     </div>
                     <div class="modal-footer bg-light py-2 px-4 justify-content-end">
-                        <form action="{{ route('ki.destroy', $item->id) }}" method="POST" class="d-inline">
+                        <form action="{{ route('asesmen.destroy', $item->id) }}" method="POST" class="d-inline">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="btn btn-danger px-4 font-weight-bold" style="border-radius: 8px; height: 38px;">
@@ -2642,7 +2642,7 @@ function updateKiPaymentForm(itemId) {
 
     const opt = select.options[select.selectedIndex];
     const sisa = opt ? (parseFloat(opt.dataset.sisa) || 0) : 0;
-    const kategori = opt ? (opt.value === 'KI' ? 'Asesmen' : opt.value) : 'Asesmen';
+    const kategori = opt ? (opt.value === 'Asesmen' ? 'Asesmen' : opt.value) : 'Asesmen';
 
     input.max = sisa > 0 ? sisa : 999999999;
     input.value = ''; // Selalu kosongkan saat ganti pilihan atau dibuka
@@ -2723,12 +2723,12 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     @endif
 
-    @if(session('open_modal_tambah') === 'ki' || $errors->has('siswa_id'))
+    @if(session('open_modal_tambah') === 'asesmen' || $errors->has('siswa_id'))
         $('#modalTambahKi').modal('show');
     @endif
 
     // 1. Handler Modal Tambah Tagihan Asesmen Dinamis
-    const modalKiSiswaSelect = document.getElementById('modal_ki_siswa_id');
+    const modalKiSiswaSelect = document.getElementById('modal_asesmen_siswa_id');
     const modalKiSelectedSiswaBox = document.getElementById('modalKiSelectedSiswaBox');
     const modalKiPreviewNama = document.getElementById('modalKiPreviewNama');
     const modalKiPreviewNis = document.getElementById('modalKiPreviewNis');
@@ -2741,7 +2741,7 @@ document.addEventListener('DOMContentLoaded', function () {
         let total = 0;
         let selectedNames = [];
 
-        document.querySelectorAll('.ki-iuran-checkbox:checked').forEach(function (chk) {
+        document.querySelectorAll('.asesmen-iuran-checkbox:checked').forEach(function (chk) {
             const id = chk.dataset.id;
             const nama = chk.dataset.nama || '';
             const inp = document.getElementById('nominal_input_' + id);
@@ -2764,7 +2764,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    document.querySelectorAll('.ki-iuran-checkbox').forEach(function (chk) {
+    document.querySelectorAll('.asesmen-iuran-checkbox').forEach(function (chk) {
         chk.addEventListener('change', function () {
             const id = this.dataset.id;
             const inp = document.getElementById('nominal_input_' + id);
@@ -2778,7 +2778,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    document.querySelectorAll('.ki-nominal-input').forEach(function (inp) {
+    document.querySelectorAll('.asesmen-nominal-input').forEach(function (inp) {
         inp.addEventListener('input', calculateKiTambahTotal);
     });
 
@@ -2844,11 +2844,11 @@ document.addEventListener('DOMContentLoaded', function () {
     };
 
     // 3. Live Handler Modal Edit Asesmen
-    document.querySelectorAll('.ki-edit-item-input').forEach(function (inp) {
+    document.querySelectorAll('.asesmen-edit-item-input').forEach(function (inp) {
         inp.addEventListener('input', function () {
             const itemId = this.dataset.itemId;
             let sum = 0;
-            document.querySelectorAll(`.ki-edit-item-input[data-item-id="${itemId}"]`).forEach(function (i) {
+            document.querySelectorAll(`.asesmen-edit-item-input[data-item-id="${itemId}"]`).forEach(function (i) {
                 sum += parseFloat(i.value || 0);
             });
             const lbl = document.getElementById('modalEditSummaryTotalLabel_' + itemId);

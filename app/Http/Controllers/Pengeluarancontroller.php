@@ -41,7 +41,7 @@ class PengeluaranController extends Controller
             'IPP'             => 'IPP',
             'DU'              => 'Daftar Ulang',
             'Sarpras'         => 'Sarana & Prasarana',
-            'KI'              => 'Asesmen',
+            'Asesmen'              => 'Asesmen',
             'Ekstrakurikuler' => 'Ekstrakurikuler',
             'Kokurikuler'     => 'Kokurikuler',
             'BOS'             => 'Dana BOS',
@@ -134,7 +134,7 @@ class PengeluaranController extends Controller
     {
         $validated = $request->validate([
             'tanggal'     => 'required|date',
-            'sumber_dana' => 'required|in:IPP,DU,Sarpras,KI,BOS,Ekstrakurikuler,Kokurikuler',
+            'sumber_dana' => 'required|in:IPP,DU,Sarpras,Asesmen,BOS,Ekstrakurikuler,Kokurikuler',
             'keterangan'  => 'required|string|max:500',
             'nominal'     => 'required|numeric|min:1',
         ]);
@@ -172,7 +172,7 @@ class PengeluaranController extends Controller
     {
         $validated = $request->validate([
             'tanggal'     => 'required|date',
-            'sumber_dana' => 'required|in:IPP,DU,Sarpras,KI,BOS,Ekstrakurikuler,Kokurikuler',
+            'sumber_dana' => 'required|in:IPP,DU,Sarpras,Asesmen,BOS,Ekstrakurikuler,Kokurikuler',
             'keterangan'  => 'required|string|max:500',
             'nominal'     => 'required|numeric|min:1',
         ]);

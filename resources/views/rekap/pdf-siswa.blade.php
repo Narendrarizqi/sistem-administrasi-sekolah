@@ -520,10 +520,10 @@
         @endif
     </div>
 
-    {{-- 6. BAGIAN 3: RINCIAN KEGIATAN INTRAKURIKULER (KI) --}}
+    {{-- 6. BAGIAN 3: RINCIAN KEGIATAN INTRAKURIKULER (Asesmen) --}}
     <div class="page-break-inside-avoid">
         <div class="section-header">3. Rincian Asesmen</div>
-        @if($kiData['has_data'])
+        @if($asesmenData['has_data'])
             <table class="table-data">
                 <thead>
                     <tr>
@@ -537,7 +537,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($kiData['komponen'] as $idx => $k)
+                    @foreach($asesmenData['komponen'] as $idx => $k)
                         <tr>
                             <td class="text-center">{{ $idx + 1 }}</td>
                             <td><strong>{{ $k['nama'] }}</strong></td>
@@ -586,21 +586,21 @@
                 <tfoot>
                     <tr>
                         <td colspan="2" class="text-center">TOTAL ASESMEN</td>
-                        <td class="text-right">{{ number_format($kiData['target'], 0, ',', '.') }}</td>
-                        <td class="text-right" style="color:#15803d;">{{ number_format($kiData['terbayar'], 0, ',', '.') }}</td>
-                        <td class="text-right" style="color:#dc2626;">{{ number_format($kiData['sisa'], 0, ',', '.') }}</td>
+                        <td class="text-right">{{ number_format($asesmenData['target'], 0, ',', '.') }}</td>
+                        <td class="text-right" style="color:#15803d;">{{ number_format($asesmenData['terbayar'], 0, ',', '.') }}</td>
+                        <td class="text-right" style="color:#dc2626;">{{ number_format($asesmenData['sisa'], 0, ',', '.') }}</td>
                         <td class="text-center">
-                            @if($kiData['status'] === 'Lunas')
+                            @if($asesmenData['status'] === 'Lunas')
                                 <span class="status-lunas">Lunas</span>
-                            @elseif($kiData['status'] === 'Sebagian')
+                            @elseif($asesmenData['status'] === 'Sebagian')
                                 <span class="status-sebagian">Sebagian</span>
                             @else
                                 <span class="status-belum">Belum Lunas</span>
                             @endif
                         </td>
                         <td>
-                            @if($kiData['riwayat']->count() > 0)
-                                {{ $kiData['riwayat']->count() }} transaksi
+                            @if($asesmenData['riwayat']->count() > 0)
+                                {{ $asesmenData['riwayat']->count() }} transaksi
                             @else
                                 -
                             @endif

@@ -349,7 +349,7 @@ class RekapController extends Controller
             'siswa',
             'jenisPembayaran',
             'detailPembayaran',
-            'itemsKi',
+            'itemsAsesmen',
             'itemsEkskul',
             'itemsKokurikuler',
         ])
@@ -404,16 +404,16 @@ class RekapController extends Controller
                 $ippBulanMap[$b['nama']] = $terbayarBulan;
             }
 
-            // 4. ASESMEN (KI)
-            $kiModel = $pembayarans->first(fn($p) => $p->jenisPembayaran && $p->jenisPembayaran->nama === 'KI');
-            $kiTarget = $kiModel ? (float)$kiModel->totalTagihan() : 0;
-            $kiTerbayar = $kiModel ? (float)$kiModel->detailPembayaran->sum('nominal') : 0;
+            // 4. ASESMEN (Asesmen)
+            $asesmenModel = $pembayarans->first(fn($p) => $p->jenisPembayaran && $p->jenisPembayaran->nama === 'Asesmen');
+            $asesmenTarget = $asesmenModel ? (float)$asesmenModel->totalTagihan() : 0;
+            $asesmenTerbayar = $asesmenModel ? (float)$asesmenModel->detailPembayaran->sum('nominal') : 0;
 
             $asesmenMap = [];
             foreach ($asesmenItems as $asm) {
                 $val = 0;
-                if ($kiModel) {
-                    $val = (float)$kiModel->detailPembayaran
+                if ($asesmenModel) {
+                    $val = (float)$asesmenModel->detailPembayaran
                         ->filter(function($d) use ($asm) {
                             foreach ($asm['aliases'] as $alias) {
                                 if (stripos($d->kategori, $alias) !== false) return true;
@@ -438,8 +438,8 @@ class RekapController extends Controller
             if ($kokuTarget > 0 || $kokuTerbayar > 0) $hasKoku = true;
 
             // TOTALS
-            $totalTagihan = $sarprasTarget + $duTarget + $ippTarget + $kiTarget + $ekskulTarget + $kokuTarget;
-            $totalTerbayar = $sarprasTerbayar + $duTerbayar + $ippTerbayar + $kiTerbayar + $ekskulTerbayar + $kokuTerbayar;
+            $totalTagihan = $sarprasTarget + $duTarget + $ippTarget + $asesmenTarget + $ekskulTarget + $kokuTarget;
+            $totalTerbayar = $sarprasTerbayar + $duTerbayar + $ippTerbayar + $asesmenTerbayar + $ekskulTerbayar + $kokuTerbayar;
             $sisa = max($totalTagihan - $totalTerbayar, 0);
             $status = ($totalTagihan > 0 && $sisa <= 0) ? 'Lunas' : ($totalTerbayar > 0 ? 'Sebagian' : ($totalTagihan > 0 ? 'Belum Lunas' : '-'));
 
@@ -689,9 +689,9 @@ class RekapController extends Controller
             ];
         }
 
-        // 2. DATA KEGIATAN INTRAKURIKULER (KI)
-        $kiModel = $pembayarans->first(fn ($p) => $p->jenisPembayaran && $p->jenisPembayaran->nama === 'KI');
-        $kiData = [
+        // 2. DATA KEGIATAN INTRAKURIKULER (Asesmen)
+        $asesmenModel = $pembayarans->first(fn ($p) => $p->jenisPembayaran && $p->jenisPembayaran->nama === 'Asesmen');
+        $asesmenData = [
             'has_data'      => false,
             'target'        => 0,
             'terbawa'       => 0,
@@ -703,12 +703,12 @@ class RekapController extends Controller
             'riwayat'       => collect(),
         ];
 
-        if ($kiModel) {
-            $kiModel->loadMissing(['itemsKi', 'detailPembayaran']);
-            $totalTargetKi = (float) $kiModel->target;
-            $terbawaKi = (float) ($kiModel->belum_lunas ?? 0);
-            $totalTagihanKi = $totalTargetKi + $terbawaKi;
-            $totalTerbayarKi = (float) $kiModel->detailPembayaran->sum('nominal');
+        if ($asesmenModel) {
+            $asesmenModel->loadMissing(['itemsAsesmen', 'detailPembayaran']);
+            $totalTargetAsesmen = (float) $asesmenModel->target;
+            $terbawaKi = (float) ($asesmenModel->belum_lunas ?? 0);
+            $totalTagihanKi = $totalTargetAsesmen + $terbawaKi;
+            $totalTerbayarKi = (float) $asesmenModel->detailPembayaran->sum('nominal');
             $sisaKi = max($totalTagihanKi - $totalTerbayarKi, 0);
 
             $statusKi = 'Belum Ada Tagihan';
@@ -722,11 +722,11 @@ class RekapController extends Controller
                 }
             }
 
-            $items = $kiModel->itemsKi;
+            $items = $asesmenModel->itemsAsesmen;
             $kategoriList = [];
             if ($items->isNotEmpty()) {
                 foreach ($items as $it) {
-                    $terbayarItem = (float) $kiModel->detailPembayaran->where('kategori', $it->nama_iuran)->sum('nominal');
+                    $terbayarItem = (float) $asesmenModel->detailPembayaran->where('kategori', $it->nama_iuran)->sum('nominal');
                     $sisaItem = max((float)$it->nominal - $terbayarItem, 0);
                     $kategoriList[] = [
                         'nama'     => $it->nama_iuran,
@@ -734,7 +734,7 @@ class RekapController extends Controller
                         'tagihan'  => (float) $it->nominal,
                         'terbayar' => $terbayarItem,
                         'sisa'     => $sisaItem,
-                        'riwayat'  => $kiModel->detailPembayaran->where('kategori', $it->nama_iuran),
+                        'riwayat'  => $asesmenModel->detailPembayaran->where('kategori', $it->nama_iuran),
                     ];
                 }
             }
@@ -751,16 +751,16 @@ class RekapController extends Controller
                 }
             }
 
-            $kiData = [
+            $asesmenData = [
                 'has_data'      => true,
-                'target'        => $totalTargetKi,
+                'target'        => $totalTargetAsesmen,
                 'terbawa'       => $terbawaKi,
                 'total_tagihan' => $totalTagihanKi,
                 'terbayar'      => $totalTerbayarKi,
                 'sisa'          => $sisaKi,
                 'status'        => $statusKi,
                 'komponen'      => $kategoriList,
-                'riwayat'       => $kiModel->detailPembayaran,
+                'riwayat'       => $asesmenModel->detailPembayaran,
             ];
         }
 
@@ -984,7 +984,7 @@ class RekapController extends Controller
             'IPP'             => $ippData,
             'Daftar Ulang'    => $duData,
             'Sarana & Prasarana' => $sarprasData,
-            'Asesmen'         => $kiData,
+            'Asesmen'         => $asesmenData,
             'Ekstrakurikuler' => $ekskulData,
             'Kokurikuler'     => $kokurikulerData,
         ] as $jenisLabel => $d) {
@@ -1045,13 +1045,13 @@ class RekapController extends Controller
             [
                 'no'            => 4,
                 'jenis'         => 'Asesmen',
-                'target'        => $kiData['target'],
-                'potongan'      => $kiData['potongan'] ?? 0,
-                'terbawa'       => $kiData['terbawa'],
-                'total_tagihan' => $kiData['total_tagihan'],
-                'terbayar'      => $kiData['terbayar'],
-                'sisa'          => $kiData['sisa'],
-                'status'        => $kiData['status'],
+                'target'        => $asesmenData['target'],
+                'potongan'      => $asesmenData['potongan'] ?? 0,
+                'terbawa'       => $asesmenData['terbawa'],
+                'total_tagihan' => $asesmenData['total_tagihan'],
+                'terbayar'      => $asesmenData['terbayar'],
+                'sisa'          => $asesmenData['sisa'],
+                'status'        => $asesmenData['status'],
             ],
             [
                 'no'            => 5,
@@ -1106,7 +1106,7 @@ class RekapController extends Controller
             'ringkasanSiswa'    => $ringkasanSiswa,
             'grandTotal'        => $grandTotal,
             'ippData'           => $ippData,
-            'kiData'            => $kiData,
+            'kiData'            => $asesmenData,
             'duData'            => $duData,
             'sarprasData'       => $sarprasData,
             'ekskulData'        => $ekskulData,

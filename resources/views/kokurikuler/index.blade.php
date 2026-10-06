@@ -15,7 +15,7 @@
            =============================================================== */
 
         /* 1. Header Box */
-        .ki-page-header {
+        .asesmen-page-header {
             background: #ffffff;
             border: 1px solid #e2e8f0;
             border-radius: 12px;
@@ -24,7 +24,7 @@
             box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
         }
 
-        .ki-title-wrapper {
+        .asesmen-title-wrapper {
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -32,7 +32,7 @@
             gap: 12px;
         }
 
-        .ki-title {
+        .asesmen-title {
             font-size: 17.5px;
             font-weight: 700;
             color: #0f172a;
@@ -43,7 +43,7 @@
             gap: 8px;
         }
 
-        .ki-title-icon {
+        .asesmen-title-icon {
             width: 32px;
             height: 32px;
             border-radius: 8px;
@@ -57,20 +57,20 @@
             flex-shrink: 0;
         }
 
-        .ki-desc {
+        .asesmen-desc {
             font-size: 12.5px;
             color: #64748b;
             margin: 0;
         }
 
-        .ki-header-badges {
+        .asesmen-header-badges {
             display: flex;
             align-items: center;
             gap: 8px;
             flex-wrap: wrap;
         }
 
-        .ki-badge-ta {
+        .asesmen-badge-ta {
             background: #f0fdf4;
             border: 1px solid #bbf7d0;
             color: #15803d;
@@ -83,7 +83,7 @@
             gap: 5px;
         }
 
-        .ki-badge-total {
+        .asesmen-badge-total {
             background: #f8fafc;
             border: 1px solid #e2e8f0;
             color: #475569;
@@ -97,7 +97,7 @@
         }
 
         /* 2. Card Container & Toolbar */
-        .ki-card {
+        .asesmen-card {
             background: #ffffff;
             border: 1px solid #e2e8f0;
             border-radius: 12px;
@@ -106,13 +106,13 @@
             margin-bottom: 24px;
         }
 
-        .ki-card-header {
+        .asesmen-card-header {
             background: #ffffff;
             padding: 13px 18px;
             border-bottom: 1px solid #f1f5f9;
         }
 
-        .ki-toolbar {
+        .asesmen-toolbar {
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -120,7 +120,7 @@
             gap: 12px;
         }
 
-        .ki-toolbar-left {
+        .asesmen-toolbar-left {
             display: flex;
             align-items: center;
             gap: 10px;
@@ -128,13 +128,13 @@
             flex: 1;
         }
 
-        .ki-search-box {
+        .asesmen-search-box {
             position: relative;
             width: 290px;
             max-width: 100%;
         }
 
-        .ki-search-box i {
+        .asesmen-search-box i {
             position: absolute;
             left: 11px;
             top: 50%;
@@ -143,7 +143,7 @@
             font-size: 12.5px;
         }
 
-        .ki-search-input {
+        .asesmen-search-input {
             width: 100%;
             height: 38px;
             padding: 6px 12px 6px 34px;
@@ -156,13 +156,13 @@
             outline: none;
         }
 
-        .ki-search-input:focus {
+        .asesmen-search-input:focus {
             border-color: #16a34a;
             box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.12);
         }
 
         /* Toolbar Action Buttons (Matching Asesmen) */
-        .ki-toolbar-actions {
+        .asesmen-toolbar-actions {
             display: flex;
             align-items: center;
             gap: 8px;
@@ -259,7 +259,7 @@
             transform: translateY(1px);
         }
 
-        .btn-toolbar-tambah-ki,
+        .btn-toolbar-tambah-asesmen,
         .btn-toolbar-tambah {
             height: 38px;
             padding: 0 16px;
@@ -280,13 +280,13 @@
             box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
         }
 
-        .btn-toolbar-tambah-ki i,
+        .btn-toolbar-tambah-asesmen i,
         .btn-toolbar-tambah i {
             color: #ffffff;
         }
 
-        .btn-toolbar-tambah-ki:hover,
-        .btn-toolbar-tambah-ki:focus,
+        .btn-toolbar-tambah-asesmen:hover,
+        .btn-toolbar-tambah-asesmen:focus,
         .btn-toolbar-tambah:hover,
         .btn-toolbar-tambah:focus {
             background: #15803d;
@@ -296,13 +296,13 @@
             box-shadow: 0 2px 6px rgba(22, 163, 74, 0.25);
         }
 
-        .btn-toolbar-tambah-ki:active,
+        .btn-toolbar-tambah-asesmen:active,
         .btn-toolbar-tambah:active {
             transform: translateY(1px);
         }
 
         @media (max-width: 768px) {
-            .ki-toolbar-actions {
+            .asesmen-toolbar-actions {
                 width: 100%;
                 justify-content: flex-start;
                 flex-wrap: wrap;
@@ -310,7 +310,7 @@
         }
 
         /* 3. Table Container */
-        .ki-table-responsive {
+        .asesmen-table-responsive {
             width: 100%;
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
@@ -318,21 +318,21 @@
             scrollbar-color: #cbd5e1 #f8fafc;
         }
 
-        .ki-table-responsive::-webkit-scrollbar {
+        .asesmen-table-responsive::-webkit-scrollbar {
             height: 6px;
         }
 
-        .ki-table-responsive::-webkit-scrollbar-track {
+        .asesmen-table-responsive::-webkit-scrollbar-track {
             background: #f8fafc;
             border-radius: 999px;
         }
 
-        .ki-table-responsive::-webkit-scrollbar-thumb {
+        .asesmen-table-responsive::-webkit-scrollbar-thumb {
             background: #cbd5e1;
             border-radius: 999px;
         }
 
-        .ki-table-responsive::-webkit-scrollbar-thumb:hover {
+        .asesmen-table-responsive::-webkit-scrollbar-thumb:hover {
             background: #94a3b8;
         }
 
@@ -562,7 +562,7 @@
             color: #b45309 !important;
         }
 
-        .ki-status-card {
+        .asesmen-status-card {
             display: flex;
             flex-direction: column;
             gap: 4px;
@@ -577,7 +577,7 @@
             box-sizing: border-box;
         }
 
-        .ki-status-row {
+        .asesmen-status-row {
             display: flex !important;
             align-items: center !important;
             justify-content: space-between !important;
@@ -586,12 +586,12 @@
             padding: 1.5px 0;
         }
 
-        .ki-status-row:not(:last-child) {
+        .asesmen-status-row:not(:last-child) {
             border-bottom: 1px solid #f1f5f9;
             padding-bottom: 3.5px;
         }
 
-        .ki-status-name {
+        .asesmen-status-name {
             font-size: 11px;
             font-weight: 600;
             color: #334155;
@@ -601,7 +601,7 @@
             line-height: 1.2;
         }
 
-        .ki-status-pill {
+        .asesmen-status-pill {
             display: inline-flex !important;
             align-items: center !important;
             justify-content: center !important;
@@ -619,7 +619,7 @@
         }
 
         /* 5. Action Buttons */
-        .ki-action-group,
+        .asesmen-action-group,
         .action-group-box {
             display: inline-flex;
             align-items: center;
@@ -948,23 +948,23 @@
     @endif
 
     {{-- 1. HEADER SECTION --}}
-    <div class="ki-page-header">
-        <div class="ki-title-wrapper">
+    <div class="asesmen-page-header">
+        <div class="asesmen-title-wrapper">
             <div>
-                <h1 class="ki-title">
-                    <span class="ki-title-icon"><i class="fas fa-compass"></i></span>
+                <h1 class="asesmen-title">
+                    <span class="asesmen-title-icon"><i class="fas fa-compass"></i></span>
                     Kokurikuler
                 </h1>
-                <p class="ki-desc">
+                <p class="asesmen-desc">
                     Kelola data tagihan dan iuran kegiatan kokurikuler siswa (Projek P5, Kunjungan Industri, Outing Class, Field Trip, dll.), verifikasi pembayaran, serta status pelunasan.
                 </p>
             </div>
-            <div class="ki-header-badges">
-                <span class="ki-badge-ta">
+            <div class="asesmen-header-badges">
+                <span class="asesmen-badge-ta">
                     <i class="far fa-calendar-alt text-success"></i>
                     Tahun Ajaran: {{ $selectedTa->nama ?? 'Aktif' }}
                 </span>
-                <span class="ki-badge-total">
+                <span class="asesmen-badge-total">
                     <i class="fas fa-users text-muted"></i>
                     Total: {{ method_exists($data, 'total') ? $data->total() : $data->count() }} Siswa
                 </span>
@@ -973,22 +973,22 @@
     </div>
 
     {{-- 2. MAIN CARD & TABLE --}}
-    <div class="ki-card">
-        <div class="ki-card-header">
-            <div class="ki-toolbar">
-                <div class="ki-toolbar-left">
-                    <div class="ki-search-box">
+    <div class="asesmen-card">
+        <div class="asesmen-card-header">
+            <div class="asesmen-toolbar">
+                <div class="asesmen-toolbar-left">
+                    <div class="asesmen-search-box">
                         <i class="fas fa-search"></i>
                         <input
                             type="text"
                             id="kokurikulerSearchInput"
-                            class="ki-search-input"
+                            class="asesmen-search-input"
                             placeholder="Cari NIS atau nama siswa..."
                         >
                     </div>
                 </div>
 
-                <div class="ki-toolbar-actions">
+                <div class="asesmen-toolbar-actions">
                     {{-- Tombol 1: Kelola Master --}}
                     <button
                         type="button"
@@ -1016,7 +1016,7 @@
                     {{-- Tombol 3: Tambah Tagihan Siswa Baru --}}
                     <button
                         type="button"
-                        class="btn-toolbar-tambah-ki"
+                        class="btn-toolbar-tambah-asesmen"
                         data-toggle="modal"
                         data-target="#modalTambahSiswaKokurikuler"
                         title="Tambah Data Tagihan Siswa"
@@ -1037,7 +1037,7 @@
             };
         @endphp
 
-        <div class="ki-table-responsive">
+        <div class="asesmen-table-responsive">
             <table class="table" id="kokurikulerTable">
                 <thead>
                     <tr>
@@ -1168,16 +1168,16 @@
 
                             {{-- 9. Status Subtagihan Dinamis --}}
                             <td class="text-center" style="padding: 6px 8px; vertical-align: middle;">
-                                <div class="ki-status-card">
+                                <div class="asesmen-status-card">
                                     @forelse($subStatus as $katNama => $st)
-                                        <div class="ki-status-row">
-                                            <span class="ki-status-name" title="{{ $katNama }}">{{ $katNama }}</span>
+                                        <div class="asesmen-status-row">
+                                            <span class="asesmen-status-name" title="{{ $katNama }}">{{ $katNama }}</span>
                                             @if($st['is_lunas'])
-                                                <span class="badge badge-status-lunas ki-status-pill">Lunas</span>
+                                                <span class="badge badge-status-lunas asesmen-status-pill">Lunas</span>
                                             @elseif($st['terbayar'] > 0)
-                                                <span class="badge badge-status-sebagian ki-status-pill">Sebagian</span>
+                                                <span class="badge badge-status-sebagian asesmen-status-pill">Sebagian</span>
                                             @else
-                                                <span class="badge badge-status-belum ki-status-pill">Belum</span>
+                                                <span class="badge badge-status-belum asesmen-status-pill">Belum</span>
                                             @endif
                                         </div>
                                     @empty
@@ -1188,7 +1188,7 @@
 
                             {{-- 10. Aksi --}}
                             <td class="text-center">
-                                <div class="ki-action-group">
+                                <div class="asesmen-action-group">
                                     {{-- Tombol Bayar --}}
                                     <button type="button"
                                             class="btn-act-bayar"

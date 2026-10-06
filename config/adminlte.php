@@ -346,7 +346,7 @@ return [
 
     [
         'text' => 'Asesmen',
-        'route' => 'ki.index',
+        'route' => 'asesmen.index',
         'icon' => 'fas fa-book-open',
     ],
 

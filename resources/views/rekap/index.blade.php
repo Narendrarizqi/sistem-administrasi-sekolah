@@ -852,7 +852,7 @@
                                         >
                                             @foreach($orderedJenisKeys as $jenis)
                                                 <option value="{{ $jenis }}" @if($jenis === 'Total') selected @endif>
-                                                    {{ $jenis === 'Total' ? 'Total Keseluruhan' : (($jenis === 'KI' || $jenis === 'Kegiatan Intrakurikuler') ? 'Asesmen' : $jenis) }}
+                                                    {{ $jenis === 'Total' ? 'Total Keseluruhan' : (($jenis === 'Asesmen' || $jenis === 'Kegiatan Intrakurikuler') ? 'Asesmen' : $jenis) }}
                                                 </option>
                                             @endforeach
                                         </select>

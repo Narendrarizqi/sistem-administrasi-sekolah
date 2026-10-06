@@ -23,7 +23,7 @@ class JenisPembayaranSeeder extends Seeder
                 'target' => 0
             ],
             [
-                'nama' => 'KI',
+                'nama' => 'Asesmen',
                 'target' => 1000000
             ]
         ];
