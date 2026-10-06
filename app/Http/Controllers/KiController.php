@@ -93,11 +93,6 @@ class KiController extends Controller
             'iuran_ids'      => 'nullable|array',
             'iuran_ids.*'    => 'exists:jenis_iuran_ki,id',
             'nominals'       => 'nullable|array',
-            // Fallback legacy support jika ada input target_uts / target_uas / target_ujian / target
-            'target_uts'     => 'nullable|numeric|min:0',
-            'target_uas'     => 'nullable|numeric|min:0',
-            'target_ujian'   => 'nullable|numeric|min:0',
-            'target'         => 'nullable|numeric|min:0',
         ]);
 
         $jenis = JenisPembayaran::where('nama', 'KI')->firstOrFail();
@@ -160,49 +155,7 @@ class KiController extends Controller
             }
         }
 
-        // 2. Fallback jika ada input legacy (target_uts, target_uas, target_ujian)
-        if ($addedItems === 0 && empty($duplicates)) {
-            $uts   = (float) ($request->target_uts ?? 0);
-            $uas   = (float) ($request->target_uas ?? 0);
-            $ujian = (float) ($request->target_ujian ?? 0);
-            $total = (float) ($request->target ?? 0);
 
-            if ($uts > 0) {
-                $masterUts = JenisIuranKi::firstOrCreate(['nama' => 'STS Gasal'], ['nominal_default' => 0, 'is_active' => true]);
-                ItemPembayaranKi::firstOrCreate(
-                    ['pembayaran_id' => $pembayaran->id, 'nama_iuran' => 'STS Gasal'],
-                    ['jenis_iuran_ki_id' => $masterUts->id, 'nominal' => $uts]
-                );
-                $addedItems++;
-            }
-
-            if ($uas > 0) {
-                $masterUas = JenisIuranKi::firstOrCreate(['nama' => 'SAS'], ['nominal_default' => 0, 'is_active' => true]);
-                ItemPembayaranKi::firstOrCreate(
-                    ['pembayaran_id' => $pembayaran->id, 'nama_iuran' => 'SAS'],
-                    ['jenis_iuran_ki_id' => $masterUas->id, 'nominal' => $uas]
-                );
-                $addedItems++;
-            }
-
-            if ($ujian > 0) {
-                $masterUjian = JenisIuranKi::firstOrCreate(['nama' => 'ASAJ'], ['nominal_default' => 0, 'is_active' => true]);
-                ItemPembayaranKi::firstOrCreate(
-                    ['pembayaran_id' => $pembayaran->id, 'nama_iuran' => 'ASAJ'],
-                    ['jenis_iuran_ki_id' => $masterUjian->id, 'nominal' => $ujian]
-                );
-                $addedItems++;
-            }
-
-            if ($addedItems === 0 && $total > 0) {
-                $masterAsaj = JenisIuranKi::firstOrCreate(['nama' => 'ASAJ'], ['nominal_default' => 0, 'is_active' => true]);
-                ItemPembayaranKi::firstOrCreate(
-                    ['pembayaran_id' => $pembayaran->id, 'nama_iuran' => 'ASAJ'],
-                    ['jenis_iuran_ki_id' => $masterAsaj->id, 'nominal' => $total]
-                );
-                $addedItems++;
-            }
-        }
 
         // Jika semua yang dipilih ternyata duplikat
         if ($addedItems === 0 && !empty($duplicates)) {

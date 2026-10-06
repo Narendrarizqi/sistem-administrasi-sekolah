@@ -1744,14 +1744,10 @@
                                                     <i class="fas fa-pen"></i>
                                                 </button>
 
-                                                {{-- Hapus (dilindungi jika sudah terpakai) --}}
-                                                <form action="{{ route('ki.jenis-iuran.destroy', $ji->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus jenis iuran ini?');">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="btn-act-hapus" title="Hapus Jenis Iuran">
-                                                        <i class="fas fa-trash-alt"></i>
-                                                    </button>
-                                                </form>
+                                                {{-- Hapus (memunculkan modal konfirmasi) --}}
+                                                <button type="button" class="btn-act-hapus" title="Hapus Jenis Iuran" data-toggle="modal" data-target="#modalHapusJi{{ $ji->id }}">
+                                                    <i class="fas fa-trash-alt"></i>
+                                                </button>
                                             </div>
                                         </td>
                                     </tr>
@@ -1783,6 +1779,51 @@
                                             </form>
                                         </td>
                                     </tr>
+
+                                    {{-- MODAL HAPUS JENIS IURAN --}}
+                                    <div class="modal fade" id="modalHapusJi{{ $ji->id }}" tabindex="-1" role="dialog" aria-hidden="true" style="z-index: 1060;">
+                                        <div class="modal-dialog modal-dialog-centered" role="document">
+                                            <div class="modal-content border-0 shadow" style="border-radius: 14px; overflow: hidden;">
+                                                <div class="modal-header py-3 px-4 bg-light border-bottom">
+                                                    <h5 class="modal-title font-weight-bold text-danger" style="font-size: 16px;">
+                                                        <i class="fas fa-trash-alt text-danger mr-2"></i>
+                                                        Konfirmasi Hapus Jenis Iuran
+                                                    </h5>
+                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body p-4 text-left">
+                                                    <p class="mb-2 text-dark" style="font-size: 14px; white-space: normal;">
+                                                        Apakah Anda yakin ingin menghapus jenis iuran ini:
+                                                    </p>
+                                                    <div class="p-3 bg-light border rounded mb-3" style="border-radius: 10px; white-space: normal;">
+                                                        <div class="font-weight-bold text-dark" style="font-size: 15px;">{{ $ji->nama }}</div>
+                                                        @if($ji->keterangan)
+                                                            <div class="text-muted small">{{ $ji->keterangan }}</div>
+                                                        @endif
+                                                    </div>
+                                                    <div class="alert alert-danger mb-0 small" style="border-radius: 8px; white-space: normal;">
+                                                        <i class="fas fa-exclamation-triangle mr-1"></i>
+                                                        Data jenis iuran yang dihapus tidak dapat dikembalikan.
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer bg-light py-2 px-4 justify-content-end">
+                                                    <form action="{{ route('ki.jenis-iuran.destroy', $ji->id) }}" method="POST" class="d-inline">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="button" class="btn btn-batal-merah px-4 mr-2" data-dismiss="modal" style="height: 38px;">
+                                                            Batal
+                                                        </button>
+                                                        <button type="submit" class="btn btn-danger px-4 font-weight-bold" style="border-radius: 8px; height: 38px;">
+                                                            <i class="fas fa-trash-alt mr-1"></i>
+                                                            Ya, Hapus Iuran
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 @empty
                                     <tr>
                                         <td colspan="6" class="text-center text-muted py-3">Belum ada jenis iuran.</td>

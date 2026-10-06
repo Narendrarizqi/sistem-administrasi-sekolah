@@ -200,12 +200,14 @@ class Pembayaran extends Model
         }
 
         // Hitung berapa bulan telah berjalan dalam tahun ajaran sampai bulan saat ini
-        if ($now->lessThan($taMulai)) {
-            $bulanBerjalan = 0;
+        // Kita abaikan tahun aslinya, dan hanya fokus pada bulan berjalan relatif terhadap Juli.
+        $currentMonth = $now->month;
+        if ($currentMonth >= 7) {
+            $bulanBerjalan = $currentMonth - 7 + 1;
         } else {
-            $diffMonths = ($now->year - $taMulai->year) * 12 + ($now->month - $taMulai->month) + 1;
-            $bulanBerjalan = max(1, min(12, $diffMonths));
+            $bulanBerjalan = $currentMonth + 6;
         }
+        $bulanBerjalan = max(1, min(12, $bulanBerjalan));
 
         // Tarif bulanan = target tahunan / 12
         $tarifBulanan = $target > 0 ? ($target / 12) : 0;
@@ -233,7 +235,37 @@ class Pembayaran extends Model
         ];
         $namaBulan = ($bulanIndoList[(int)$now->format('n')] ?? 'Agustus') . ' ' . $now->format('Y');
 
-        if ($tunggakanBulan == 0) {
+        if ($target == 0 && $terbawa <= 0) {
+            return [
+                'status_text'          => 'Belum Ada Tagihan',
+                'badge_class'          => 'badge-secondary',
+                'icon'                 => 'fas fa-info-circle',
+                'is_lunas'             => false,
+                'tunggakan_bulan'      => 0,
+                'bulan_berjalan'       => 0,
+                'bulan_terbayar'       => 0,
+                'tarif_bulanan'        => 0,
+                'tagihan_bulan_ini'    => 0,
+                'keterangan_bulan_ini' => 'Target tagihan belum diatur.',
+            ];
+        }
+
+        if ($bulanBerjalan == 0 && $terpenuhi < $tarifBulanan) {
+            return [
+                'status_text'          => 'Bulan Ini Belum Lunas',
+                'badge_class'          => 'badge-status-belum',
+                'icon'                 => 'fas fa-clock',
+                'is_lunas'             => false,
+                'tunggakan_bulan'      => 1,
+                'bulan_berjalan'       => 1,
+                'bulan_terbayar'       => 0,
+                'tarif_bulanan'        => (float) $tarifBulanan,
+                'tagihan_bulan_ini'    => (float) $tarifBulanan,
+                'keterangan_bulan_ini' => 'Tagihan awal tahun ajaran baru',
+            ];
+        }
+
+        if ($tunggakanBulan == 0 && $tagihanBulanIni <= 0) {
             return [
                 'status_text'          => 'Bulan Ini Lunas',
                 'badge_class'          => 'badge-status-lunas',
@@ -246,7 +278,7 @@ class Pembayaran extends Model
                 'tagihan_bulan_ini'    => (float) $tagihanBulanIni,
                 'keterangan_bulan_ini' => "Bulan {$namaBulan} sudah Lunas",
             ];
-        } elseif ($tunggakanBulan == 1) {
+        } elseif ($tunggakanBulan <= 1) {
             return [
                 'status_text'          => 'Bulan Ini Belum Lunas',
                 'badge_class'          => 'badge-status-belum',

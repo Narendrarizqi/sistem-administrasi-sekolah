@@ -4,7 +4,7 @@
             &copy; {{ date('Y') }} <strong>NarendraRizqi</strong>. All rights reserved.
         </div>
         <div>
-            Sistem Rekap Pembayaran
+            Sistem Rekap Keuangan
         </div>
     </div>
 </footer>

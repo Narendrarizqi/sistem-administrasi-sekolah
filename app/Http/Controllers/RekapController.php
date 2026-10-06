@@ -723,8 +723,8 @@ class RekapController extends Controller
             }
 
             $items = $kiModel->itemsKi;
+            $kategoriList = [];
             if ($items->isNotEmpty()) {
-                $kategoriList = [];
                 foreach ($items as $it) {
                     $terbayarItem = (float) $kiModel->detailPembayaran->where('kategori', $it->nama_iuran)->sum('nominal');
                     $sisaItem = max((float)$it->nominal - $terbayarItem, 0);
@@ -737,40 +737,6 @@ class RekapController extends Controller
                         'riwayat'  => $kiModel->detailPembayaran->where('kategori', $it->nama_iuran),
                     ];
                 }
-            } else {
-                $targetUts = (float) $kiModel->target_uts;
-                $targetUas = (float) $kiModel->target_uas;
-                $targetUjian = (float) $kiModel->target_ujian;
-                $terbayarUts = (float) $kiModel->detailPembayaran->where('kategori', 'UTS')->sum('nominal');
-                $terbayarUas = (float) $kiModel->detailPembayaran->where('kategori', 'UAS')->sum('nominal');
-                $terbayarUjian = (float) $kiModel->detailPembayaran->where('kategori', 'Ujian')->sum('nominal');
-
-                $kategoriList = [
-                    [
-                        'nama'     => 'STS Gasal (UTS)',
-                        'kode'     => 'UTS',
-                        'tagihan'  => $targetUts,
-                        'terbayar' => $terbayarUts,
-                        'sisa'     => max($targetUts - $terbayarUts, 0),
-                        'riwayat'  => $kiModel->detailPembayaran->where('kategori', 'UTS'),
-                    ],
-                    [
-                        'nama'     => 'SAS (UAS)',
-                        'kode'     => 'UAS',
-                        'tagihan'  => $targetUas,
-                        'terbayar' => $terbayarUas,
-                        'sisa'     => max($targetUas - $terbayarUas, 0),
-                        'riwayat'  => $kiModel->detailPembayaran->where('kategori', 'UAS'),
-                    ],
-                    [
-                        'nama'     => 'ASAJ (Ujian)',
-                        'kode'     => 'Ujian',
-                        'tagihan'  => $targetUjian,
-                        'terbayar' => $terbayarUjian,
-                        'sisa'     => max($targetUjian - $terbayarUjian, 0),
-                        'riwayat'  => $kiModel->detailPembayaran->where('kategori', 'Ujian'),
-                    ],
-                ];
             }
 
             foreach ($kategoriList as &$komp) {

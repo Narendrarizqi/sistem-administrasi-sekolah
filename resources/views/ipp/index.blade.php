@@ -1329,7 +1329,7 @@
                                             data-toggle="tooltip"
                                             data-target="#modalBayar{{ $item->id }}"
                                             onclick="$('#modalBayar{{ $item->id }}').modal('show')"
-                                            {{ $isLunasPenuh ? 'disabled' : '' }}>
+                                            {{ ($isLunasPenuh || $totalTagihan <= 0) ? 'disabled' : '' }}>
                                         <i class="fas fa-money-bill-wave"></i>
                                     </button>
 
@@ -1560,6 +1560,7 @@
     {{-- MODALS PER BARIS: MODAL BAYAR & MODAL HAPUS --}}
     @foreach($data as $item)
         @php
+            $targetItem = (float) $item->target;
             $terbayarItem = (float) $item->detailPembayaran->sum('nominal');
             $terbawaItem = (float) ($item->belum_lunas ?? 0);
             $tagihanAwalItem = $item->totalTagihanAwal();
@@ -1648,7 +1649,17 @@
                             </div>
 
                             {{-- 3. TAGIHAN BULAN INI (Focus Section) --}}
-                            @if($sisaItem <= 0)
+                            @if($targetItem == 0 && $sisaTerbawaItem <= 0)
+                                <div class="alert alert-secondary py-3 px-3 mb-3 d-flex align-items-center gap-3" style="border-radius: 12px; border: 1px solid #e2e8f0; background: #f8fafc;">
+                                    <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; background: #e2e8f0; color: #64748b;">
+                                        <i class="fas fa-info-circle"></i>
+                                    </div>
+                                    <div>
+                                        <span class="text-dark font-weight-bold d-block" style="font-size: 14px;">Belum Ada Tagihan</span>
+                                        <span class="text-muted small">Target IPP belum diatur. Silakan edit target terlebih dahulu sebelum melakukan pembayaran.</span>
+                                    </div>
+                                </div>
+                            @elseif($sisaItem <= 0)
                                 <div class="tagihan-lunas-card">
                                     <div class="d-flex align-items-center gap-2">
                                         <i class="fas fa-check-circle text-success" style="font-size: 15px;"></i>

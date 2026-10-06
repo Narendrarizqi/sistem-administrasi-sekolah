@@ -350,6 +350,9 @@ class SiswaController extends Controller
         int $tahunBaruId,
         string $tahunBaruNama
     ): void {
+        $ippJenis = \App\Models\JenisPembayaran::where('nama', 'IPP')->first();
+        $ippJenisId = $ippJenis ? $ippJenis->id : null;
+
         // Ambil semua tagihan siswa pada tahun lama
         $tagihanLama = Pembayaran::with('detailPembayaran')
             ->where('siswa_id', $siswaId)
@@ -364,25 +367,31 @@ class SiswaController extends Controller
 
         $terbawaPerJenis = [];
         $originMap = [];
+        $targetPerJenis = [];
 
         foreach ($tagihanLama as $tagihan) {
             $terbayar = (float) $tagihan->detailPembayaran->sum('nominal');
             $totalTagihan = (float) $tagihan->target + (float) ($tagihan->belum_lunas ?? 0);
             $sisa = max($totalTagihan - $terbayar, 0);
 
-            if ($sisa <= 0) {
-                continue;
+            $jenisId = $tagihan->jenis_id;
+
+            if ($jenisId == $ippJenisId) {
+                $targetPerJenis[$jenisId] = $tagihan->target;
             }
 
-            $jenisId = $tagihan->jenis_id;
-            $terbawaPerJenis[$jenisId] = ($terbawaPerJenis[$jenisId] ?? 0) + $sisa;
-            $originMap[$jenisId] = $tagihan->id;
+            if ($sisa > 0 || $jenisId == $ippJenisId) {
+                $terbawaPerJenis[$jenisId] = ($terbawaPerJenis[$jenisId] ?? 0) + $sisa;
+                $originMap[$jenisId] = $tagihan->id;
+            }
         }
 
         foreach ($terbawaPerJenis as $jenisId => $totalTerbawa) {
-            if ($totalTerbawa <= 0) {
+            if ($totalTerbawa <= 0 && $jenisId != $ippJenisId) {
                 continue;
             }
+
+            $targetBaru = 0; // The user requested the target to be 0 for the new year so it shows 'Belum Ada Tagihan'
 
             // Pastikan HANYA ada 1 record per jenis di tahun baru untuk siswa ini
             $baru = Pembayaran::where('siswa_id', $siswaId)
@@ -396,7 +405,7 @@ class SiswaController extends Controller
                     'jenis_id'        => $jenisId,
                     'tahun_ajaran_id' => $tahunBaruId,
                     'tahun_ajaran'    => $tahunBaruNama,
-                    'target'          => 0,
+                    'target'          => $targetBaru,
                     'belum_lunas'     => $totalTerbawa,
                     'status'          => 'Belum Lunas',
                     'carryover_from_pembayaran_id' => $originMap[$jenisId] ?? null,
