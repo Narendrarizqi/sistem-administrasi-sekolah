@@ -225,7 +225,7 @@ class TargetTahunanController extends Controller
             'SARPRAS' => 'Sarpras',
             'SARANA DAN PRASARANA' => 'Sarpras',
             'SARANA & PRASARANA' => 'Sarpras',
-            'Asesmen' => 'Asesmen',
+            'ASESMEN' => 'Asesmen',
             'KEGIATAN INTRAKURIKULER' => 'Asesmen',
         ];
 

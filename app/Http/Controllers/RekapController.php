@@ -689,7 +689,7 @@ class RekapController extends Controller
             ];
         }
 
-        // 2. DATA KEGIATAN INTRAKURIKULER (Asesmen)
+        // 2. DATA KEGIATAN ASESMEN
         $asesmenModel = $pembayarans->first(fn ($p) => $p->jenisPembayaran && $p->jenisPembayaran->nama === 'Asesmen');
         $asesmenData = [
             'has_data'      => false,
@@ -706,19 +706,19 @@ class RekapController extends Controller
         if ($asesmenModel) {
             $asesmenModel->loadMissing(['itemsAsesmen', 'detailPembayaran']);
             $totalTargetAsesmen = (float) $asesmenModel->target;
-            $terbawaKi = (float) ($asesmenModel->belum_lunas ?? 0);
-            $totalTagihanKi = $totalTargetAsesmen + $terbawaKi;
-            $totalTerbayarKi = (float) $asesmenModel->detailPembayaran->sum('nominal');
-            $sisaKi = max($totalTagihanKi - $totalTerbayarKi, 0);
+            $terbawaAsesmen = (float) ($asesmenModel->belum_lunas ?? 0);
+            $totalTagihanAsesmen = $totalTargetAsesmen + $terbawaAsesmen;
+            $totalTerbayarAsesmen = (float) $asesmenModel->detailPembayaran->sum('nominal');
+            $sisaAsesmen = max($totalTagihanAsesmen - $totalTerbayarAsesmen, 0);
 
-            $statusKi = 'Belum Ada Tagihan';
-            if ($totalTagihanKi > 0) {
-                if ($sisaKi <= 0) {
-                    $statusKi = 'Lunas';
-                } elseif ($totalTerbayarKi > 0) {
-                    $statusKi = 'Sebagian';
+            $statusAsesmen = 'Belum Ada Tagihan';
+            if ($totalTagihanAsesmen > 0) {
+                if ($sisaAsesmen <= 0) {
+                    $statusAsesmen = 'Lunas';
+                } elseif ($totalTerbayarAsesmen > 0) {
+                    $statusAsesmen = 'Sebagian';
                 } else {
-                    $statusKi = 'Belum Lunas';
+                    $statusAsesmen = 'Belum Lunas';
                 }
             }
 
@@ -754,11 +754,11 @@ class RekapController extends Controller
             $asesmenData = [
                 'has_data'      => true,
                 'target'        => $totalTargetAsesmen,
-                'terbawa'       => $terbawaKi,
-                'total_tagihan' => $totalTagihanKi,
-                'terbayar'      => $totalTerbayarKi,
-                'sisa'          => $sisaKi,
-                'status'        => $statusKi,
+                'terbawa'       => $terbawaAsesmen,
+                'total_tagihan' => $totalTagihanAsesmen,
+                'terbayar'      => $totalTerbayarAsesmen,
+                'sisa'          => $sisaAsesmen,
+                'status'        => $statusAsesmen,
                 'komponen'      => $kategoriList,
                 'riwayat'       => $asesmenModel->detailPembayaran,
             ];
